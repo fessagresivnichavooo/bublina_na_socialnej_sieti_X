@@ -1,0 +1,1242 @@
+{
+    "realDonaldTrump": {
+        "type": "celebrity",
+        "topic": "politics",
+        "short_describtion": "Donald J. Trump, former president of the USA.",
+        "country": "United States",
+        "celebrity_info": "conservative",
+        "screen_name": "realDonaldTrump"
+    },
+    "vladimir_weiss": {
+        "type": "celebrity",
+        "topic": "sport",
+        "short_describtion": "Vladimir Weiss is a professional football player.",
+        "country": "Qatar",
+        "celebrity_info": "football, Lekhwiya SC, Slovakia",
+        "screen_name": "vladimir_weiss"
+    },
+    "AlexBarnicoat_": {
+        "type": "private profile",
+        "topic": "other",
+        "short_describtion": "A person named Alex Barnicoat who shares global news content and is active on TikTok and YouTube.",
+        "country": "UK",
+        "celebrity_info": "dont know",
+        "screen_name": "AlexBarnicoat_"
+    },
+    "balajis": {
+        "type": "celebrity",
+        "topic": "other",
+        "short_describtion": "Balaji is a prominent figure discussing concepts related to cryptocurrency, futurism, and technology.",
+        "country": "unknown",
+        "celebrity_info": "libertarian",
+        "screen_name": "balajis"
+    },
+    "jordanbpeterson": {
+        "type": "celebrity",
+        "topic": "other",
+        "short_describtion": "Dr. Jordan B. Peterson is a clinical psychologist and best-selling author known for his educational content and podcast.",
+        "country": "canada",
+        "celebrity_info": "center",
+        "screen_name": "jordanbpeterson"
+    },
+    "cctvidiots": {
+        "type": "fanpage",
+        "topic": "other",
+        "short_describtion": "A page that shares videos of people behaving unusually, caught on CCTV.",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "cctvidiots"
+    },
+    "FreeMattKim": {
+        "type": "private profile",
+        "topic": "other",
+        "short_describtion": "dont know",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "FreeMattKim"
+    },
+    "catturd2": {
+        "type": "private profile",
+        "topic": "other",
+        "short_describtion": "A humorous or satirical profile, likely focused on memes or light-hearted commentary.",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "catturd2"
+    },
+    "Cyber_Watch": {
+        "type": "company",
+        "topic": "other",
+        "short_describtion": "A news feed providing updates and commentary on cybersecurity.",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "Cyber_Watch"
+    },
+    "MattWalshBlog": {
+        "type": "celebrity",
+        "topic": "politics",
+        "short_describtion": "Matt Walsh is a political commentator and author known for his conservative views.",
+        "country": "USA",
+        "celebrity_info": "conservative",
+        "screen_name": "MattWalshBlog"
+    },
+    "FAFO_TV": {
+        "type": "company",
+        "topic": "other",
+        "short_describtion": "A platform that shares daily fail videos and encourages users to submit their own content.",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "FAFO_TV"
+    },
+    "unusual_whales": {
+        "type": "company",
+        "topic": "finance",
+        "short_describtion": "A platform providing information and tools for trading in stocks, options, and cryptocurrencies.",
+        "country": "united states",
+        "celebrity_info": "dont know",
+        "screen_name": "unusual_whales"
+    },
+    "patrickbetdavid": {
+        "type": "celebrity",
+        "topic": "business",
+        "short_describtion": "Entrepreneur and author known for business insights and podcasting.",
+        "country": "USA",
+        "celebrity_info": "business",
+        "screen_name": "patrickbetdavid"
+    },
+    "Rightanglenews": {
+        "type": "company",
+        "topic": "news",
+        "short_describtion": "An independent news reporting network that covers breaking news stories.",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "Rightanglenews"
+    },
+    "SStricklandMMA": {
+        "type": "celebrity",
+        "topic": "sport",
+        "short_describtion": "MMA fighter",
+        "country": "USA",
+        "celebrity_info": "mixed martial arts, UFC, USA",
+        "screen_name": "SStricklandMMA"
+    },
+    "elonmusk": {
+        "type": "celebrity",
+        "topic": "other",
+        "short_describtion": "Business magnate, industrial designer, and engineer known for founding SpaceX and Tesla.",
+        "country": "USA",
+        "celebrity_info": "entrepreneur, CEO",
+        "screen_name": "elonmusk"
+    },
+    "EndWokeness": {
+        "type": "fanpage",
+        "topic": "politics",
+        "short_describtion": "A page focused on criticizing and mocking wokeness.",
+        "country": "unknown",
+        "celebrity_info": "libertarian",
+        "screen_name": "EndWokeness"
+    },
+    "RealAlexJones": {
+        "type": "celebrity",
+        "topic": "politics",
+        "short_describtion": "American radio host and conspiracy theorist known for his controversial views and media presence.",
+        "country": "USA",
+        "celebrity_info": "totalitarian",
+        "screen_name": "RealAlexJones"
+    },
+    "TuckerCarlson": {
+        "type": "celebrity",
+        "topic": "politics",
+        "short_describtion": "Tucker Carlson is a conservative political commentator and journalist known for his television show.",
+        "country": "USA",
+        "celebrity_info": "conservative",
+        "screen_name": "TuckerCarlson"
+    },
+    "MinesMinIndia": {
+        "type": "company",
+        "topic": "politics",
+        "short_describtion": "Official account for the Ministry of Mines in India",
+        "country": "India",
+        "celebrity_info": "center",
+        "screen_name": "MinesMinIndia"
+    },
+    "joerogan": {
+        "type": "celebrity",
+        "topic": "other",
+        "short_describtion": "Joe Rogan is a comedian, podcast host, and mixed martial arts commentator.",
+        "country": "USA",
+        "celebrity_info": "other",
+        "screen_name": "joerogan"
+    },
+    "EsTendenciaEnX": {
+        "type": "fanpage",
+        "topic": "other",
+        "short_describtion": "A parody account that discusses trends and decadences on the social media platform X (formerly Twitter).",
+        "country": "unknown",
+        "celebrity_info": "dont know",
+        "screen_name": "EsTendenciaEnX"
+    },
+    "VidsBanned": {
+        "type": "fanpage",
+        "topic": "other",
+        "short_describtion": "A page that posts viral videos daily",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "VidsBanned"
+    },
+    "Wallpaper_Only_": {
+        "type": "fanpage",
+        "topic": "other",
+        "short_describtion": "A page dedicated to sharing crazy smartphone wallpapers.",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "Wallpaper_Only_"
+    },
+    "jacksonhinklle": {
+        "type": "private profile",
+        "topic": "other",
+        "short_describtion": "dont know",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "jacksonhinklle"
+    },
+    "BarekSvata": {
+        "type": "private profile",
+        "topic": "politics/AI",
+        "short_describtion": "Ukrainian video creator and commentator focusing on politics and AI, also a TikTok influencer.",
+        "country": "Ukraine",
+        "celebrity_info": "dont know",
+        "screen_name": "BarekSvata"
+    },
+    "fikisulik": {
+        "type": "private profile",
+        "topic": "other",
+        "short_describtion": "dont know",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "fikisulik"
+    },
+    "TheTriceRozay": {
+        "type": "private profile",
+        "topic": "other",
+        "short_describtion": "This is a personal Twitter profile likely focused on business or entrepreneurship.",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "TheTriceRozay"
+    },
+    "davidgoggins": {
+        "type": "celebrity",
+        "topic": "sport",
+        "short_describtion": "David Goggins is a retired Navy SEAL and an endurance athlete known for his achievements in ultra-endurance events.",
+        "country": "USA",
+        "celebrity_info": "endurance athlete, null, USA",
+        "screen_name": "davidgoggins"
+    },
+    "TheNotoriousMMA": {
+        "type": "celebrity",
+        "topic": "sport",
+        "short_describtion": "Conor McGregor is a well-known mixed martial artist and former UFC champion.",
+        "country": "Ireland",
+        "celebrity_info": "MMA, UFC, Ireland",
+        "screen_name": "TheNotoriousMMA"
+    },
+    "bestwildclips": {
+        "type": "fanpage",
+        "topic": "other",
+        "short_describtion": "A page that shares daily wild animal videos or clips.",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "bestwildclips"
+    },
+    "Salwan_Momika1": {
+        "type": "private profile",
+        "topic": "politics",
+        "short_describtion": "A controversial figure known for his actions regarding the Quran, identifying as an Assyrian with Christian background.",
+        "country": "Sweden",
+        "celebrity_info": "dont know",
+        "screen_name": "Salwan_Momika1"
+    },
+    "NewsNotBs": {
+        "type": "company",
+        "topic": "politics",
+        "short_describtion": "A news organization providing straightforward news without bias or misinformation.",
+        "country": "USA",
+        "celebrity_info": "center",
+        "screen_name": "NewsNotBs"
+    },
+    "RestrictedVids": {
+        "type": "fanpage",
+        "topic": "other",
+        "short_describtion": "A profile dedicated to sharing shocking or unusual videos, likely with a focus on viewer discretion.",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "RestrictedVids"
+    },
+    "streetfighthard": {
+        "type": "fanpage",
+        "topic": "sport",
+        "short_describtion": "A Twitter page dedicated to street fighting content.",
+        "country": "dont know",
+        "celebrity_info": "type of sport: street fighting, sports club: null, country: null",
+        "screen_name": "streetfighthard"
+    },
+    "TRIGGERHAPPYV1": {
+        "type": "fanpage",
+        "topic": "other",
+        "short_describtion": "A profile that shares crime-related video content and alerts viewers.",
+        "country": "unknown",
+        "celebrity_info": "dont know",
+        "screen_name": "TRIGGERHAPPYV1"
+    },
+    "FadeHubb": {
+        "type": "fanpage",
+        "topic": "comedy",
+        "short_describtion": "A profile sharing memes, comedy content, and entertainment news.",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "FadeHubb"
+    },
+    "NoFapSamurai": {
+        "type": "private profile",
+        "topic": "other",
+        "short_describtion": "Life Coach specializing in NoFap and personal development tips.",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "NoFapSamurai"
+    },
+    "Geo__team": {
+        "type": "fanpage",
+        "topic": "sport",
+        "short_describtion": "A football reporting account focused on Georgian football and players.",
+        "country": "georgia",
+        "celebrity_info": "football, sports club(null), georgia",
+        "screen_name": "Geo__team"
+    },
+    "mentalhealth": {
+        "type": "company",
+        "topic": "other",
+        "short_describtion": "A charity organization focused on mental health awareness and support in the UK.",
+        "country": "uk",
+        "celebrity_info": "",
+        "screen_name": "mentalhealth"
+    },
+    "historyinmemes": {
+        "type": "fanpage",
+        "topic": "education",
+        "short_describtion": "A Twitter account that shares educational content about history through memes.",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "historyinmemes"
+    },
+    "spurs": {
+        "type": "company",
+        "topic": "sport",
+        "short_describtion": "NBA professional basketball team based in San Antonio, Texas",
+        "country": "USA",
+        "celebrity_info": "NBA",
+        "screen_name": "spurs"
+    },
+    "BasketballCL": {
+        "type": "company",
+        "topic": "sport",
+        "short_describtion": "Official account of the Basketball Champions League, a professional basketball league in Europe.",
+        "country": "europe",
+        "celebrity_info": "basketball, club competition, europe",
+        "screen_name": "BasketballCL"
+    },
+    "HowThingsWork_": {
+        "type": "company",
+        "topic": "other",
+        "short_describtion": "Official page for 'How Things Work', focused on technology, AI, and viral news content.",
+        "country": "not specified",
+        "celebrity_info": "",
+        "screen_name": "HowThingsWork_"
+    },
+    "TeamKhabib": {
+        "type": "fanpage",
+        "topic": "sport",
+        "short_describtion": "Fan page for Khabib Nurmagomedov, a retired UFC lightweight champion who is undefeated.",
+        "country": "USA",
+        "celebrity_info": "mixed martial arts, UFC, Russia",
+        "screen_name": "TeamKhabib"
+    },
+    "Paobcgr": {
+        "type": "company",
+        "topic": "sport",
+        "short_describtion": "Official Twitter account of Panathinaikos BC, a professional basketball team in Greece.",
+        "country": "greece",
+        "celebrity_info": "basketball, Panathinaikos BC, greece",
+        "screen_name": "Paobcgr"
+    },
+    "fatihterim": {
+        "type": "celebrity",
+        "topic": "sport",
+        "short_describtion": "Fatih Terim is a renowned Turkish football manager and former player, known for his successful career with Galatasaray and the Turkish national team.",
+        "country": "turkey",
+        "celebrity_info": "football, Galatasaray, turkey",
+        "screen_name": "fatihterim"
+    },
+    "cooltechtipz": {
+        "type": "company",
+        "topic": "other",
+        "short_describtion": "A profile focused on educating people about technology and STEM subjects.",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "cooltechtipz"
+    },
+    "SkySportsNews": {
+        "type": "company",
+        "topic": "other",
+        "short_describtion": "Official account for Sky Sports News, providing sports news updates.",
+        "country": "United Kingdom",
+        "celebrity_info": "dont know",
+        "screen_name": "SkySportsNews"
+    },
+    "ScienceGuys_": {
+        "type": "fanpage",
+        "topic": "other",
+        "short_describtion": "A profile dedicated to science videos and educational content.",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "ScienceGuys_"
+    },
+    "FCSteaua": {
+        "type": "fanpage",
+        "topic": "sport",
+        "short_describtion": "Official page of FC Steaua Bucuresti, a Romanian football club.",
+        "country": "romania",
+        "celebrity_info": "football, FC Steaua Bucuresti, romania",
+        "screen_name": "FCSteaua"
+    },
+    "SKSlovan": {
+        "type": "company",
+        "topic": "sport",
+        "short_describtion": "Official Twitter account for ŠK Slovan Bratislava, a football club",
+        "country": "Slovakia",
+        "celebrity_info": "football, null, Slovakia",
+        "screen_name": "SKSlovan"
+    },
+    "DonaldTNews": {
+        "type": "fanpage",
+        "topic": "politics",
+        "short_describtion": "A news account dedicated to updates about Donald Trump, encouraging support from followers.",
+        "country": "USA",
+        "celebrity_info": "conservative",
+        "screen_name": "DonaldTNews"
+    },
+    "paofc_": {
+        "type": "company",
+        "topic": "sport",
+        "short_describtion": "Official Twitter account of Panathinaikos F.C.",
+        "country": "Greece",
+        "celebrity_info": "football, Panathinaikos F.C., Greece",
+        "screen_name": "paofc_"
+    },
+    "Cobratate": {
+        "type": "celebrity",
+        "topic": "politics",
+        "short_describtion": "Andrew Tate, a prominent figure who claims to be a Prime Minister candidate for the United Kingdom and leader of a political party.",
+        "country": "United Kingdom",
+        "celebrity_info": "libertarian",
+        "screen_name": "Cobratate"
+    },
+    "jakepaul": {
+        "type": "celebrity",
+        "topic": "other",
+        "short_describtion": "Social media personality, entrepreneur and boxer",
+        "country": "USA",
+        "celebrity_info": "boxer, entrepreneur, USA",
+        "screen_name": "jakepaul"
+    },
+    "Tesla": {
+        "type": "company",
+        "topic": "other",
+        "short_describtion": "Tesla is a company that focuses on electric vehicles and sustainable energy solutions.",
+        "country": "USA",
+        "celebrity_info": "electric vehicles/renewable energy/AI/robotics",
+        "screen_name": "Tesla"
+    },
+    "Lewysko": {
+        "type": "private profile",
+        "topic": "sport",
+        "short_describtion": "Hockey insider and writer focusing on Slovak hockey",
+        "country": "Slovakia",
+        "celebrity_info": "sport: ice hockey, sports club: null, country: Slovakia",
+        "screen_name": "Lewysko"
+    },
+    "ShaneStoffer": {
+        "type": "private profile",
+        "topic": "other",
+        "short_describtion": "dont know",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "ShaneStoffer"
+    },
+    "hooliganscz1999": {
+        "type": "company",
+        "topic": "other",
+        "short_describtion": "Official page for Hooligans.cz",
+        "country": "unknown",
+        "celebrity_info": "none",
+        "screen_name": "hooliganscz1999"
+    },
+    "frogNscorpion": {
+        "type": "private profile",
+        "topic": "other",
+        "short_describtion": "Dont know",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "frogNscorpion"
+    },
+    "Nikeliga_sk": {
+        "type": "company",
+        "topic": "sport",
+        "short_describtion": "Official Twitter account of the Slovak Niké League, which is a football league.",
+        "country": "slovakia",
+        "celebrity_info": "type of sport: football, sports club: null, country: slovakia",
+        "screen_name": "Nikeliga_sk"
+    },
+    "slovaninsights": {
+        "type": "fanpage",
+        "topic": "sport",
+        "short_describtion": "Fan page dedicated to discussions about the Slovak sports club Slovan.",
+        "country": "slovakia",
+        "celebrity_info": "type of sport: football, sports club: Slovan Bratislava, country: Slovakia",
+        "screen_name": "slovaninsights"
+    },
+    "FutZakulisie": {
+        "type": "fanpage",
+        "topic": "sport",
+        "short_describtion": "A fanpage focused on everything related to the Niké League, a football league.",
+        "country": "Slovakia",
+        "celebrity_info": "type of sport: football, sports club: null, country: Slovakia",
+        "screen_name": "FutZakulisie"
+    },
+    "visegrad24": {
+        "type": "company",
+        "topic": "politics",
+        "short_describtion": "A news aggregator focusing on Central European politics and current affairs.",
+        "country": "Czech Republic",
+        "celebrity_info": "dont know",
+        "screen_name": "visegrad24"
+    },
+    "imagesaicouldnt": {
+        "type": "fanpage",
+        "topic": "other",
+        "short_describtion": "A fanpage dedicated to a collection of memes showcasing human creativity that AI cannot replicate.",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "imagesaicouldnt"
+    },
+    "HumansNoContext": {
+        "type": "fanpage",
+        "topic": "other",
+        "short_describtion": "A page sharing various observations and thoughts on human behavior without context.",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "HumansNoContext"
+    },
+    "insaneposes": {
+        "type": "fanpage",
+        "topic": "other",
+        "short_describtion": "A humorous account sharing funny poses submitted by others.",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "insaneposes"
+    },
+    "WeedPorns": {
+        "type": "fanpage",
+        "topic": "other",
+        "short_describtion": "A fanpage sharing original stoner content and promotions related to cannabis.",
+        "country": "USA",
+        "celebrity_info": "dont know",
+        "screen_name": "WeedPorns"
+    },
+    "FacebookAIslop": {
+        "type": "fanpage",
+        "topic": "other",
+        "short_describtion": "A fan page dedicated to showcasing bizarre and insane AI-generated images found on Facebook.",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "FacebookAIslop"
+    },
+    "VLONEPREDATOR": {
+        "type": "private profile",
+        "topic": "other",
+        "short_describtion": "Dont know",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "VLONEPREDATOR"
+    },
+    "NickJFuentes": {
+        "type": "private profile",
+        "topic": "politics",
+        "short_describtion": "American political commentator known for far-right views",
+        "country": "USA",
+        "celebrity_info": "from: conservative",
+        "screen_name": "NickJFuentes"
+    },
+    "Nugjokes": {
+        "type": "private profile",
+        "topic": "other",
+        "short_describtion": "A personal Twitter account with a humorous approach to tweeting.",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "Nugjokes"
+    },
+    "lporiginalg": {
+        "type": "private profile",
+        "topic": "other",
+        "short_describtion": "A personal account focusing on philosophical reflections about humanity.",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "lporiginalg"
+    },
+    "UpdateNews724": {
+        "type": "company",
+        "topic": "other",
+        "short_describtion": "A news agency providing global news and real-time updates.",
+        "country": "global",
+        "celebrity_info": "",
+        "screen_name": "UpdateNews724"
+    },
+    "fasc1nate": {
+        "type": "company",
+        "topic": "other",
+        "short_describtion": "A profile dedicated to sharing interesting content about science, gadgets, history, and art.",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "fasc1nate"
+    },
+    "DeIudedShaniqwa": {
+        "type": "private profile",
+        "topic": "other",
+        "short_describtion": "A satire account that likely critiques or humorously engages with social or cultural topics through the lens of delusions.",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "DeIudedShaniqwa"
+    },
+    "Stone_tossers": {
+        "type": "fanpage",
+        "topic": "other",
+        "short_describtion": "A meme account centered around the Stone Toss comic, focusing on right-wing humor.",
+        "country": "dont know",
+        "celebrity_info": "liberal",
+        "screen_name": "Stone_tossers"
+    },
+    "libsoftiktok": {
+        "type": "company",
+        "topic": "other",
+        "short_describtion": "A media company that shares news and content primarily related to TikTok and other platforms, often with a conservative viewpoint.",
+        "country": "United States",
+        "celebrity_info": "totalitarian",
+        "screen_name": "libsoftiktok"
+    },
+    "mugshawtys": {
+        "type": "private profile",
+        "topic": "other",
+        "short_describtion": "Twitter account related to a personal friendship or support for someone seeking bail.",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "mugshawtys"
+    },
+    "astrologybot_": {
+        "type": "amusement-education",
+        "topic": "other",
+        "short_describtion": "An astrology bot that tweets hourly horoscopes.",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "astrologybot_"
+    },
+    "FilmsBub": {
+        "type": "company",
+        "topic": "other",
+        "short_describtion": "Production company focusing on films.",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "FilmsBub"
+    },
+    "shirtsthtgohard": {
+        "type": "company",
+        "topic": "other",
+        "short_describtion": "A business selling unique shirt designs while crediting their creators.",
+        "country": "unknown",
+        "celebrity_info": "",
+        "screen_name": "shirtsthtgohard"
+    },
+    "FatsPostingLs": {
+        "type": "fanpage",
+        "topic": "other",
+        "short_describtion": "A Twitter account dedicated to sharing and posting submissions of people receiving losses or embarrassing moments",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "FatsPostingLs"
+    },
+    "KFC_ES": {
+        "type": "company",
+        "topic": "food",
+        "short_describtion": "Official Twitter profile of KFC in Spain promoting their chicken products.",
+        "country": "spain",
+        "celebrity_info": "food chain, fast food, USA",
+        "screen_name": "KFC_ES"
+    },
+    "mischiefanimals": {
+        "type": "fanpage",
+        "topic": "other",
+        "short_describtion": "A social media account focused on sharing humorous content related to animals and goblin culture.",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "mischiefanimals"
+    },
+    "GreenTextRepost": {
+        "type": "fanpage",
+        "topic": "other",
+        "short_describtion": "A profile that reposts popular greentext stories from 4chan, mainly for entertainment purposes.",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "GreenTextRepost"
+    },
+    "yajwokeup": {
+        "type": "private profile",
+        "topic": "other",
+        "short_describtion": "dont know",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "yajwokeup"
+    },
+    "weirdlilguys": {
+        "type": "fanpage",
+        "topic": "other",
+        "short_describtion": "A fan page dedicated to sharing and celebrating quirky cat behaviors.",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "weirdlilguys"
+    },
+    "cashanova_bg": {
+        "type": "private profile",
+        "topic": "other",
+        "short_describtion": "dont know",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "cashanova_bg"
+    },
+    "FACEITTF2": {
+        "type": "fanpage",
+        "topic": "other",
+        "short_describtion": "A community page for Team Fortress 2 on the FACEIT platform.",
+        "country": "unknown",
+        "celebrity_info": "dont know",
+        "screen_name": "FACEITTF2"
+    },
+    "ResNeXtGuesser": {
+        "type": "fanpage",
+        "topic": "other",
+        "short_describtion": "A project that uses a ResNeXt neural network to analyze and guess memes.",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "ResNeXtGuesser"
+    },
+    "GymplQuotes": {
+        "type": "fanpage",
+        "topic": "other",
+        "short_describtion": "A fanpage sharing quotes from movies and information about films.",
+        "country": "Czech Republic",
+        "celebrity_info": "dont know",
+        "screen_name": "GymplQuotes"
+    },
+    "justkidolive": {
+        "type": "private profile",
+        "topic": "other",
+        "short_describtion": "dont know",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "justkidolive"
+    },
+    "ShapedInternet": {
+        "type": "company",
+        "topic": "other",
+        "short_describtion": "A profile focused on discussing significant changes in the internet.",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "ShapedInternet"
+    },
+    "trvisXX": {
+        "type": "celebrity",
+        "topic": "music",
+        "short_describtion": "Travis Scott is an American rapper and producer known for his musical style and influence in hip-hop.",
+        "country": "USA",
+        "celebrity_info": "genre: hip-hop, trap",
+        "screen_name": "trvisXX"
+    },
+    "princeinjeans1": {
+        "type": "private profile",
+        "topic": "other",
+        "short_describtion": "dont know",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "princeinjeans1"
+    },
+    "LILUZIVERT": {
+        "type": "celebrity",
+        "topic": "music",
+        "short_describtion": "A popular American rapper and singer known for his unique style and sound.",
+        "country": "USA",
+        "celebrity_info": "hip hop, trap",
+        "screen_name": "LILUZIVERT"
+    },
+    "vercetti_cg": {
+        "type": "private profile",
+        "topic": "other",
+        "short_describtion": "Doesn't provide enough information to determine identity",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "vercetti_cg"
+    },
+    "ZssBecker": {
+        "type": "private profile",
+        "topic": "other",
+        "short_describtion": "The profile belongs to Alex Becker, who shares various personal insights and satirical content.",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "ZssBecker"
+    },
+    "contactathand": {
+        "type": "fanpage",
+        "topic": "other",
+        "short_describtion": "A profile sharing memes and content related to Ordinals, Berachain, and Solana.",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "contactathand"
+    },
+    "KosherPlug": {
+        "type": "private profile",
+        "topic": "other",
+        "short_describtion": "dont know",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "KosherPlug"
+    },
+    "MutantShibaClub": {
+        "type": "company",
+        "topic": "other",
+        "short_describtion": "A community-driven project focused on web3 art and immersive experiences.",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "MutantShibaClub"
+    },
+    "0xMert_": {
+        "type": "private profile",
+        "topic": "other",
+        "short_describtion": "CEO of Helius Labs and nCMO at Solana, focused on Solana RPCs and APIs.",
+        "country": "not specified",
+        "celebrity_info": "not applicable",
+        "screen_name": "0xMert_"
+    },
+    "Shibtoken": {
+        "type": "company",
+        "topic": "other",
+        "short_describtion": "Official Twitter account for the Shiba Inu cryptocurrency ecosystem.",
+        "country": "unknown",
+        "celebrity_info": "type of cryptocurrency, Shiba Inu ecosystem, global",
+        "screen_name": "Shibtoken"
+    },
+    "binance": {
+        "type": "company",
+        "topic": "other",
+        "short_describtion": "Binance is a major cryptocurrency exchange and blockchain ecosystem.",
+        "country": "global",
+        "celebrity_info": "-",
+        "screen_name": "binance"
+    },
+    "SpaceX": {
+        "type": "company",
+        "topic": "other",
+        "short_describtion": "Space exploration company founded by Elon Musk.",
+        "country": "USA",
+        "celebrity_info": "",
+        "screen_name": "SpaceX"
+    },
+    "pedrosgame": {
+        "type": "private profile",
+        "topic": "other",
+        "short_describtion": "Czech YouTuber who loves family, games, music, movies, sports, travel, and food.",
+        "country": "czech republic",
+        "celebrity_info": "dont know",
+        "screen_name": "pedrosgame"
+    },
+    "X": {
+        "type": "private profile",
+        "topic": "other",
+        "short_describtion": "dont know",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "X"
+    },
+    "BillGates": {
+        "type": "celebrity",
+        "topic": "other",
+        "short_describtion": "Co-founder of Microsoft and philanthropist",
+        "country": "USA",
+        "celebrity_info": "liberal",
+        "screen_name": "BillGates"
+    },
+    "Google": {
+        "type": "company",
+        "topic": "other",
+        "short_describtion": "Google is a multinational technology company specializing in Internet-related services and products.",
+        "country": "global",
+        "celebrity_info": "",
+        "screen_name": "Google"
+    },
+    "KarolDzonson": {
+        "type": "private profile",
+        "topic": "other",
+        "short_describtion": "An individual who claims to have been betrayed but sought revenge and achieved wealth.",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "KarolDzonson"
+    },
+    "observinglala": {
+        "type": "private profile",
+        "topic": "other",
+        "short_describtion": "A personal account likely sharing lifestyle content.",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "observinglala"
+    },
+    "solisolsoli": {
+        "type": "private profile",
+        "topic": "other",
+        "short_describtion": "Person interested in philosophy or wisdom",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "solisolsoli"
+    },
+    "aryarosalina": {
+        "type": "private profile",
+        "topic": "other",
+        "short_describtion": "dont know",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "aryarosalina"
+    },
+    "TinTechno": {
+        "type": "fanpage",
+        "topic": "music",
+        "short_describtion": "This profile seems to be related to techno music, possibly discussing or promoting techno artists or events.",
+        "country": "dont know",
+        "celebrity_info": "genre: techno",
+        "screen_name": "TinTechno"
+    },
+    "callittechno": {
+        "type": "fanpage",
+        "topic": "music",
+        "short_describtion": "A Twitter profile dedicated to techno and hard techno music, promoting rave culture.",
+        "country": "unknown",
+        "celebrity_info": "genre: techno, hardtechno",
+        "screen_name": "callittechno"
+    },
+    "freezecorleone": {
+        "type": "celebrity",
+        "topic": "music",
+        "short_describtion": "French rapper known for his unique flow and lyrics.",
+        "country": "france",
+        "celebrity_info": "rap",
+        "screen_name": "freezecorleone"
+    },
+    "klangkuenstler": {
+        "type": "celebrity",
+        "topic": "music",
+        "short_describtion": "A music artist known for electronic music.",
+        "country": "germany",
+        "celebrity_info": "genre: electronic",
+        "screen_name": "klangkuenstler"
+    },
+    "FobiaKid": {
+        "type": "private profile",
+        "topic": "other",
+        "short_describtion": "dont know",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "FobiaKid"
+    },
+    "asvpxrocky": {
+        "type": "celebrity",
+        "topic": "music",
+        "short_describtion": "Rapper and member of A$AP Mob known for his style and influence in hip-hop.",
+        "country": "USA",
+        "celebrity_info": "hip-hop",
+        "screen_name": "asvpxrocky"
+    },
+    "101ULTRAS": {
+        "type": "fanpage",
+        "topic": "sport",
+        "short_describtion": "A fan page dedicated to expressing support for a sports team or group, possibly related to a particular sporting culture.",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "101ULTRAS"
+    },
+    "BarbinkaLucy": {
+        "type": "private profile",
+        "topic": "other",
+        "short_describtion": "A personal profile sharing a perspective on truth and love over lies and hate, likely from a Slovak individual.",
+        "country": "Slovakia",
+        "celebrity_info": "dont know",
+        "screen_name": "BarbinkaLucy"
+    },
+    "spolecnice": {
+        "type": "private profile",
+        "topic": "other",
+        "short_describtion": "Klára shares thoughts and experiences from her life as a paid companion.",
+        "country": "unknown",
+        "celebrity_info": "dont know",
+        "screen_name": "spolecnice"
+    },
+    "TKotlarik": {
+        "type": "private profile",
+        "topic": "sport",
+        "short_describtion": "A Slovak football and sports reporter working for RTVS and FlashscoreSK.",
+        "country": "slovakia",
+        "celebrity_info": "sport reporter",
+        "screen_name": "TKotlarik"
+    },
+    "o_novotny": {
+        "type": "celebrity",
+        "topic": "sport",
+        "short_describtion": "Ondřej Novotný is a promoter and journalist focused on MMA, creator of a YouTube channel and podcasts.",
+        "country": "Czech Republic",
+        "celebrity_info": "type of sport: MMA, sports club: null, country: Czech Republic",
+        "screen_name": "o_novotny"
+    },
+    "HockeySlovakia": {
+        "type": "company",
+        "topic": "sport",
+        "short_describtion": "Official account of the Slovak Ice Hockey Federation",
+        "country": "slovakia",
+        "celebrity_info": "type of sport: ice hockey, sports club: null, country: slovakia",
+        "screen_name": "HockeySlovakia"
+    },
+    "MatejTomek42": {
+        "type": "private profile",
+        "topic": "other",
+        "short_describtion": "dont know",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "MatejTomek42"
+    },
+    "HCKometa": {
+        "type": "company",
+        "topic": "sport",
+        "short_describtion": "Official Twitter account of HC Kometa Brno, a professional ice hockey club in the Czech Republic.",
+        "country": "Czech Republic",
+        "celebrity_info": "ice hockey, sports club, Czech Republic",
+        "screen_name": "HCKometa"
+    },
+    "FCZbrojovkaBrno": {
+        "type": "company",
+        "topic": "sport",
+        "short_describtion": "Official Twitter profile of FC Zbrojovka Brno, a Czech football club.",
+        "country": "Czech Republic",
+        "celebrity_info": "football, null, Czech Republic",
+        "screen_name": "FCZbrojovkaBrno"
+    },
+    "FKAustriaWien": {
+        "type": "company",
+        "topic": "sport",
+        "short_describtion": "Official Twitter account of the FK Austria Wien football club.",
+        "country": "Austria",
+        "celebrity_info": "football, FK Austria Wien, Austria",
+        "screen_name": "FKAustriaWien"
+    },
+    "kelsieswrites": {
+        "type": "private profile",
+        "topic": "other",
+        "short_describtion": "Kelsie Snow is a storyteller, writer, and podcaster who advocates for ALS awareness. She is also a widow and mom, with dual citizenship in Canada and the USA.",
+        "country": "Canada",
+        "celebrity_info": "dont know",
+        "screen_name": "kelsieswrites"
+    },
+    "BlueJacketsNHL": {
+        "type": "company",
+        "topic": "sport",
+        "short_describtion": "Official Twitter account for the Columbus Blue Jackets NHL team.",
+        "country": "USA",
+        "celebrity_info": "type of sport: hockey, sports club: Columbus Blue Jackets, country: USA",
+        "screen_name": "BlueJacketsNHL"
+    },
+    "NYIslanders": {
+        "type": "company",
+        "topic": "sport",
+        "short_describtion": "Official account of the New York Islanders hockey team",
+        "country": "USA",
+        "celebrity_info": "hockey, sports club: New York Islanders, country: USA",
+        "screen_name": "NYIslanders"
+    },
+    "darina_vymetali": {
+        "type": "private profile",
+        "topic": "sport",
+        "short_describtion": "A personal account likely related to sports commentary or event coverage, especially in hockey.",
+        "country": "unknown",
+        "celebrity_info": "don't know",
+        "screen_name": "darina_vymetali"
+    },
+    "jurislaff": {
+        "type": "celebrity",
+        "topic": "sport",
+        "short_describtion": "Professional ice hockey player from Slovakia.",
+        "country": "Slovakia",
+        "celebrity_info": "hockey, Slovakia",
+        "screen_name": "jurislaff"
+    },
+    "TomasVosvrda": {
+        "type": "company",
+        "topic": "other",
+        "short_describtion": "Founder and CEO of a hockey agency",
+        "country": "unknown",
+        "celebrity_info": "dont know",
+        "screen_name": "TomasVosvrda"
+    },
+    "FKPartizanEN": {
+        "type": "fanpage",
+        "topic": "sport",
+        "short_describtion": "Official English-language fanpage for FK Partizan Belgrade, a Serbian football club.",
+        "country": "serbia",
+        "celebrity_info": "football, FK Partizan, serbia",
+        "screen_name": "FKPartizanEN"
+    },
+    "crvenazvezda_en": {
+        "type": "company",
+        "topic": "sport",
+        "short_describtion": "Official English account of the football club FK Crvena zvezda",
+        "country": "Serbia",
+        "celebrity_info": "football, FK Crvena zvezda, Serbia",
+        "screen_name": "crvenazvezda_en"
+    },
+    "dentondella4407": {
+        "type": "private profile",
+        "topic": "other",
+        "short_describtion": "dont know",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "dentondella4407"
+    },
+    "NBCSportsHockey": {
+        "type": "company",
+        "topic": "sport",
+        "short_describtion": "Official source for hockey coverage during the Winter Olympics and Paralympics from NBC.",
+        "country": "USA",
+        "celebrity_info": "type of sport: hockey, sports club: null, country: USA",
+        "screen_name": "NBCSportsHockey"
+    },
+    "NHLBruins": {
+        "type": "company",
+        "topic": "sport",
+        "short_describtion": "Official social media account of the Boston Bruins NHL hockey team.",
+        "country": "USA",
+        "celebrity_info": "type of sport: hockey, sports club: Boston Bruins, country: USA",
+        "screen_name": "NHLBruins"
+    },
+    "NHLBlackhawks": {
+        "type": "fanpage",
+        "topic": "sport",
+        "short_describtion": "Official fan page for the Chicago Blackhawks hockey team.",
+        "country": "USA",
+        "celebrity_info": "ice hockey, NHL, USA",
+        "screen_name": "NHLBlackhawks"
+    },
+    "NHL": {
+        "type": "company",
+        "topic": "sport",
+        "short_describtion": "Official Twitter account for the National Hockey League.",
+        "country": "USA",
+        "celebrity_info": "type of sport: hockey, sports club: NHL, country: USA",
+        "screen_name": "NHL"
+    },
+    "matej_hejda33": {
+        "type": "private profile",
+        "topic": "sport",
+        "short_describtion": "Sports instructor and reporter covering the Flames and involved in IcingTV and NFL Touchdown.",
+        "country": "Canada",
+        "celebrity_info": "sport, none, Canada",
+        "screen_name": "matej_hejda33"
+    },
+    "ZvolenskyAndrej": {
+        "type": "celebrity",
+        "topic": "sport",
+        "short_describtion": "Football commentator for various TV channels",
+        "country": "Slovakia",
+        "celebrity_info": "type of sport: football, sports club: null, country: Slovakia",
+        "screen_name": "ZvolenskyAndrej"
+    },
+    "HV71": {
+        "type": "company",
+        "topic": "other",
+        "short_describtion": "Official Twitter account for the Swedish ice hockey club HV71.",
+        "country": "sweden",
+        "celebrity_info": "type of sport: ice hockey, sports club: HV71, country: sweden",
+        "screen_name": "HV71"
+    },
+    "mike_p_johnson": {
+        "type": "celebrity",
+        "topic": "sport",
+        "short_describtion": "Former NHL player and current NHL analyst.",
+        "country": "Canada",
+        "celebrity_info": "hockey, NHL, Canada",
+        "screen_name": "mike_p_johnson"
+    },
+    "astralkid22": {
+        "type": "private profile",
+        "topic": "other",
+        "short_describtion": "User involved with ConspiracyFlat Studio, possibly related to creative or conspiracy-themed content.",
+        "country": "unknown",
+        "celebrity_info": "dont know",
+        "screen_name": "astralkid22"
+    },
+    "BranislavRapac": {
+        "type": "private profile",
+        "topic": "other",
+        "short_describtion": "dont know",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "BranislavRapac"
+    },
+    "rayferraro21": {
+        "type": "celebrity",
+        "topic": "sport",
+        "short_describtion": "Ray Ferraro is a hockey analyst and podcast host at ESPN.",
+        "country": "USA",
+        "celebrity_info": "hockey, ESPN, USA",
+        "screen_name": "rayferraro21"
+    },
+    "Jakub_Homola": {
+        "type": "private profile",
+        "topic": "other",
+        "short_describtion": "dont know",
+        "country": "dont know",
+        "celebrity_info": "dont know",
+        "screen_name": "Jakub_Homola"
+    },
+    "SimonCop_": {
+        "type": "private profile",
+        "topic": "sport",
+        "short_describtion": "Journalist focusing on NHL ice hockey, Slovak.",
+        "country": "slovakia",
+        "celebrity_info": "type of sport: ice hockey, sports club: null, country: slovakia",
+        "screen_name": "SimonCop_"
+    },
+    "MatoDeraj": {
+        "type": "private profile",
+        "topic": "sports",
+        "short_describtion": "A Slovak ice hockey journalist and regional scout with a background in data analysis.",
+        "country": "Slovakia",
+        "celebrity_info": "type of sport: ice hockey, sports club: null, country: Slovakia",
+        "screen_name": "MatoDeraj"
+    },
+    "vretenicka": {
+        "type": "private profile",
+        "topic": "sport",
+        "short_describtion": "A contributor focused on hockey statistics and Slovak prospects.",
+        "country": "Slovakia",
+        "celebrity_info": "type of sport: hockey, sports club: null, country: Slovakia",
+        "screen_name": "vretenicka"
+    }
+}
