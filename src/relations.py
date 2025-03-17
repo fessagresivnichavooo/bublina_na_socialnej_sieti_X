@@ -41,12 +41,13 @@ import json
 
 
 
-
 SCRAPPER = test_twitter_scrapper_from_json.TwitterScrapper()
 PROFILE_AI_ANALYSER = AIAnalysis.GPT4o()
 TWEET_AI_ANALYSER = AIAnalysis.GPT4o()
-ALL_TWEETS = {}
 
+
+ALL_TWEETS = {}
+OUTSIDE_BUBBLE_PROFILES_ANALYSED = {}
 
 class Node:
     def __init__(self, username):
@@ -76,6 +77,7 @@ class Edge:
     def get_second_node(self, node):
         return self.directions[node]
 
+    ### 1 reaguje na 2
     def direction(self, node1: Node, node2: Node):
         if node1 == self.node1 and node2 == self.node2:
             return "1->2"
@@ -140,20 +142,18 @@ class Profile:
             f"Bio: {self.bio}\n"
             f"Followers: {len(self.followers)}, Following: {len(self.following)}, Friends: {len(self.friends)}\n"
             f"Tweets: {len(self.tweets)}, Reposts: {len(self.reposts)}, Comments: {len(self.comments)}, Quotes: {len(self.quotes)}\n"
-##            f"Recent Tweets:\n" +
-##            "\n".join(f"  - {tweet.text}" for tweet in self.tweets[:5])  # Show only first 5 tweets for readability
         )
 
-    def set_profession(self):
-        pass
-        ### pomocou chatgpt ziska profesiu profilu
-        ### sport => klub, krajina ; hudba => zanre ; politika ; ostatne
+    def summary(self):
+        return
+
+
 
 
 ### repost retweet hashtagy 
 class Tweet:
-    def __init__(self, source_id, username, text, type, source_tweet=None, source_username=None, hashtags=[], mentions=[]):
-        self.source_id = source_id
+    def __init__(self, status_id, username, text, type, source_tweet=None, source_username=None, hashtags=[], mentions=[]):
+        self.status_id = status_id
         self.username = username
         self.text = text
         self.type = type
@@ -165,13 +165,45 @@ class Tweet:
         self.content = None
 
     def analyse(self):
-        if self.type == "tweet":
+        global COUNTER
+        with open("tweet_analysis.json", 'r', encoding="utf-8") as file:
+            cached_tweets = json.load(file)
+
+        
+        if self.status_id in cached_tweets:
+            return
+
+        elif self.type == "tweet":
             self.content = TWEET_AI_ANALYSER.analyze_tweet(self.text)
-            print(self.text, '\n', self.content, '\n')
+            print(self.type, '\n', self.source_tweet, '\n', self.text, '\n', self.content, '\n')
+            cached_tweets[self.status_id] = [self.username, self.text, self.content]
+               
+        elif self.type == "repost":
+            if ALL_TWEETS.get(self.source_tweet, None):
+                self.content = TWEET_AI_ANALYSER.analyze_tweet(ALL_TWEETS[self.source_tweet].text)
+                print(self.type, '\n', self.source_tweet, '\n', self.text, '\n', self.content, '\n')
+                cached_tweets[self.status_id] = [self.username, self.text, self.content]
+               
+        elif self.type == "comment":
+            if ALL_TWEETS.get(self.source_tweet, None):
+                self.content = TWEET_AI_ANALYSER.analyze_reaction(self.text, ALL_TWEETS[self.source_tweet].text)
+                print(self.type, '\n', self.source_tweet, '\n', self.text, '\n', self.content, '\n')
+                cached_tweets[self.status_id] = [self.username, self.text, self.content]
+                
+        elif self.type == "quote":
+             if ALL_TWEETS.get(self.source_tweet, None):
+                self.content = TWEET_AI_ANALYSER.analyze_reaction(self.text, ALL_TWEETS[self.source_tweet].text)
+                print(self.type, '\n', self.source_tweet, '\n', self.text, '\n', self.content, '\n')
+                cached_tweets[self.status_id] = [self.username, self.text, self.content]
+
+        with open("tweet_analysis.json", "w", encoding="utf-8") as f:
+            json.dump(cached_tweets, f, indent=4, ensure_ascii=False)
+                
+
 
     def __repr__(self):
         return f"""
-            SOURCE ID: {self.source_id}
+            SOURCE ID: {self.status_id}
             USER: {self.username}
             CONTENT: {self.text}
             TYPE: {self.type}
@@ -220,6 +252,7 @@ class SocialBubble:
         self.nodes = {}  ### name : Node
         self.followed_outside_bubble = {}  ### sledovane profily ucastnikmi bubliny ktore sa v nej nenachadzaju
         self.following_outside_bubble = {} ### sledujuci profilov bubliny ktori nie su v nej
+        
 
     def exist_edge(self, node1: Node, node2: Node):
         for edge in self.edges:
@@ -437,9 +470,9 @@ class SocialBubble:
                                                     
 
                             else:
-                                self.interacted_outside_bubble.append(tweet.source_username)
+                                self.interacted_outside_bubble.append((tweet.source_username, tweet))
                         
-
+            print(self.followed_outside_bubble, self.mentioned_outside_bubble)
                 
             ## pridat interagovane profily mimo bubliny do nejakeho zoznamu, zoradene podla poctu interakcii clenov bubliny a followov
 
@@ -544,10 +577,11 @@ class SocialBubble:
 
 
     def profile_analysis(self, profiles, cache="profile_analysis.json"):
+        global OUTSIDE_BUBBLE_PROFILES_ANALYSED
         with open(cache, 'r', encoding="utf-8") as file:
             cached_profiles = json.load(file)
 
-        print(profiles)
+        #print(profiles)
 
         serpapi = AIAnalysis.SerpAPI()
 
@@ -559,12 +593,15 @@ class SocialBubble:
             serpapi_formated["Twitter username"] = username
             serpapi_formated["Twitter bio"] = profile[1]
             analysis = PROFILE_AI_ANALYSER.analyze_profile_II(serpapi_formated)
-            cached_profiles[username] = analysis
+            cached_profiles[username] = json.loads(analysis)
+            print(analysis)
 
+
+        OUTSIDE_BUBBLE_PROFILES_ANALYSED = cached_profiles
         with open("profile_analysis.json", "w", encoding="utf-8") as f:
             json.dump(cached_profiles, f, indent=4, ensure_ascii=False)
-        ###     TREBA OPRAVIT FORMAT CO IDE DO SUBORU
 
+        
 
 
 
@@ -576,7 +613,7 @@ class SocialBubble:
 
 
 
-SB = SocialBubble("pushkicknadusu", "profile_centered", depth=0)
+SB = SocialBubble("pushkicknadusu", "profile_centered", depth=3)
 
 SB.create_graph()
 
@@ -584,9 +621,16 @@ SB.visualize_graph()
 
 opd = SB.get_outside_profiles_data(2000)
 
-print(opd)
+##print(opd)
 
-SB.profile_analysis(opd)
+##SB.profile_analysis(opd)
+
+SB.tweet_analysis()
+
+
+
+
+
 
 #############   AK SERPAPI NEVRATI KVALITNY OUTPUT, PREFEROVAT BIO
 
@@ -594,70 +638,4 @@ SB.profile_analysis(opd)
 
 #############   BUDE TREBA SKONTROLOVAT IMPLEMENTACIU CREATE_BUBBLE, CI
 #############   NIEKDE NIE SU VYNECHANE UDAJE ATD
-
-
-
-
-
-##SB.nodes.get("RobertFicoSVK", None).profile.analyse_tweets()
-
-
-
-##with open("profile_analysis.json", 'r', encoding="utf-8") as file:
-##    profiles = json.load(file)
-##    
-##
-##for_analysis = SB.get_outside_profiles_data(1000)
-##for profile in profiles:
-##    if profile in for_analysis:
-##        for_analysis.pop(profile)
-##for_analysis = [(key, *value) for key, value in for_analysis.items()]
-##
-##
-##with open("profile_analysis_SERPAPI.json", 'w', encoding="utf-8") as file:
-##    
-##
-##for profile_data in PROFILE_AI_ANALYSER.analyze_profiles(for_analysis):
-##    profiles[profile_data["screen_name"]] = profile_data
-##
-##with open("profile_analysis.json", "w", encoding="utf-8") as f:
-##    json.dump(profiles, f, indent=4, ensure_ascii=False)
-
-
-#print(SB.followed_outside_bubble)
-
-#print(ALL_TWEETS)
-
-
-
-
-
-
-
-
-
-##E = [0, 0, 0]
-##S = [0, 0, 0]
-##for i in SB.nodes.get("RobertFicoSVK", None).profile.tweets:
-##    print(i.content)
-##    try:
-##        E[0] += i.content["politics"].get("E", 0)
-##        E[1] += 1
-##        if i.content["politics"].get("E", 0):
-##            E[2] += 1
-##        S[0] += i.content["politics"].get("S", 0)
-##        S[1] += 1
-##        if i.content["politics"].get("S", 0):
-##            S[2] += 1
-##    except AttributeError:
-##        pass
-##
-##
-##
-##print(f"E: {E}, S: {S}")
-
-#E: [-0.3000000000000001, 8], S: [1.9000000000000001, 8]
-#E: [0.09999999999999998, 9], S: [2.3000000000000003, 9]
-
-### vyskusat pomery dvoch osi
 
