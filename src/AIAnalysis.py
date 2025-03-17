@@ -11,24 +11,24 @@ import requests
 class Athlete(BaseModel):
     type_of_sport: str = Field(..., description="Type of sport (e.g., Football, Basketball)")
     club: Optional[str] = Field(None, description="Club/team the athlete plays for")
-    nationality: Optional[str] = Field(None, description="Nationality of the athlete")
+    nationality: Optional[str] = Field(None, description="Nationality of the athlete (return 3 letter ISO code of the country)")
 
 
 class ClubTeam(BaseModel):
     sport: str = Field(..., description="Type of sport")
-    country: Optional[str] = Field(None, description="Country where the club/team is based")
+    country: Optional[str] = Field(None, description="Country where the club/team is based (return 3 letter ISO code)")
 
 
 # === Music Models ===
 class Author(BaseModel):
     genre: str = Field(..., description="Music genre of the author")
-    country: Optional[str] = Field(None, description="Country where the author is influential")
+    country: Optional[str] = Field(None, description="Country where the author is influential (return 3 letter ISO code)")
 
 
 class BandLabel(BaseModel):
     music_genre: str = Field(..., description="Music genre of the band/label")
     authors: Optional[List[str]] = Field(None, description="List of authors in the band/label")
-    country: Optional[str] = Field(None, description="Country of influence")
+    country: Optional[str] = Field(None, description="Country of influence (return 3 letter ISO code)")
 
 
 class Fanpage(BaseModel):
@@ -39,23 +39,23 @@ class Fanpage(BaseModel):
 class Politician(BaseModel):
     political_party: Optional[str] = Field(None, description="Political party the politician belongs to")
     ideology: Optional[str] = Field(None, description="Political ideology (liberal, conservative, etc.)")
-    country: str = Field(..., description="Country where the politician is active")
+    country: str = Field(..., description="Country where the politician is active (return 3 letter ISO code)")
 
 
 class PoliticalPartyMovement(BaseModel):
     ideology: str = Field(..., description="Political ideology (e.g., Conservative, Liberal, Socialist)")
-    country: str = Field(..., description="Country where the political party/movement is active")    
+    country: str = Field(..., description="Country where the political party/movement is active (return 3 letter ISO code)")    
 
 
 class JournalistNews(BaseModel):
-    country: str = Field(..., description="Country where the journalist/news is active")
+    country: str = Field(..., description="Country where the journalist/news is active (return 3 letter ISO code)")
     ideology: Optional[str] = Field(None, description="Political ideology of the journalist/news")
 
 # === Other Models ===
 
 class Finance(BaseModel):
     sector: str = Field(..., description="Specific sector in finance (e.g., banking, investment, cryptocurrency)")
-    country: Optional[str] = Field(None, description="Country where the financial organization or expert operates")
+    country: Optional[str] = Field(None, description="Country where the financial organization or expert operates (return 3 letter ISO code)")
 
 
 class Entertainment(BaseModel):
@@ -160,10 +160,9 @@ class GPT4o():
      
         
     class PoliticsModel(BaseModel):
-        E: float = Field(..., description="Economic freedom score (-1 to 1), negative number = state controlled , positive number = free market, individualism")
-        S: float = Field(..., description="Social freedom score (-1 to 1); negative number is favoring government control; positive is against government control, more individual freedom")
-        Reason: str = Field(..., description="Explain for both E and S why they got assigned these values")
-
+        ideology: str = Field(..., description="Choose ideology/ies, that describes the tweet best (if any): Liberalism, Conservatism, Socialism, Communism, Fascism, Nationalism, Anarchism, Environmentalism, Religious-Based Ideology, Centrism")
+        #sentiment: str = Field(..., description="Describe relation of author to mentioned ideology: positive, neutral, negative, critical")
+        
     class SportModel(BaseModel):
         sports: list["Sport"]
         clubs: Optional[list["Club"]]
@@ -177,10 +176,15 @@ class GPT4o():
         type: str = Field(..., description="Type of analysis ('politics'/'sport'/'music'/'other')")
         language: str = Field(..., description="Detected language")
         professionality: float = Field(..., description="Professionality score (between 0 and 1)")
-        politics: Optional["PoliticsModel"] = Field(..., description="Describes vector on Nolans chart represented by political ideology in current tweet; conservative/right-wing = +E -S , liberal/left-wing = +S -E , authoritarian = -S -E , libertarian = +S +E")  # Provide default values
+        politics: str = Field(..., description="Choose ideology/ies, that describes the tweet best (if any): Liberalism, Conservatism, Socialism, Communism, Fascism, Nationalism, Anarchism, Environmentalism, Religious-Based Ideology, Centrism")  # Provide default values
         sport: Optional["SportModel"] = Field(..., description="Describe mentioned sports, players and clubs and analyse sentiment of each; notes: it should consider, that sentiment can change throughout the tweet (ex.: one club mentioned positively and other negatively; sport sentiment=positive, club sentiment=negative; etc), dislike for club doesnt mean dislike for sport") #, try also recognise famous sport chants and symbols
         music: Optional["MusicModel"] = Field(..., description="Describe mentioned music genres and musicians")
     ##    other_topics: Dict[str, str] = Field(default_factory=dict, description="Other topic sentiments")
+
+    class AnalysisReaction(BaseModel):
+        original_tweet: "AnalysisTweet" = Field(..., description="Analysis  of original tweet")
+        reaction: "AnalysisTweet" = Field(..., description="Analyse reaction if possible")
+        reaction_sentiment: str = Field(..., description="Agreeing, Disagreeing, Neutral")
 
     ### ANALYZA OBSAHU TEXTU V TWEETE ###
     def analyze_tweet(self, text):
@@ -191,6 +195,19 @@ class GPT4o():
                 {"role": "user", "content": f"{text}"}
             ],
             response_format=self.AnalysisTweet,
+            temperature=0.85
+        )
+    
+        return json.loads(response.choices[0].message.parsed.json())
+
+    def analyze_reaction(self, reaction, original_tweet):
+        response = self.client.beta.chat.completions.parse(
+            model="gpt-4o-2024-08-06",
+            messages=[
+                {"role": "system", "content": "You are an AI that analyzes content of twitter comments/quotes and original tweets and returns structured JSON output."},
+                {"role": "user", "content": f"Comment/Quote: {reaction} , Original tweet: {original_tweet}"}
+            ],
+            response_format=self.AnalysisReaction,
             temperature=0.85
         )
     
@@ -301,7 +318,6 @@ class SerpAPI():
 
 
 
-
 '''
 1. Liberalism
 Classical Liberalism – Individual rights, free markets, limited government
@@ -340,19 +356,3 @@ Third Way – Mix of capitalism and social democracy
 ### vyskusat pristup: vypisat ideologie, a pre kazdy tweet napisat, ako velmi pre alebo proti
 ### ak profil, tak vyberie iba hlavnu temu a nie podtemy (cize conservativism, liberalism ...)
 ### neskor mozno vyskusat priradit kazdej ideologii vektor a podla toho umiestnit na spektrum
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
