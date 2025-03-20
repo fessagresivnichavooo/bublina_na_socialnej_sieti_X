@@ -11,24 +11,24 @@ import requests
 class Athlete(BaseModel):
     type_of_sport: str = Field(..., description="Type of sport (e.g., Football, Basketball)")
     club: Optional[str] = Field(None, description="Club/team the athlete plays for")
-    nationality: Optional[str] = Field(None, description="Nationality of the athlete (return 3 letter ISO code of the country)")
+    nationality: Optional[str] = Field(None, description="ISO 3166 code of nationality of the athlete")
 
 
 class ClubTeam(BaseModel):
     sport: str = Field(..., description="Type of sport")
-    country: Optional[str] = Field(None, description="Country where the club/team is based (return 3 letter ISO code)")
+    country: Optional[str] = Field(None, description="ISO 3166 code of country where the club/team is based")
 
 
 # === Music Models ===
 class Author(BaseModel):
     genre: str = Field(..., description="Music genre of the author")
-    country: Optional[str] = Field(None, description="Country where the author is influential (return 3 letter ISO code)")
+    country: Optional[str] = Field(None, description="ISO 3166 code of country where the author is influential")
 
 
 class BandLabel(BaseModel):
     music_genre: str = Field(..., description="Music genre of the band/label")
     authors: Optional[List[str]] = Field(None, description="List of authors in the band/label")
-    country: Optional[str] = Field(None, description="Country of influence (return 3 letter ISO code)")
+    country: Optional[str] = Field(None, description="ISO 3166 code of country of influence")
 
 
 class Fanpage(BaseModel):
@@ -39,23 +39,23 @@ class Fanpage(BaseModel):
 class Politician(BaseModel):
     political_party: Optional[str] = Field(None, description="Political party the politician belongs to")
     ideology: Optional[str] = Field(None, description="Political ideology (liberal, conservative, etc.)")
-    country: str = Field(..., description="Country where the politician is active (return 3 letter ISO code)")
+    country: str = Field(..., description="ISO 3166 code of country where the politician is active")
 
 
 class PoliticalPartyMovement(BaseModel):
     ideology: str = Field(..., description="Political ideology (e.g., Conservative, Liberal, Socialist)")
-    country: str = Field(..., description="Country where the political party/movement is active (return 3 letter ISO code)")    
+    country: str = Field(..., description="ISO 3166 code of country where the political party/movement is active")    
 
 
 class JournalistNews(BaseModel):
-    country: str = Field(..., description="Country where the journalist/news is active (return 3 letter ISO code)")
+    country: str = Field(..., description="ISO 3166 code of country where the journalist/news is active")
     ideology: Optional[str] = Field(None, description="Political ideology of the journalist/news")
 
 # === Other Models ===
 
 class Finance(BaseModel):
     sector: str = Field(..., description="Specific sector in finance (e.g., banking, investment, cryptocurrency)")
-    country: Optional[str] = Field(None, description="Country where the financial organization or expert operates (return 3 letter ISO code)")
+    country: Optional[str] = Field(None, description="ISO 3166 code of country where the financial organization or expert operates")
 
 
 class Entertainment(BaseModel):
@@ -143,11 +143,15 @@ class GPT4o():
 
     class Club(BaseModel):
         club: str = Field(..., description="Official name of mentioned club, not nickname")
+        sport: str = Field(..., description="Sport type (football, basketball, ...)")
         sentiment: str = Field(..., description="Sentiment about the club (positive/negative/neutral)")
+        country: str = Field(..., description="ISO 3166 code of country of origin")
 
     class Player(BaseModel):
         player: str = Field(..., description="Player name")
+        sport: str = Field(..., description="Sport type (football, basketball, ...)")
         sentiment: str = Field(..., description="Sentiment about the player (positive/negative/neutral)")
+        country: str = Field(..., description="ISO 3166 code of country of origin")
 
     class Genre(BaseModel):
         genre: str = Field(..., description="Mentioned genre")
@@ -157,10 +161,11 @@ class GPT4o():
         artist: str = Field(..., description="Name of artist")
         genre: str = Field(..., description="Genre of the artist")
         sentiment: str = Field(..., description="Sentiment about the artist")
+        country: str = Field(..., description="ISO 3166 code of country of origin")
      
         
     class PoliticsModel(BaseModel):
-        ideology: str = Field(..., description="Choose ideology/ies, that describes the tweet best (if any): Liberalism, Conservatism, Socialism, Communism, Fascism, Nationalism, Anarchism, Environmentalism, Religious-Based Ideology, Centrism")
+        ideology: str = Field(..., description="Choose ideology of author of the tweet: Liberalism, Conservatism, Socialism, Communism, Fascism, Nationalism, Anarchism, Environmentalism, Religious-Based Ideology, Centrism")
         #sentiment: str = Field(..., description="Describe relation of author to mentioned ideology: positive, neutral, negative, critical")
         
     class SportModel(BaseModel):
@@ -174,15 +179,15 @@ class GPT4o():
 
     class AnalysisTweet(BaseModel):
         type: str = Field(..., description="Type of analysis ('politics'/'sport'/'music'/'other')")
-        language: str = Field(..., description="Detected language")
-        professionality: float = Field(..., description="Professionality score (between 0 and 1)")
-        politics: str = Field(..., description="Choose ideology/ies, that describes the tweet best (if any): Liberalism, Conservatism, Socialism, Communism, Fascism, Nationalism, Anarchism, Environmentalism, Religious-Based Ideology, Centrism")  # Provide default values
+        language: str = Field(..., description="ISO 639 code of detected language")
+        #professionality: float = Field(..., description="Professionality score (between 0 and 1)")
+        politics: str = Field(..., description="Choose ideology of author of the tweet: Liberalism, Conservatism, Socialism, Communism, Fascism, Nationalism, Anarchism, Environmentalism, Religious-Based Ideology, Centrism")  # Provide default values
         sport: Optional["SportModel"] = Field(..., description="Describe mentioned sports, players and clubs and analyse sentiment of each; notes: it should consider, that sentiment can change throughout the tweet (ex.: one club mentioned positively and other negatively; sport sentiment=positive, club sentiment=negative; etc), dislike for club doesnt mean dislike for sport") #, try also recognise famous sport chants and symbols
         music: Optional["MusicModel"] = Field(..., description="Describe mentioned music genres and musicians")
     ##    other_topics: Dict[str, str] = Field(default_factory=dict, description="Other topic sentiments")
 
     class AnalysisReaction(BaseModel):
-        original_tweet: "AnalysisTweet" = Field(..., description="Analysis  of original tweet")
+        #original_tweet: "AnalysisTweet" = Field(..., description="Analysis  of original tweet")
         reaction: "AnalysisTweet" = Field(..., description="Analyse reaction if possible")
         reaction_sentiment: str = Field(..., description="Agreeing, Disagreeing, Neutral")
 
@@ -205,7 +210,13 @@ class GPT4o():
             model="gpt-4o-2024-08-06",
             messages=[
                 {"role": "system", "content": "You are an AI that analyzes content of twitter comments/quotes and original tweets and returns structured JSON output."},
-                {"role": "user", "content": f"Comment/Quote: {reaction} , Original tweet: {original_tweet}"}
+                {"role": "user", "content": (
+                    f"### Original Tweet ###\n"
+                    f"{original_tweet}\n\n"
+                    f"### Reaction ###\n"
+                    f"{reaction}\n\n"
+                    f"Analyze reaction and how it relates to the original tweet. Does it agree, disagree, add context, or shift the sentiment?"
+                )}
             ],
             response_format=self.AnalysisReaction,
             temperature=0.85
@@ -316,6 +327,10 @@ class SerpAPI():
 ##    print(b)
 ##    print(GPT4o().analyze_profile_II(b))
 
+
+##a=GPT4o()
+##for i in range(1):
+##    print(a.analyze_tweet("Trumpove nariadenia urcite ovplyvnia moldavsky sport"))
 
 
 '''
