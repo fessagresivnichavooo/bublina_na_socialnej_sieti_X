@@ -107,6 +107,7 @@ class Profile:
         self.all_mentions = {}
         
         for status_id, username, text, type, source_tweet, source_username, hashtags, mentions in SCRAPPER.get_tweets(username):
+            #print(type, source_tweet)
             tweet = Tweet(status_id, username, text, type, source_tweet, source_username, hashtags, mentions)
             ALL_TWEETS[status_id] = tweet
             if tweet.get_type() == "repost":
@@ -131,10 +132,6 @@ class Profile:
             if followers > follower_count and screen_name in following_outside_bubble_list:
                 return_val.append((screen_name, name, description))
         return return_val
-                
-    def analyse_tweets(self):
-        for tweet in self.tweets:
-            tweet.analyse()
         
     def __repr__(self):
         return (
@@ -144,9 +141,334 @@ class Profile:
             f"Tweets: {len(self.tweets)}, Reposts: {len(self.reposts)}, Comments: {len(self.comments)}, Quotes: {len(self.quotes)}\n"
         )
 
-    def summary(self):
-        return
+    def summary(self, time_interval=None):
+        ### vyskusat normalne
+        ### vyskusat s AI
 
+        ### rozdelit si sumar a analyzu na jednoducho vydedukovatelne a tazko
+        ### napr. jednoducho = sleduje vela americkych novinarov -> zaujima sa a o americku politiku
+        print(self.username)
+        #print(self.expression_sum())
+        print(self.interaction_sum())
+        print('\n\n\n\n')
+        'interest, expression, interaction'
+
+
+    def expression_sum(self, time_interval=None):
+        expression_summary = {
+            "politics": {
+                "type": [],
+                "no type": []
+            },
+            "languages": [],
+            "sports": {},   # sport: {sentiment when just itself: str, c/p number tweets}
+            "clubs": {},    # club: {[sentiments], country, [sports]}
+            "players": {},  # player: {[sentiments], country, sport}
+            "genres": {},   # genre: {[countries], [countries_negative], [sentiments]}
+            "artists": {}   # artist:{genre, country, [sentiments]}
+        }
+        
+        for tweet in self.tweets+self.reposts:
+            try:
+                ############## OPRAVIT TENTO ERROR ######################
+                type = tweet.content["type"]
+            except TypeError:
+                print(tweet.text, ALL_TWEETS)
+                continue
+            if tweet.content["sport"]:
+                clubs = tweet.content["sport"].get("clubs", [])
+                players = tweet.content["sport"].get("players", [])
+            else:
+                clubs, players = [], []
+            
+            if type == "politics":
+                expression_summary["politics"]["type"].append(tweet.content["politics"])
+            else:
+                expression_summary["politics"]["no type"].append(tweet.content["politics"])
+            expression_summary["languages"].append(tweet.content["language"])
+
+            if type == "sport":
+                temp_club_player_sports = set()
+                if clubs:
+                    for club in clubs:   ### v pripade nerozoznania rovnakych klubov-> fuzzy wuzzy + porovnat krajiny
+                        if club["club"] not in expression_summary["clubs"]:
+                            expression_summary["clubs"][club["club"].lower()] = {"sentiments": [], "country": "", "sports": []}
+                        expression_summary["clubs"][club["club"].lower()]["sentiments"].append(club["sentiment"].lower())
+                        expression_summary["clubs"][club["club"].lower()]["country"] = club["country"].lower()
+                        expression_summary["clubs"][club["club"].lower()]["sports"].append(club["sport"].lower())
+                        temp_club_player_sports.add(club["sport"].lower())
+
+                if players:
+                    for player in players:   ### v pripade nerozoznania rovnakych klubov-> fuzzy wuzzy + porovnat krajiny
+                        if player["player"] not in expression_summary["players"]:
+                            expression_summary["players"][player["player"].lower()] = {"sentiments": [], "country": "", "sports": ""}
+                        expression_summary["players"][player["player"].lower()]["sentiments"].append(player["sentiment"].lower())
+                        expression_summary["players"][player["player"].lower()]["country"] = player["country"].lower()
+                        expression_summary["players"][player["player"].lower()]["sport"] = player["sport"].lower()
+                        temp_club_player_sports.add(player["sport"].lower())
+                
+                for sport in tweet.content["sport"]["sports"]:
+                    if sport["sport"].lower() not in expression_summary["sports"]:
+                        expression_summary["sports"][sport["sport"].lower()] = {"sentiments": [], "c/p tweets": 0}  ### sentiments su iba pre tie sporty, ktore su spomenute individualne
+                    if sport["sport"].lower() in temp_club_player_sports:
+                        expression_summary["sports"][sport["sport"].lower()]["c/p tweets"] += 1
+                    else:
+                        expression_summary["sports"][sport["sport"].lower()]["sentiments"].append(sport["sentiment"].lower())
+
+            if type == "music":
+                temp = set()
+                genres = tweet.content["music"].get("genres", [])
+                artists = tweet.content["music"].get("artists", [])
+
+                if artists:
+                    for artist in artists:
+                        if artist["artist"] not in expression_summary["artists"]:
+                            expression_summary["artists"][artist["artist"].lower()] = {"sentiments": [], "country": "", "genres": []}
+                        expression_summary["artists"][artist["artist"].lower()]["sentiments"].append(artist["sentiment"].lower())
+                        expression_summary["artists"][artist["artist"].lower()]["country"] = artist["country"].lower()
+                        expression_summary["artists"][artist["artist"].lower()]["genres"].append(artist["genre"].lower())
+                        temp.add(artist["genre"])
+                        
+                if genres:
+                    for genre in genres:
+                        if genre["genre"].lower() not in expression_summary["genres"]:
+                            expression_summary["genres"][genre["genre"].lower()] = {"sentiments": [], "artist tweets": 0}
+                        if genre["genre"].lower() not in temp:
+                            expression_summary["genres"][genre["genre"].lower()]["artist tweets"] += 1
+                        else:
+                            expression_summary["genres"][genre["genre"].lower()]["sentiments"].append(genre["sentiment"].lower())
+                        
+        return expression_summary
+
+    
+    def interaction_sum(self, time_interval=None):
+        reaction_translate = {
+            "Disagreeing": {
+                "neutral": "neutral",
+                "positive": "negative",
+                "negative": "positive"
+            },
+            "Agreeing": {
+                "neutral": "neutral",
+                "positive": "positive",
+                "negative": "negative"
+            },
+            "Neutral": {  ### na neutral preto, lebo je to spomenute, ale nie v specifickom sentimente
+                "neutral": "neutral",
+                "positive": "neutral",
+                "negative": "neutral"
+            }
+        }
+        interaction_summary = {
+            "politics": {
+                "type": [],
+                "type reaction": [],
+                "no type": [],
+                "no type reaction": []
+            },
+            "languages": [],
+            "sports": {},   # ak je text same o sebe cisto o sporte (nie club/player), tak vezme to, + reakcia -> aj pri other, ak je to disagree tak reverse sentimentu predosleho tweetu ak agree tak copy
+
+                            # sport: {sentiment when just itself: str, reaction sentiment (reversed if disagree)}
+            "clubs": {},    # club: {[sentiments], country, [sports]}
+            "players": {},  # player: {[sentiments], country, sport}
+            "genres": {},   # genre: {[countries], [countries_negative], [sentiments]}
+            "artists": {}   # artist:{genre, country, [sentiments]}
+        }
+        for reaction in self.quotes+self.comments:
+            try:
+                ############## OPRAVIT TENTO ERROR ######################
+                type = reaction.content["reaction"]["type"]
+            except TypeError:
+                print(reaction.text, ALL_TWEETS)
+                continue
+            if reaction.content["reaction"]["sport"]:
+                clubs = reaction.content["reaction"]["sport"].get("clubs", [])
+                players = reaction.content["reaction"]["sport"].get("players", [])
+            else:
+                clubs, players = [], []
+
+            if reaction.content["reaction"]["music"]:
+                genres = reaction.content["reaction"]["music"].get("genres", [])
+                artists = reaction.content["reaction"]["music"].get("artists", [])
+            else:
+                genres, artists = [], []
+
+
+            print(reaction.text, ALL_TWEETS[reaction.source_tweet].text)
+            
+            source_tweet_content = ALL_TWEETS[reaction.source_tweet].content
+            if "reaction" in source_tweet_content:
+                source_tweet_content = source_tweet_content["reaction"]
+
+                
+            if type == "politics" or source_tweet_content["type"] == "sport":
+                interaction_summary["politics"]["type"].append(reaction.content["reaction"]["politics"])
+                #################### DOROBIT TUTO KED SA SFINALIZUJE FORMAT POLITIKY ####################
+                '''expression_summary["politics"]["type reaction"].append(source_tweet_content["type"])'''
+            else:
+                interaction_summary["politics"]["no type"].append(reaction.content["reaction"]["politics"])
+            interaction_summary["languages"].append(reaction.content["reaction"]["language"])
+
+            
+            if type == "sport" or source_tweet_content["type"] == "sport":
+                temp_club_player_sports = set()
+                if clubs:
+                    for club in clubs:   ### v pripade nerozoznania rovnakych klubov-> fuzzy wuzzy + porovnat krajiny
+                        if club["club"] not in interaction_summary["clubs"]:
+                            interaction_summary["clubs"][club["club"].lower()] = {"sentiments": [], "country": "", "sports": [], "reaction sentiments": []}
+                        interaction_summary["clubs"][club["club"].lower()]["sentiments"].append(club["sentiment"].lower())
+                        interaction_summary["clubs"][club["club"].lower()]["country"] = club["country"].lower()
+                        interaction_summary["clubs"][club["club"].lower()]["sports"].append(club["sport"].lower())
+                        temp_club_player_sports.add(club["sport"].lower())
+
+                if players:
+                    for player in players:   ### v pripade nerozoznania rovnakych klubov-> fuzzy wuzzy + porovnat krajiny
+                        if player["player"] not in interaction_summary["players"]:
+                            interaction_summary["players"][player["player"].lower()] = {"sentiments": [], "country": "", "sports": "", "reaction sentiments": []}
+                        interaction_summary["players"][player["player"].lower()]["sentiments"].append(player["sentiment"].lower())
+                        interaction_summary["players"][player["player"].lower()]["country"] = player["country"].lower()
+                        interaction_summary["players"][player["player"].lower()]["sport"] = player["sport"].lower()
+                        temp_club_player_sports.add(player["sport"].lower())
+                
+                for sport in reaction.content["reaction"]["sport"]["sports"]:
+                    if sport["sport"].lower() not in interaction_summary["sports"]:
+                        interaction_summary["sports"][sport["sport"].lower()] = {"sentiments": [], "c/p tweets": 0, "reaction sentiments": []}  ### sentiments su iba pre tie sporty, ktore su spomenute individualne
+                    if sport["sport"].lower() in temp_club_player_sports:
+                        interaction_summary["sports"][sport["sport"].lower()]["c/p tweets"] += 1
+                    else:
+                        interaction_summary["sports"][sport["sport"].lower()]["sentiments"].append(sport["sentiment"].lower())
+
+                og_tweet = source_tweet_content
+                if og_tweet["sport"]:
+                    if og_tweet["sport"]["sports"]:
+                        for sport in og_tweet["sport"]["sports"]:
+                            if sport["sport"].lower() not in interaction_summary["sports"]:
+                                interaction_summary["sports"][sport["sport"].lower()] = {"sentiments": [], "c/p tweets": 0, "reaction sentiments": []}  ### sentiments su iba pre tie sporty, ktore su spomenute individualne
+                            interaction_summary["sports"][sport["sport"].lower()]["reaction sentiments"].append(reaction_translate[reaction.content["reaction_sentiment"]][sport["sentiment"].lower()])
+
+                    if og_tweet["sport"]["clubs"]:
+                        for club in og_tweet["sport"]["clubs"]:
+                            if club["club"].lower() not in interaction_summary["clubs"]:
+                                interaction_summary["clubs"][club["club"].lower()] = {"sentiments": [], "country": "", "sports": [], "reaction sentiments": []}
+                                interaction_summary["clubs"][club["club"].lower()]["country"] = club["country"].lower()
+                                interaction_summary["clubs"][club["club"].lower()]["sports"].append(club["sport"].lower())
+                            interaction_summary["clubs"][club["club"].lower()]["reaction sentiments"].append(reaction_translate[reaction.content["reaction_sentiment"]][club["sentiment"].lower()])
+
+                    if og_tweet["sport"]["players"]:
+                        for player in og_tweet["sport"]["players"]:
+                            if player["player"].lower() not in interaction_summary["players"]:
+                                interaction_summary["players"][player["player"].lower()] = {"sentiments": [], "country": "", "sports": [], "reaction sentiments": []}
+                                interaction_summary["players"][player["player"].lower()]["country"] = player["country"].lower()
+                                interaction_summary["players"][player["player"].lower()]["sport"] = player["sport"].lower()
+                            interaction_summary["players"][player["player"].lower()]["reaction sentiments"].append(reaction_translate[reaction.content["reaction_sentiment"]][player["sentiment"].lower()])
+
+
+            if type == "music" or source_tweet_content["type"] == "music":
+                temp = set()
+                if artists:
+                    for artist in artists:   ### v pripade nerozoznania rovnakych klubov-> fuzzy wuzzy + porovnat krajiny
+                        if artist["artist"] not in interaction_summary["artists"]:
+                            interaction_summary["artists"][artist["artist".lower()]] = {"sentiments": [], "country": "", "genres": "", "reaction sentiments": []}
+                        interaction_summary["artists"][artist["artist"].lower()]["sentiments"].append(artist["sentiment"].lower())
+                        interaction_summary["artists"][artist["artist"].lower()]["country"] = artist["country"].lower()
+                        interaction_summary["artists"][artist["artist"].lower()]["genres"].append(artist["genre"].lower())
+                        temp.add(player["genre"].lower())
+                
+                for genre in reaction.content["reaction"]["music"]["genres"]:
+                    if genre["genre"].lower() not in interaction_summary["genres"]:
+                        interaction_summary["genres"][genre["genre"].lower()] = {"sentiments": [], "artist tweets": 0, "reaction sentiments": []}  ### sentiments su iba pre tie sporty, ktore su spomenute individualne
+                    if genre["genre"].lower() in temp:
+                        interaction_summary["genres"][genre["genre"].lower()]["artist tweets"] += 1
+                    else:
+                        interaction_summary["genres"][genre["genre"].lower()]["sentiments"].append(genre["sentiment"].lower())
+
+                og_tweet = source_tweet_content
+                if og_tweet["music"]:
+                    if og_tweet["music"]["genres"]:
+                        for genre in og_tweet["music"]["genres"]:
+                            if genre["genre"].lower() not in interaction_summary["genres"]:
+                                interaction_summary["genres"][genre["genre"].lower()] = {"sentiments": [], "artist tweets": 0, "reaction sentiments": []}  ### sentiments su iba pre tie sporty, ktore su spomenute individualne
+                            interaction_summary["genres"][genre["genre"].lower()]["reaction sentiments"].append(reaction_translate[reaction.content["reaction_sentiment"]][genre["sentiment"].lower()])
+                    if og_tweet["music"]["artists"]:
+                        for artist in og_tweet["music"]["artists"]:
+                            if artist["artist"].lower() not in interaction_summary["artists"]:
+                                interaction_summary["artists"][artist["artist"].lower()] = {"sentiments": [], "country": "", "genres": [], "reaction sentiments": []}
+                                interaction_summary["artists"][artist["artist"].lower()]["country"] = artist["country"].lower()
+                                interaction_summary["artists"][artist["artist"].lower()]["genre"] = artist["genre"].lower()
+                            interaction_summary["artists"][artist["artist"].lower()]["reaction sentiments"].append(reaction_translate[reaction.content["reaction_sentiment"]][artist["sentiment"].lower()])
+
+        return interaction_summary
+
+
+'''
+Nodes
+    Tweety / Reposty
+        Politika
+            {Ideologia: pocet_krat}   zoradeny list
+            
+        Sport
+            {sports: sentiment_index}    zl
+            {clubs: sentiment_index}     zl
+            {players: sentiment_index}   zl
+            {countries of origin: {clubs: number, players: number}}
+            
+        Hudba
+            {genres, country: sentiment_index}
+            {artists: sentiment_index}
+
+        Pomer jazykov
+        
+    Quote/Comment
+        Politika
+            {Ideologia: pocet_krat}   zoradeny list
+            +Reackie ideologia       ak disagree na napr na lib-left og tweet, tak napise sem
+
+        Sport
+            {sports: sentiment_index}    zl
+            {clubs: sentiment_index}     zl
+            + reakcie
+            {players: sentiment_index}   zl
+            + reakcie
+            {countries of origin: {clubs: number, players: number}}
+            
+        Hudba
+            {genres, country: sentiment_index}
+            {artists: sentiment_index}
+            + reakcie
+
+        Pomer jazykov
+    
+    Profily
+        to iste iba suhrn
+
+    Hashtagy
+            
+        
+    MetaData
+        Bio
+        Location
+        Profession
+        Datum zalozenia
+        
+    
+    => vydedukovat politicku orientaciu
+        - sledovane          priemer politickych orientacii sledovanych profilov
+        - vyjadrene          priemer pol. or. tweetov, repostov, pripadne hashtagov
+        - interagovane na    priemer p.o. quote a comment podla agree/disagree
+        => suhrn
+    => na kazdy spominany sport nazor
+        - -,,-
+    => 3 kategorie klubov podla oblubenosti
+        
+    => 3 kategorie hracov podla oblubenosti
+    => na kazdy spominany zaner nazor
+    => 3 kategorie hudobnikov podla oblubenosti
+
+
+Edges
+
+'''
 
 
 
@@ -164,13 +486,13 @@ class Tweet:
         self.date = None
         self.content = None
 
-    def analyse(self):
-        global COUNTER
+    def analyse(self):     ###   analyza vynechava niektore,  mozno je to ze v threadoch
+        ##########    riesenie => ak najde tweet bez contentu, retrospektivne ho analyzuje
         with open("tweet_analysis.json", 'r', encoding="utf-8") as file:
             cached_tweets = json.load(file)
 
-        
         if self.status_id in cached_tweets:
+            self.content = cached_tweets[self.status_id][-1]
             return
 
         elif self.type == "tweet":
@@ -188,13 +510,13 @@ class Tweet:
             if ALL_TWEETS.get(self.source_tweet, None):
                 self.content = TWEET_AI_ANALYSER.analyze_reaction(self.text, ALL_TWEETS[self.source_tweet].text)
                 print(self.type, '\n', self.source_tweet, '\n', self.text, '\n', self.content, '\n')
-                cached_tweets[self.status_id] = [self.username, self.text, self.content]
+                cached_tweets[self.status_id] = [self.username, self.source_tweet, self.text, self.content]
                 
         elif self.type == "quote":
              if ALL_TWEETS.get(self.source_tweet, None):
                 self.content = TWEET_AI_ANALYSER.analyze_reaction(self.text, ALL_TWEETS[self.source_tweet].text)
                 print(self.type, '\n', self.source_tweet, '\n', self.text, '\n', self.content, '\n')
-                cached_tweets[self.status_id] = [self.username, self.text, self.content]
+                cached_tweets[self.status_id] = [self.username, self.source_tweet, self.text, self.content]
 
         with open("tweet_analysis.json", "w", encoding="utf-8") as f:
             json.dump(cached_tweets, f, indent=4, ensure_ascii=False)
@@ -205,12 +527,14 @@ class Tweet:
         return f"""
             SOURCE ID: {self.status_id}
             USER: {self.username}
-            CONTENT: {self.text}
+            TEXT: {self.text}
             TYPE: {self.type}
-            SOURCE TWEET: {ALL_TWEETS[self.source_tweet].text if self.source_tweet in ALL_TWEETS else None}
+            SOURCE TWEET: {self.source_tweet}
             SOURCE USER: {self.source_username}
             HASHTAGS: {self.hashtags}
             MENTIONS: {self.mentions}
+            DATE: {self.date}
+            CONTENT: {self.content}
 
         """
     def __str__(self):
@@ -219,8 +543,6 @@ class Tweet:
     def get_type(self):
         return self.type
 
-    def check_topic(self):
-        return ""
     
 
 
@@ -472,7 +794,7 @@ class SocialBubble:
                             else:
                                 self.interacted_outside_bubble.append((tweet.source_username, tweet))
                         
-            print(self.followed_outside_bubble, self.mentioned_outside_bubble)
+            #print(self.followed_outside_bubble, self.mentioned_outside_bubble)
                 
             ## pridat interagovane profily mimo bubliny do nejakeho zoznamu, zoradene podla poctu interakcii clenov bubliny a followov
 
@@ -570,8 +892,6 @@ class SocialBubble:
         return outside_bubble_data
             
     def tweet_analysis(self):
-        #for node in self.nodes.values():
-        #    node.profile.analyse_tweets()
         for tweet in ALL_TWEETS.values():
             tweet.analyse()
 
@@ -601,6 +921,14 @@ class SocialBubble:
         with open("profile_analysis.json", "w", encoding="utf-8") as f:
             json.dump(cached_profiles, f, indent=4, ensure_ascii=False)
 
+
+    def profiles_summary(self, time_interval=None, steps=1):
+        sums = {}
+        for username, node in self.nodes.items():
+            #sums[username] =
+            node.profile.summary()
+            
+
         
 
 
@@ -613,19 +941,25 @@ class SocialBubble:
 
 
 
-SB = SocialBubble("pushkicknadusu", "profile_centered", depth=3)
+SB = SocialBubble("pushkicknadusu", "profile_centered", depth=2)
 
 SB.create_graph()
 
+print(ALL_TWEETS)
+
 SB.visualize_graph()
 
-opd = SB.get_outside_profiles_data(2000)
+##opd = SB.get_outside_profiles_data(2000)
 
 ##print(opd)
 
 ##SB.profile_analysis(opd)
 
 SB.tweet_analysis()
+
+SB.profiles_summary()
+
+
 
 
 
@@ -638,4 +972,3 @@ SB.tweet_analysis()
 
 #############   BUDE TREBA SKONTROLOVAT IMPLEMENTACIU CREATE_BUBBLE, CI
 #############   NIEKDE NIE SU VYNECHANE UDAJE ATD
-
