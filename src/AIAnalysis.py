@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, RootModel
 from typing import Dict, List, Optional, Union
 import openai
 import json
@@ -15,8 +15,11 @@ class Athlete(BaseModel):
 
 
 class ClubTeam(BaseModel):
-    sport: str = Field(..., description="Type of sport")
+    sport_type: str = Field(..., description="Type of sport")
     country: Optional[str] = Field(None, description="ISO 3166 code of country where the club/team is based")
+
+class SportFanpage(BaseModel):
+    sport: str = Field(..., description="Sport related to the fanpage")
 
 
 # === Music Models ===
@@ -31,7 +34,7 @@ class BandLabel(BaseModel):
     country: Optional[str] = Field(None, description="ISO 3166 code of country of influence")
 
 
-class Fanpage(BaseModel):
+class MusicFanpage(BaseModel):
     genre_of_music: str = Field(..., description="Music genre related to the fanpage")
 
 
@@ -72,26 +75,71 @@ class Education(BaseModel):
     specialization: str = Field(..., description="Field of education (e.g., STEM, humanities, business)")
     institution: Optional[str] = Field(None, description="Associated school, university, or institution")
 
+class Other(BaseModel):
+    topic: str = Field(..., description="Choose topic which defines the profile best")
 
 
 # === Unified Topic Model ===
 class TopicData(BaseModel):
-    topic: str = Field(..., description="Main category (Sport, Music, Politics, Other)")
+    topic: str = Field(..., description="Main category, choose only from: Sport, Music, Politics, Other")
     type: str = Field(..., description="Specific entity type within the topic")
     data: Union[
         Athlete,
         ClubTeam,
+        SportFanpage,
         Author,
         BandLabel,
-        Fanpage,
+        MusicFanpage,
         Politician,
         PoliticalPartyMovement,
         JournalistNews,
         Finance,
         Entertainment,
         Technology,
-        Education
+        Education,
+        Other
     ]
+
+
+
+class CountryDetails(BaseModel):
+    country: str = Field(..., description="Associated country")
+    clubs: List[str] = Field(..., description="List of mentioned clubs of this country")
+    athletes: List[str] = Field(..., description="List of mentioned athletes of this country")
+
+
+class SportEntry(BaseModel):
+    sport: str = Field(..., description="Name of the sport, merge duplicates")
+    counter: int = Field(..., description="How many times this sport is mentioned or appears")
+    countries: List[CountryDetails] = Field(..., description="Mapping of country names to sport details")
+
+
+class MusicEntry(BaseModel):
+    genre: str = Field(..., description="Genre name")
+    counter: int = Field(..., description="How many times this genre is mentioned or appears")
+    countries: List[str] = Field(..., description="List of countries mentioned in for this genre")
+    artists: List[str] = Field(..., description="Mentioned artists in this genre")
+
+class Ideology(BaseModel):
+    ideology: str = Field(..., description="Name of ideology")
+    counter: int = Field(..., description="Number of mentions")
+
+class Politics(BaseModel):
+    ideologies: List[Ideology] = Field(..., description="Mapping of ideology names to number of mentions")
+    countries: List[str] = Field(..., description="ISO 3166 code of mentioned countries")
+
+class OtherInterest(BaseModel):
+    interest: str = Field(..., description="Name of topic/interest")
+    counter: int = Field(..., description="Number of mentions")
+
+class Interests(BaseModel):
+    sport: List[SportEntry] = Field(..., description="Mapping of sport name to sport-related data")
+    music: List[MusicEntry] = Field(..., description="Mapping of music genre to genre-related data")
+    politics: Politics = Field(..., description="Political ideologies and mentioned countries")
+    other_interests: List[OtherInterest] = Field(..., description="Other interests and how many times they were mentioned, make it general and merge similar topics together")
+
+
+
 
 
 ###############################################################################
@@ -270,7 +318,22 @@ class GPT4o():
         )
 
         output = response.choices[0].message.parsed.json()
+        output["full_name"] = data["Name"]
         return output
+
+    def profiles_summary(self, data):
+        response = self.client.beta.chat.completions.parse(
+            model="gpt-4o-2024-08-06",
+            messages=[
+                {"role": "system", "content": "You are an AI that summarises data into predefined structure."},
+                {"role": "user", "content": f'{data}'}
+            ],
+            response_format=Interests,
+            temperature=1
+        )
+
+        output = response.choices[0].message.parsed.json()
+        return json.loads(output)
     
 
     
@@ -313,6 +376,11 @@ class SerpAPI():
             formated_return["Entity"] = kg.get("entity_type", "N/A")
         return formated_return
 
+
+##a=GPT4o()
+##with open("profile_analysis.json", 'r', encoding="utf-8") as file:
+##    data = json.load(file)
+##print(a.profiles_summary(data))
 
 
 
@@ -371,3 +439,19 @@ Third Way – Mix of capitalism and social democracy
 ### vyskusat pristup: vypisat ideologie, a pre kazdy tweet napisat, ako velmi pre alebo proti
 ### ak profil, tak vyberie iba hlavnu temu a nie podtemy (cize conservativism, liberalism ...)
 ### neskor mozno vyskusat priradit kazdej ideologii vektor a podla toho umiestnit na spektrum
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
