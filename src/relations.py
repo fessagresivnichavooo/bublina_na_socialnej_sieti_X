@@ -134,10 +134,58 @@ class Summary:
 
         for sport in self.interest_sum["sport"]:
             sentiment = self.interpret_sentiment_list(["positive"]*sport["counter"], 0.6, 0, 0)
-            if sport["sport"] not in self.sports:
-                self.sports[sport["sport"]] = {"sentiment": [sentiment], "mentions": [sport["counter"]]}
+            if sport["sport"].lower() not in self.sports:
+                self.sports[sport["sport"].lower()] = {"sentiment": [sentiment], "mentions": [sport["counter"]]}
+            else:
+                self.sports[sport["sport"].lower()]["sentiment"].append(sentiment)
+                self.sports[sport["sport"].lower()]["mentions"].append(sport["counter"])
+                
 
-        print(self.sports)
+        for club, data in self.expression_sum["clubs"].items():
+            sentiment = self.interpret_sentiment_list(data["sentiments"], 1.1, 0.4, -0.5)
+            mentions = len(data["sentiments"])
+            self.clubs[club] = {"sentiment": [sentiment], "mentions": [mentions]}
+
+        for club, data in self.interaction_sum["clubs"].items():
+            sentiment = self.interpret_sentiment_list(self.data["sentiments"], 1.1, 0.4, -0.5)
+            reaction_sentiment = self.interpret_sentiment_list(data["reaction sentiments"], 0.8, 0.1, -0.5)
+            mentions = len(data["sentiments"]) + len(data["reaction sentiments"])
+            if club not in self.clubs:
+                self.clubs[club] = {"sentiment": [sentiment], "mentions": [mentions]}
+            else:
+                self.clubs[club]["sentiment"].append(sentiment)
+                self.clubs[club]["sentiment"].append(reaction_sentiment)
+                self.clubs[club]["mentions"].append(mentions)
+
+##        for sport in self.interest_sum["sport"]:
+##            for country in sport["countries"]:
+##                for club in set(country["clubs"]):
+##                    if self.clubs:
+##                        if process.extractOne(club, self.clubs.keys())[1] > 85:
+##                            
+##                            
+##                    if club not in self.clubs:
+##                        self.clubs[club] = {"sentiment": [sentiment], "mentions": [mentions]}
+            
+        for player, data in self.expression_sum["players"].items():
+            sentiment = self.interpret_sentiment_list(data["sentiments"], 1.1, 0.4, -0.5)
+            mentions = len(data["sentiments"])
+            self.athletes[player] = {"sentiment": [sentiment], "mentions": [mentions]}
+
+        for player, data in self.interaction_sum["players"].items():
+            sentiment = self.interpret_sentiment_list(self.data["sentiments"], 1.1, 0.4, -0.5)
+            reaction_sentiment = self.interpret_sentiment_list(data["reaction sentiments"], 0.8, 0.1, -0.5)
+            mentions = len(data["sentiments"]) + len(data["reaction sentiments"])
+            if player not in self.players:
+                self.athletes[player] = {"sentiment": [sentiment], "mentions": [mentions]}
+            else:
+                self.athletes[player]["sentiment"].append(sentiment)
+                self.athletes[player]["sentiment"].append(reaction_sentiment)
+                self.athletes[player]["mentions"].append(mentions)
+
+
+        print(self.expression_sum, self.interaction_sum, self.interest_sum)
+        print(self.sports, self.clubs, self.athletes)
 
         
             
@@ -1038,9 +1086,11 @@ class SocialBubble:
             serpapi_formated = serpapi.process_entity(entity_data)
             serpapi_formated["Twitter username"] = username
             serpapi_formated["Twitter bio"] = profile[1]
+            serpapi_formated["name"] = profile[0]
             analysis = PROFILE_AI_ANALYSER.analyze_profile_II(serpapi_formated)
-            cached_profiles[username] = json.loads(analysis)
-##            print(analysis)
+            analysis["full_name"] = profile[0]
+            cached_profiles[username] = analysis
+            print(username, analysis)
 
 
         OUTSIDE_BUBBLE_PROFILES_ANALYSED = cached_profiles
@@ -1069,17 +1119,30 @@ class SocialBubble:
 
 
 
-SB = SocialBubble("pushkicknadusu", "profile_centered", depth=2)
+SB = SocialBubble("pushkicknadusu", "profile_centered", depth=1)
 
 SB.create_graph()
 
 SB.visualize_graph()
 
-##opd = SB.get_outside_profiles_data(THRESHOLD)
+opd = SB.get_outside_profiles_data(THRESHOLD)
 
 ##print(len(opd))
 
-##SB.profile_analysis(opd)
+##outside_bubble_data={}
+##for node in SB.nodes.values():
+##    for profile in node.profile.following_outside_bubble_big_profiles(SB.followed_outside_bubble, 2000):
+##        a,b,c = profile
+##        if a not in outside_bubble_data.keys():
+##            outside_bubble_data[a] = (b,c)
+##
+##a = set(outside_bubble_data)- set(SB.nodes["jarro01"].profile.following) - set(SB.nodes["pushkicknadusu"].profile.following)
+##
+##filtered_dict = {k: v for k, v in outside_bubble_data.items() if k in a}
+##
+##print(filtered_dict)
+
+SB.profile_analysis(opd)
 
 SB.tweet_analysis()
 
