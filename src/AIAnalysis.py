@@ -318,7 +318,7 @@ class GPT4o():
         )
 
         output = response.choices[0].message.parsed.json()
-        output["full_name"] = data["Name"]
+        output = json.loads(output)
         return output
 
     def profiles_summary(self, data):
@@ -342,7 +342,7 @@ class GPT4o():
 
 
 class SerpAPI():
-    API_KEY = ""
+    API_KEY = ""#""
 
     def get_entity(self, name):
         params = {
@@ -375,74 +375,6 @@ class SerpAPI():
             formated_return["Type"] = kg.get("type", "N/A")
             formated_return["Entity"] = kg.get("entity_type", "N/A")
         return formated_return
-
-
-##a=GPT4o()
-##with open("profile_analysis.json", 'r', encoding="utf-8") as file:
-##    data = json.load(file)
-##print(a.profiles_summary(data))
-
-
-
-##a = SerpAPI()
-##print(a.process_entity(a.get_entity("Tigran Barseghyan")))
-
-
-##for i in ["Alex Jones"]:
-##    c = a.get_entity(i)
-##    print(c)
-##    b = a.process_entity(c)
-##    print(b)
-##    print(GPT4o().analyze_profile_II(b))
-
-
-##a=GPT4o()
-##for i in range(1):
-##    print(a.analyze_tweet("Trumpove nariadenia urcite ovplyvnia moldavsky sport"))
-
-
-'''
-1. Liberalism
-Classical Liberalism – Individual rights, free markets, limited government
-Social Liberalism – Welfare state, regulated capitalism
-Libertarianism – Minimal government, strong personal freedoms
-2. Conservatism
-Traditional Conservatism – Stability, tradition, gradual change
-Fiscal Conservatism – Low taxes, small government
-Social Conservatism – Religious and family values
-3. Socialism
-Democratic Socialism – Social justice, regulated capitalism
-Marxism – Class struggle, worker control of production
-4. Communism
-Marxist-Leninism – One-party rule, planned economy
-Maoism – Peasant-based revolutionary socialism
-5. Fascism & Authoritarianism
-Fascism – Nationalism, authoritarian control, militarism
-Nazism – Racial supremacy, totalitarianism
-6. Nationalism
-Civic Nationalism – Nation based on shared values/culture
-Ethnic Nationalism – Nation based on ancestry/heritage
-7. Anarchism
-Anarcho-Communism – Stateless, classless society
-Anarcho-Capitalism – Stateless free markets
-8. Environmentalism
-Green Politics – Sustainability, climate action
-9. Religious-Based Ideologies
-Theocracy – Religious rule over government
-Christian Democracy – Conservative social values with welfare policies
-Islamism – Political enforcement of Islamic law
-10. Centrism & Pragmatic Approaches
-Centrism – Balance between left and right policies
-Third Way – Mix of capitalism and social democracy
-'''
-
-### vyskusat pristup: vypisat ideologie, a pre kazdy tweet napisat, ako velmi pre alebo proti
-### ak profil, tak vyberie iba hlavnu temu a nie podtemy (cize conservativism, liberalism ...)
-### neskor mozno vyskusat priradit kazdej ideologii vektor a podla toho umiestnit na spektrum
-
-
-
-
 
 
 
