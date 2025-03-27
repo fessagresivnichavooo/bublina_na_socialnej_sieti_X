@@ -4,8 +4,9 @@ import matplotlib.pyplot as plt
 import test_twitter_scrapper_from_json
 import AIAnalysis
 import json
-from fuzzywuzzy import process
+from fuzzywuzzy import process, fuzz
 import math
+from collections import Counter
 
 ### follower/followed
 
@@ -101,14 +102,31 @@ class Summary:
         self.expression_sum = expression
         self.interaction_sum = interaction
         self.interest_sum = interest
+        print(self.username, self.expression_sum, self.interaction_sum, self.interest_sum)
         self.overall = self.overall_sum()
+
+##    def interpret_sentiment_list(self, sentiments, pos, neu, neg):
+##        mapping = {'positive': pos, 'neutral': neu, 'negative': neg}
+##        scores = [mapping[s] for s in sentiments]
+##        raw_score = sum(scores) / len(scores)
+##        confidence = min(1.0, math.log2(len(scores) + 1) / 3)
+##        return raw_score * confidence
+        import math
 
     def interpret_sentiment_list(self, sentiments, pos, neu, neg):
         mapping = {'positive': pos, 'neutral': neu, 'negative': neg}
         scores = [mapping[s] for s in sentiments]
+        
+        if not scores:
+            return 0  # Avoid division by zero
+
         raw_score = sum(scores) / len(scores)
-        confidence = min(1.0, math.log2(len(scores) + 1) / 3)
+
+        n = len(scores)
+        confidence = n / (n + 3.5)  # Slower start, then grows faster
+
         return raw_score * confidence
+
 
     def overall_sum(self):
         ### SPORT
@@ -116,64 +134,98 @@ class Summary:
         self.sports = {}
         self.clubs = {}
         self.athletes = {}
+        self.genres = {}
+        self.artists = {}
+
         for sport, data in self.expression_sum["sports"].items():
             sentiment = self.interpret_sentiment_list(data["sentiments"], 1.1, 0.4, -0.5)
             mentions = len(data["sentiments"]) + data["c/p tweets"]
             self.sports[sport] = {"sentiment": [sentiment], "mentions": [mentions]}
-            
+
         for sport, data in self.interaction_sum["sports"].items():
             sentiment = self.interpret_sentiment_list(self.data["sentiments"], 1.1, 0.4, -0.5)
             reaction_sentiment = self.interpret_sentiment_list(data["reaction sentiments"], 0.8, 0.1, -0.5)
             mentions = len(data["sentiments"]) + data["c/p tweets"] + len(data["reaction sentiments"])
-            if sport not in self.sports:
-                self.sports[sport] = {"sentiment": [sentiment], "mentions": [mentions]}
+            temp = process.extractOne(sport, self.sports.keys()) or [0,0]
+            if sport not in self.sports and temp[1] < 85:
+                self.sports[sport.lower()] = {"sentiment": [sentiment], "mentions": [mentions]}
             else:
-                self.sports[sport]["sentiment"].append(sentiment)
-                self.sports[sport]["sentiment"].append(reaction_sentiment)
-                self.sports[sport]["mentions"].append(mentions)
+                self.sports[temp[0]]["sentiment"].append(sentiment)
+                self.sports[temp[0]]["sentiment"].append(reaction_sentiment)
+                self.sports[temp[0]]["mentions"].append(mentions)
 
-        for sport in self.interest_sum["sport"]:
-            sentiment = self.interpret_sentiment_list(["positive"]*sport["counter"], 0.6, 0, 0)
-            if sport["sport"].lower() not in self.sports:
-                self.sports[sport["sport"].lower()] = {"sentiment": [sentiment], "mentions": [sport["counter"]]}
-            else:
-                self.sports[sport["sport"].lower()]["sentiment"].append(sentiment)
-                self.sports[sport["sport"].lower()]["mentions"].append(sport["counter"])
+        if self.interest_sum["sport"]:
+            for sport in self.interest_sum["sport"]:
+                sentiment = self.interpret_sentiment_list(["positive"]*sport["counter"], 0.6, 0, 0)
+                if sport["sport"].lower() not in self.sports:
+                    self.sports[sport["sport"].lower()] = {"sentiment": [sentiment], "mentions": [sport["counter"]]}
+                else:
+                    self.sports[sport["sport"].lower()]["sentiment"].append(sentiment)
+                    self.sports[sport["sport"].lower()]["mentions"].append(sport["counter"])
                 
 
         for club, data in self.expression_sum["clubs"].items():
-            sentiment = self.interpret_sentiment_list(data["sentiments"], 1.1, 0.4, -0.5)
+            sentiment = self.interpret_sentiment_list(data["sentiments"], 1.1, 0.4, -0.7)
             mentions = len(data["sentiments"])
             self.clubs[club] = {"sentiment": [sentiment], "mentions": [mentions]}
 
         for club, data in self.interaction_sum["clubs"].items():
-            sentiment = self.interpret_sentiment_list(self.data["sentiments"], 1.1, 0.4, -0.5)
+            sentiment = self.interpret_sentiment_list(self.data["sentiments"], 1.1, 0.4, -0.7)
             reaction_sentiment = self.interpret_sentiment_list(data["reaction sentiments"], 0.8, 0.1, -0.5)
             mentions = len(data["sentiments"]) + len(data["reaction sentiments"])
-            if club not in self.clubs:
+            temp = process.extractOne(club, self.clubs.keys()) or [0,0]
+
+            sport = self.expression_sum.get("clubs", {}).get(temp[0], None)["sports"] or self.interaction_sum.get("clubs", {}).get(temp[0], None)["sports"] or self.interest_sum.get("clubs", {}).get(temp[0], None)["sports"]
+            if sport is None:
+                print("NO SPORT")
                 self.clubs[club] = {"sentiment": [sentiment], "mentions": [mentions]}
             else:
-                self.clubs[club]["sentiment"].append(sentiment)
-                self.clubs[club]["sentiment"].append(reaction_sentiment)
-                self.clubs[club]["mentions"].append(mentions)
+                sport = Counter(sport).most_common(1)[0][0]
+                
+            if club not in self.clubs and temp[1] < 85:
+                self.clubs[club] = {"sentiment": [sentiment], "mentions": [mentions]}
+                
+            elif self.clubs[temp[0]] and fuzz.ratio(sport, Counter(data["sports"]).most_common(1)[0][0]) > 87:
+                self.clubs[temp[0]]["sentiment"].append(sentiment)
+                self.clubs[temp[0]]["sentiment"].append(reaction_sentiment)
+                self.clubs[temp[0]]["mentions"].append(mentions)
+                
+            else:
+                self.clubs[club] = {"sentiment": [sentiment], "mentions": [mentions]}
+                
 
-##        for sport in self.interest_sum["sport"]:
-##            for country in sport["countries"]:
-##                for club in set(country["clubs"]):
-##                    if self.clubs:
-##                        if process.extractOne(club, self.clubs.keys())[1] > 85:
-##                            
-##                            
-##                    if club not in self.clubs:
-##                        self.clubs[club] = {"sentiment": [sentiment], "mentions": [mentions]}
+        if self.interest_sum["sport"]:
+            for sport in self.interest_sum["sport"]:
+                if sport["countries"]:
+                    for country in sport["countries"]:
+                        if country["clubs"]:
+                            for club in set(country["clubs"]):
+                                if self.clubs:
+                                    temp = process.extractOne(club.lower(), self.clubs.keys())
+                                    #print(temp, club)
+                                    if temp[1] > 85:
+                                        mentions = country["clubs"].count(club)
+                                        sentiment = self.interpret_sentiment_list(["positive"]*mentions, 0.6, 0, 0)
+                                        self.clubs[temp[0].lower()]["sentiment"].append(sentiment)
+                                        self.clubs[temp[0].lower()]["mentions"].append(mentions)
+                                    else:
+                                        mentions = country["clubs"].count(club)
+                                        sentiment = self.interpret_sentiment_list(["positive"]*mentions, 0.6, 0, 0)
+                                        self.clubs[club.lower()] = {"sentiment": [sentiment], "mentions": [mentions]}
+                                        
+                                elif club.lower() not in self.clubs:
+                                    mentions = country["clubs"].count(club)
+                                    sentiment = self.interpret_sentiment_list(["positive"]*mentions, 0.6, 0, 0)
+                                    self.clubs[club.lower()] = {"sentiment": [sentiment], "mentions": [mentions]}
+
             
         for player, data in self.expression_sum["players"].items():
-            sentiment = self.interpret_sentiment_list(data["sentiments"], 1.1, 0.4, -0.5)
+            sentiment = self.interpret_sentiment_list(data["sentiments"], 1.1, 0.4, -0.7)
             mentions = len(data["sentiments"])
             self.athletes[player] = {"sentiment": [sentiment], "mentions": [mentions]}
 
         for player, data in self.interaction_sum["players"].items():
-            sentiment = self.interpret_sentiment_list(self.data["sentiments"], 1.1, 0.4, -0.5)
+            sentiment = self.interpret_sentiment_list(self.data["sentiments"], 1.1, 0.4, -0.7)
             reaction_sentiment = self.interpret_sentiment_list(data["reaction sentiments"], 0.8, 0.1, -0.5)
             mentions = len(data["sentiments"]) + len(data["reaction sentiments"])
             if player not in self.players:
@@ -183,9 +235,102 @@ class Summary:
                 self.athletes[player]["sentiment"].append(reaction_sentiment)
                 self.athletes[player]["mentions"].append(mentions)
 
+        if self.interest_sum["sport"]:
+            for sport in self.interest_sum["sport"]:
+                if sport["countries"]:
+                    for country in sport["countries"]:
+                        if country["athletes"]:
+                            for athlete in set(country["athletes"]):
+                                if self.athletes:
+                                    temp = process.extractOne(athlete.lower(), self.athletes.keys())
+                                    if temp[1] > 85:
+                                        mentions = country["athletes"].count(temp[0])
+                                        sentiment = self.interpret_sentiment_list(["positive"]*mentions, 0.6, 0, 0)
+                                        self.athletes[temp[0].lower()]["sentiment"].append(sentiment)
+                                        self.athletes[temp[0].lower()]["mentions"].append(mentions)
+                                    else:
+                                        mentions = country["athletes"].count(athlete)
+                                        sentiment = self.interpret_sentiment_list(["positive"]*mentions, 0.6, 0, 0)
+                                        self.athletes[athlete.lower()] = {"sentiment": [sentiment], "mentions": [mentions]}
+                                        
+                                elif athlete.lower() not in self.athletes:
+                                    mentions = country["athletes"].count(athlete)
+                                    sentiment = self.interpret_sentiment_list(["positive"]*mentions, 0.6, 0, 0)
+                                    self.athletes[athlete] = {"sentiment": [sentiment], "mentions": [mentions]}
 
-        print(self.expression_sum, self.interaction_sum, self.interest_sum)
-        print(self.sports, self.clubs, self.athletes)
+        for genre, data in self.expression_sum["genres"].items():
+            sentiment = self.interpret_sentiment_list(data["sentiments"], 1.1, 0.4, -0.5)
+            mentions = len(data["sentiments"]) + data["artist tweets"]
+            self.genres[genre] = {"sentiment": [sentiment], "mentions": [mentions]}
+
+        for genre, data in self.interaction_sum["genres"].items():
+            sentiment = self.interpret_sentiment_list(self.data["sentiments"], 1.1, 0.4, -0.5)
+            reaction_sentiment = self.interpret_sentiment_list(data["reaction sentiments"], 0.8, 0.1, -0.5)
+            mentions = len(data["sentiments"]) + data["artist tweets"] + len(data["reaction sentiments"])
+            temp = process.extractOne(genre, self.genres.keys()) or [0,0]
+            if genre not in self.genres and temp[1] < 85:
+                self.genres[genre.lower()] = {"sentiment": [sentiment], "mentions": [mentions]}
+            else:
+                self.genres[temp[0]]["sentiment"].append(sentiment)
+                self.genres[temp[0]]["sentiment"].append(reaction_sentiment)
+                self.genres[temp[0]]["mentions"].append(mentions)
+
+        if self.interest_sum["music"]:
+            for genre in self.interest_sum["music"]:
+                sentiment = self.interpret_sentiment_list(["positive"]*genre["counter"], 0.6, 0, 0)
+                if genre["genre"].lower() not in self.genres:
+                    self.genres[genre["genre"].lower()] = {"sentiment": [sentiment], "mentions": [genre["counter"]]}
+                else:
+                    self.genres[genre["genre"].lower()]["sentiment"].append(sentiment)
+                    self.genres[genre["genre"].lower()]["mentions"].append(genre["counter"])
+
+
+
+        for artist, data in self.expression_sum["artists"].items():
+            sentiment = self.interpret_sentiment_list(data["sentiments"], 1.1, 0.4, -0.7)
+            mentions = len(data["sentiments"])
+            self.artists[artist] = {"sentiment": [sentiment], "mentions": [mentions]}
+
+        for artist, data in self.interaction_sum["players"].items():
+            sentiment = self.interpret_sentiment_list(self.data["sentiments"], 1.1, 0.4, -0.7)
+            reaction_sentiment = self.interpret_sentiment_list(data["reaction sentiments"], 0.8, 0.1, -0.5)
+            mentions = len(data["sentiments"]) + len(data["reaction sentiments"])
+            if artist not in self.artists:
+                self.artists[artist] = {"sentiment": [sentiment], "mentions": [mentions]}
+            else:
+                self.artists[artist]["sentiment"].append(sentiment)
+                self.artists[artist]["sentiment"].append(reaction_sentiment)
+                self.artists[artist]["mentions"].append(mentions)
+
+        if self.interest_sum["music"]:
+            for genre in self.interest_sum["music"]:
+                if genre["artists"]:
+                    for artist in set(genre["artists"]):
+                        if self.artists:
+                            temp = process.extractOne(artist.lower(), self.artists.keys())
+                            if temp[1] > 85:
+                                mentions = genre["artists"].count(temp[0])
+                                sentiment = self.interpret_sentiment_list(["positive"]*mentions, 0.6, 0, 0)
+                                self.artists[temp[0].lower()]["sentiment"].append(sentiment)
+                                self.artists[temp[0].lower()]["mentions"].append(mentions)
+                            else:
+                                mentions = genre["artists"].count(artist)
+                                sentiment = self.interpret_sentiment_list(["positive"]*mentions, 0.6, 0, 0)
+                                self.artists[artist.lower()] = {"sentiment": [sentiment], "mentions": [mentions]}
+                                
+                        elif artist.lower() not in self.artists:
+                            mentions = genre["artists"].count(artist)
+                            sentiment = self.interpret_sentiment_list(["positive"]*mentions, 0.6, 0, 0)
+                            self.artists[artist] = {"sentiment": [sentiment], "mentions": [mentions]}
+
+                   
+        
+
+
+
+        
+        with open("test.json", 'w', encoding="utf-8") as file:
+            json.dump([self.sports, self.clubs, self.athletes, self.genres, self.artists], file, indent=4)
 
         
             
@@ -352,7 +497,7 @@ class Profile:
                         expression_summary["sports"][sport["sport"].lower()]["sentiments"].append(sport["sentiment"].lower())
 
             if type == "music":
-                temp = set()
+                temp = []
                 genres = tweet.content["music"].get("genres", [])
                 artists = tweet.content["music"].get("artists", [])
 
@@ -363,14 +508,13 @@ class Profile:
                         expression_summary["artists"][artist["artist"].lower()]["sentiments"].append(artist["sentiment"].lower())
                         expression_summary["artists"][artist["artist"].lower()]["country"] = artist["country"].lower()
                         expression_summary["artists"][artist["artist"].lower()]["genres"].append(artist["genre"].lower())
-                        temp.add(artist["genre"])
+                        temp.append(artist["genre"].lower())
                         
                 if genres:
                     for genre in genres:
                         if genre["genre"].lower() not in expression_summary["genres"]:
                             expression_summary["genres"][genre["genre"].lower()] = {"sentiments": [], "artist tweets": 0}
-                        if genre["genre"].lower() not in temp:
-                            expression_summary["genres"][genre["genre"].lower()]["artist tweets"] += 1
+                        expression_summary["genres"][genre["genre"].lower()]["artist tweets"] += temp.count(genre["genre"].lower())
                         expression_summary["genres"][genre["genre"].lower()]["sentiments"].append(genre["sentiment"].lower())
                         
         return expression_summary
@@ -1119,7 +1263,7 @@ class SocialBubble:
 
 
 
-SB = SocialBubble("pushkicknadusu", "profile_centered", depth=1)
+SB = SocialBubble("tofaaakt", "profile_centered", depth=0)
 
 SB.create_graph()
 
