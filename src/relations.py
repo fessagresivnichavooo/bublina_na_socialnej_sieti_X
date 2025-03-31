@@ -7,6 +7,12 @@ import json
 from fuzzywuzzy import process, fuzz
 import math
 from collections import Counter
+import numpy as np
+from flask import Flask, render_template_string
+from datetime import datetime, time
+from dateutil.relativedelta import relativedelta
+import plotly.graph_objects as go
+
 
 ### follower/followed
 
@@ -53,6 +59,7 @@ ALL_TWEETS = {}
 OUTSIDE_BUBBLE_PROFILES_ANALYSED = {}
 THRESHOLD = 2000
 OTHER_TOPICS = ["Finance", "Entertainment", "Technology", "Education"]
+MONTH_MAP = {"Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5, "Jun": 6, "Jul": 7, "Aug": 8, "Sep": 9, "Oct": 10, "Nov": 11, "Dec": 12}
 
 
 class Node:
@@ -96,22 +103,39 @@ class Edge:
         return f"{self.node1.profile.username}; {self.node2.profile.username} | {self.weight}"
 
 
+
+
+        
 class Summary:
-    def __init__(self, username, expression, interaction, interest, time_interval=None):
+    def __init__(self, username, expression, interaction, interest, hashtags, mentions, location, avg_activity, daily_activity, interval):
         self.username = username
         self.expression_sum = expression
         self.interaction_sum = interaction
         self.interest_sum = interest
-        print(self.username, self.expression_sum, self.interaction_sum, self.interest_sum)
         self.overall = self.overall_sum()
+        self.top_hashtags = sorted(hashtags.keys(), key=lambda k: hashtags[k], reverse=True)[:5]
+        self.top_mentions = sorted(mentions.keys(), key=lambda k: mentions[k], reverse=True)[:5]
+        self.location = location
+        self.avg_activity = avg_activity
+        self.daily_activity = {}
+        self.interval = interval
+        self.filename = "graphs.html"
+        for hour, tweets in daily_activity.items():
+            self.daily_activity[hour] = len(tweets)
+        self.languages = {}
+        for lg in expression["languages"] + interaction["languages"]:
+            if lg not in self.languages:
+                self.languages[lg] = 0
+            self.languages[lg] += 1
 
+        
 ##    def interpret_sentiment_list(self, sentiments, pos, neu, neg):
 ##        mapping = {'positive': pos, 'neutral': neu, 'negative': neg}
 ##        scores = [mapping[s] for s in sentiments]
 ##        raw_score = sum(scores) / len(scores)
 ##        confidence = min(1.0, math.log2(len(scores) + 1) / 3)
 ##        return raw_score * confidence
-        import math
+        
 
     def interpret_sentiment_list(self, sentiments, pos, neu, neg):
         mapping = {'positive': pos, 'neutral': neu, 'negative': neg}
@@ -127,6 +151,23 @@ class Summary:
 
         return raw_score * confidence
 
+    def show(self):
+        self.generate_html()
+
+        
+    def __str__(self):
+        return f'''
+                {self.username},
+
+                HASHTAGS: {self.top_hashtags}
+                MENTIONS: {self.top_mentions}
+                LOCATION: {self.location}
+                AVG ACTIVITY: {self.avg_activity}
+                DAILY ACTIVITY: {self.daily_activity}
+
+                SUM: {self.overall}
+                LANGUAGES: {self.languages}
+            '''
 
     def overall_sum(self):
         ### SPORT
@@ -140,7 +181,7 @@ class Summary:
         for sport, data in self.expression_sum["sports"].items():
             sentiment = self.interpret_sentiment_list(data["sentiments"], 1.1, 0.4, -0.5)
             mentions = len(data["sentiments"]) + data["c/p tweets"]
-            self.sports[sport] = {"sentiment": [sentiment], "mentions": [mentions]}
+            self.sports[sport] = {"sentiment": [sentiment], "mentions": {"expression": mentions, "interaction": 0, "interest": 0}}
 
         for sport, data in self.interaction_sum["sports"].items():
             sentiment = self.interpret_sentiment_list(self.data["sentiments"], 1.1, 0.4, -0.5)
@@ -148,26 +189,26 @@ class Summary:
             mentions = len(data["sentiments"]) + data["c/p tweets"] + len(data["reaction sentiments"])
             temp = process.extractOne(sport, self.sports.keys()) or [0,0]
             if sport not in self.sports and temp[1] < 85:
-                self.sports[sport.lower()] = {"sentiment": [sentiment], "mentions": [mentions]}
+                self.sports[sport.lower()] = {"sentiment": [sentiment], "mentions": {"expression": 0, "interaction": mentions, "interest": 0}}
             else:
                 self.sports[temp[0]]["sentiment"].append(sentiment)
                 self.sports[temp[0]]["sentiment"].append(reaction_sentiment)
-                self.sports[temp[0]]["mentions"].append(mentions)
+                self.sports[temp[0]]["mentions"]["interaction"] += mentions
 
         if self.interest_sum["sport"]:
             for sport in self.interest_sum["sport"]:
                 sentiment = self.interpret_sentiment_list(["positive"]*sport["counter"], 0.6, 0, 0)
                 if sport["sport"].lower() not in self.sports:
-                    self.sports[sport["sport"].lower()] = {"sentiment": [sentiment], "mentions": [sport["counter"]]}
+                    self.sports[sport["sport"].lower()] = {"sentiment": [sentiment], "mentions": {"expression": 0, "interaction": 0, "interest": sport["counter"]}}
                 else:
                     self.sports[sport["sport"].lower()]["sentiment"].append(sentiment)
-                    self.sports[sport["sport"].lower()]["mentions"].append(sport["counter"])
+                    self.sports[sport["sport"].lower()]["mentions"]["interest"] += sport["counter"]
                 
 
         for club, data in self.expression_sum["clubs"].items():
             sentiment = self.interpret_sentiment_list(data["sentiments"], 1.1, 0.4, -0.7)
             mentions = len(data["sentiments"])
-            self.clubs[club] = {"sentiment": [sentiment], "mentions": [mentions]}
+            self.clubs[club] = {"sentiment": [sentiment], "mentions": {"expression": mentions, "interaction": 0, "interest": 0}}
 
         for club, data in self.interaction_sum["clubs"].items():
             sentiment = self.interpret_sentiment_list(self.data["sentiments"], 1.1, 0.4, -0.7)
@@ -178,20 +219,20 @@ class Summary:
             sport = self.expression_sum.get("clubs", {}).get(temp[0], None)["sports"] or self.interaction_sum.get("clubs", {}).get(temp[0], None)["sports"] or self.interest_sum.get("clubs", {}).get(temp[0], None)["sports"]
             if sport is None:
                 print("NO SPORT")
-                self.clubs[club] = {"sentiment": [sentiment], "mentions": [mentions]}
+                self.clubs[club] = {"sentiment": [sentiment], "mentions": {"expression": 0, "interaction": mentions, "interest": 0}}
             else:
                 sport = Counter(sport).most_common(1)[0][0]
                 
             if club not in self.clubs and temp[1] < 85:
-                self.clubs[club] = {"sentiment": [sentiment], "mentions": [mentions]}
+                self.clubs[club] = {"sentiment": [sentiment], "mentions": {"expression": 0, "interaction": mentions, "interest": 0}}
                 
             elif self.clubs[temp[0]] and fuzz.ratio(sport, Counter(data["sports"]).most_common(1)[0][0]) > 87:
                 self.clubs[temp[0]]["sentiment"].append(sentiment)
                 self.clubs[temp[0]]["sentiment"].append(reaction_sentiment)
-                self.clubs[temp[0]]["mentions"].append(mentions)
+                self.clubs[temp[0]]["mentions"]["interaction"] += mentions
                 
             else:
-                self.clubs[club] = {"sentiment": [sentiment], "mentions": [mentions]}
+                self.clubs[club] = {"sentiment": [sentiment], "mentions": {"expression": 0, "interaction": mentions, "interest": 0}}
                 
 
         if self.interest_sum["sport"]:
@@ -207,33 +248,33 @@ class Summary:
                                         mentions = country["clubs"].count(club)
                                         sentiment = self.interpret_sentiment_list(["positive"]*mentions, 0.6, 0, 0)
                                         self.clubs[temp[0].lower()]["sentiment"].append(sentiment)
-                                        self.clubs[temp[0].lower()]["mentions"].append(mentions)
+                                        self.clubs[temp[0].lower()]["mentions"]["interest"] += mentions
                                     else:
                                         mentions = country["clubs"].count(club)
                                         sentiment = self.interpret_sentiment_list(["positive"]*mentions, 0.6, 0, 0)
-                                        self.clubs[club.lower()] = {"sentiment": [sentiment], "mentions": [mentions]}
+                                        self.clubs[club.lower()] = {"sentiment": [sentiment], "mentions": {"expression": 0, "interaction": 0, "interest": mentions}}
                                         
                                 elif club.lower() not in self.clubs:
                                     mentions = country["clubs"].count(club)
                                     sentiment = self.interpret_sentiment_list(["positive"]*mentions, 0.6, 0, 0)
-                                    self.clubs[club.lower()] = {"sentiment": [sentiment], "mentions": [mentions]}
+                                    self.clubs[club.lower()] = {"sentiment": [sentiment], "mentions": {"expression": 0, "interaction": 0, "interest": mentions}}
 
             
         for player, data in self.expression_sum["players"].items():
             sentiment = self.interpret_sentiment_list(data["sentiments"], 1.1, 0.4, -0.7)
             mentions = len(data["sentiments"])
-            self.athletes[player] = {"sentiment": [sentiment], "mentions": [mentions]}
+            self.athletes[player] = {"sentiment": [sentiment], "mentions": {"expression": mentions, "interaction": 0, "interest": 0}}
 
         for player, data in self.interaction_sum["players"].items():
             sentiment = self.interpret_sentiment_list(self.data["sentiments"], 1.1, 0.4, -0.7)
             reaction_sentiment = self.interpret_sentiment_list(data["reaction sentiments"], 0.8, 0.1, -0.5)
             mentions = len(data["sentiments"]) + len(data["reaction sentiments"])
             if player not in self.players:
-                self.athletes[player] = {"sentiment": [sentiment], "mentions": [mentions]}
+                self.athletes[player] = {"sentiment": [sentiment], "mentions": {"expression": 0, "interaction": mentions, "interest": 0}}
             else:
                 self.athletes[player]["sentiment"].append(sentiment)
                 self.athletes[player]["sentiment"].append(reaction_sentiment)
-                self.athletes[player]["mentions"].append(mentions)
+                self.athletes[player]["mentions"]["interaction"] += mentions
 
         if self.interest_sum["sport"]:
             for sport in self.interest_sum["sport"]:
@@ -247,21 +288,21 @@ class Summary:
                                         mentions = country["athletes"].count(temp[0])
                                         sentiment = self.interpret_sentiment_list(["positive"]*mentions, 0.6, 0, 0)
                                         self.athletes[temp[0].lower()]["sentiment"].append(sentiment)
-                                        self.athletes[temp[0].lower()]["mentions"].append(mentions)
+                                        self.athletes[temp[0].lower()]["mentions"]["interest"] += mentions
                                     else:
                                         mentions = country["athletes"].count(athlete)
                                         sentiment = self.interpret_sentiment_list(["positive"]*mentions, 0.6, 0, 0)
-                                        self.athletes[athlete.lower()] = {"sentiment": [sentiment], "mentions": [mentions]}
+                                        self.athletes[athlete.lower()] = {"sentiment": [sentiment], "mentions": {"expression": 0, "interaction": 0, "interest": mentions}}
                                         
                                 elif athlete.lower() not in self.athletes:
                                     mentions = country["athletes"].count(athlete)
                                     sentiment = self.interpret_sentiment_list(["positive"]*mentions, 0.6, 0, 0)
-                                    self.athletes[athlete] = {"sentiment": [sentiment], "mentions": [mentions]}
+                                    self.athletes[athlete] = {"sentiment": [sentiment], "mentions": {"expression": 0, "interaction": 0, "interest": mentions}}
 
         for genre, data in self.expression_sum["genres"].items():
             sentiment = self.interpret_sentiment_list(data["sentiments"], 1.1, 0.4, -0.5)
             mentions = len(data["sentiments"]) + data["artist tweets"]
-            self.genres[genre] = {"sentiment": [sentiment], "mentions": [mentions]}
+            self.genres[genre] = {"sentiment": [sentiment], "mentions": {"expression": mentions, "interaction": 0, "interest": 0}}
 
         for genre, data in self.interaction_sum["genres"].items():
             sentiment = self.interpret_sentiment_list(self.data["sentiments"], 1.1, 0.4, -0.5)
@@ -269,38 +310,38 @@ class Summary:
             mentions = len(data["sentiments"]) + data["artist tweets"] + len(data["reaction sentiments"])
             temp = process.extractOne(genre, self.genres.keys()) or [0,0]
             if genre not in self.genres and temp[1] < 85:
-                self.genres[genre.lower()] = {"sentiment": [sentiment], "mentions": [mentions]}
+                self.genres[genre.lower()] = {"sentiment": [sentiment], "mentions": {"expression": 0, "interaction": mentions, "interest": 0}}
             else:
                 self.genres[temp[0]]["sentiment"].append(sentiment)
                 self.genres[temp[0]]["sentiment"].append(reaction_sentiment)
-                self.genres[temp[0]]["mentions"].append(mentions)
+                self.genres[temp[0]]["mentions"]["interaction"] += mentions
 
         if self.interest_sum["music"]:
             for genre in self.interest_sum["music"]:
                 sentiment = self.interpret_sentiment_list(["positive"]*genre["counter"], 0.6, 0, 0)
                 if genre["genre"].lower() not in self.genres:
-                    self.genres[genre["genre"].lower()] = {"sentiment": [sentiment], "mentions": [genre["counter"]]}
+                    self.genres[genre["genre"].lower()] = {"sentiment": [sentiment], "mentions": {"expression": 0, "interaction": 0, "interest": genre["counter"]}}
                 else:
                     self.genres[genre["genre"].lower()]["sentiment"].append(sentiment)
-                    self.genres[genre["genre"].lower()]["mentions"].append(genre["counter"])
+                    self.genres[genre["genre"].lower()]["mentions"]["interest"] += genre["counter"]
 
 
 
         for artist, data in self.expression_sum["artists"].items():
             sentiment = self.interpret_sentiment_list(data["sentiments"], 1.1, 0.4, -0.7)
             mentions = len(data["sentiments"])
-            self.artists[artist] = {"sentiment": [sentiment], "mentions": [mentions]}
+            self.artists[artist] = {"sentiment": [sentiment], "mentions": {"expression": mentions, "interaction": 0, "interest": 0}}
 
         for artist, data in self.interaction_sum["players"].items():
             sentiment = self.interpret_sentiment_list(self.data["sentiments"], 1.1, 0.4, -0.7)
             reaction_sentiment = self.interpret_sentiment_list(data["reaction sentiments"], 0.8, 0.1, -0.5)
             mentions = len(data["sentiments"]) + len(data["reaction sentiments"])
             if artist not in self.artists:
-                self.artists[artist] = {"sentiment": [sentiment], "mentions": [mentions]}
+                self.artists[artist] = {"sentiment": [sentiment], "mentions": {"expression": 0, "interaction": mentions, "interest": 0}}
             else:
                 self.artists[artist]["sentiment"].append(sentiment)
                 self.artists[artist]["sentiment"].append(reaction_sentiment)
-                self.artists[artist]["mentions"].append(mentions)
+                self.artists[artist]["mentions"]["interaction"] += mentions
 
         if self.interest_sum["music"]:
             for genre in self.interest_sum["music"]:
@@ -312,26 +353,146 @@ class Summary:
                                 mentions = genre["artists"].count(temp[0])
                                 sentiment = self.interpret_sentiment_list(["positive"]*mentions, 0.6, 0, 0)
                                 self.artists[temp[0].lower()]["sentiment"].append(sentiment)
-                                self.artists[temp[0].lower()]["mentions"].append(mentions)
+                                self.artists[temp[0].lower()]["mentions"]["interest"] += mentions
                             else:
                                 mentions = genre["artists"].count(artist)
                                 sentiment = self.interpret_sentiment_list(["positive"]*mentions, 0.6, 0, 0)
-                                self.artists[artist.lower()] = {"sentiment": [sentiment], "mentions": [mentions]}
+                                self.artists[artist.lower()] = {"sentiment": [sentiment], "mentions": {"expression": 0, "interaction": 0, "interest": mentions}}
                                 
                         elif artist.lower() not in self.artists:
                             mentions = genre["artists"].count(artist)
                             sentiment = self.interpret_sentiment_list(["positive"]*mentions, 0.6, 0, 0)
-                            self.artists[artist] = {"sentiment": [sentiment], "mentions": [mentions]}
-
-                   
-        
-
-
+                            self.artists[artist.lower()] = {"sentiment": [sentiment], "mentions": {"expression": 0, "interaction": 0, "interest": mentions}}
 
         
         with open("test.json", 'w', encoding="utf-8") as file:
             json.dump([self.sports, self.clubs, self.athletes, self.genres, self.artists], file, indent=4)
 
+        return [self.sports, self.clubs, self.athletes, self.genres, self.artists]
+    """  DOKONCIT TUTO FUNKCIU  """
+
+
+    def create_pie_chart(self, labels, values, title):
+        pie_chart = go.Figure(go.Pie(labels=labels, values=values, title=title))
+        return pie_chart.to_html(full_html=False)
+
+    def create_radar_chart(self, labels, values, title):
+        radar_chart = go.Figure()
+        radar_chart.add_trace(go.Scatterpolar(r=values + [values[0]], theta=labels + [labels[0]], fill='toself', name='Výkon'))
+        radar_chart.update_layout(title=title, polar=dict(radialaxis=dict(visible=True)))
+        return radar_chart.to_html(full_html=False)
+
+    def create_bar_chart(self, labels, values, title):
+        bar_chart = go.Figure(go.Bar(x=labels, y=values, marker_color=['red' if v < -2 else 'yellow' if -2 <= v <= 2 else 'green' for v in values]))
+        bar_chart.update_layout(title=title, yaxis=dict(range=[-10, 10]))
+        return bar_chart.to_html(full_html=False)
+
+    def generate_html(self):
+        # === 1. Koláčový graf (jazyky) ===
+        print(self.expression_sum, '\n')
+        print(self.interaction_sum, '\n')
+        print(self.interest_sum, '\n')
+        print(self.overall, '\n')
+
+        # === 2. Športy ===
+        sports = ['Futbal', 'Basketbal', 'Tenis', 'Hokej', 'Plávanie']
+        sport_values = [8, 6, 9, 5, 7]
+        radar_html = self.create_radar_chart(sports, sport_values, "Interest")
+        
+        bar_values = [3, -7, 6, -4, 10]
+        bar_html = self.create_bar_chart(sports, bar_values, "Sentiment")
+        
+        # === 3. Športové kluby ===
+        clubs = ['FC Barcelona', 'Real Madrid', 'Lakers', 'Warriors', 'Juventus']
+        club_values = [7, 5, 8, 6, 9]
+        club_radar_html = self.create_radar_chart(clubs, club_values, "Interest")
+        
+        club_sentiment_values = [-1, 8, -3, 1, 4]
+        club_sentiment_html = self.create_bar_chart(clubs, club_sentiment_values, "Sentiment")
+        
+        # === 4. Športovci ===
+        athletes = ['Messi', 'Ronaldo', 'LeBron', 'Federer', 'Nadal']
+        athlete_values = [9, 7, 8, 6, 5]
+        athlete_radar_html = self.create_radar_chart(athletes, athlete_values, "Interest")
+        
+        athlete_sentiment_values = [4, -6, 0, -3, 7]
+        athlete_sentiment_html = self.create_bar_chart(athletes, athlete_sentiment_values, "Sentiment")
+        
+        # HTML content
+        topic_tweet_count = {"politics": len(self.expression_sum["politics"]["type"])+len(self.interaction_sum["politics"]["type reaction"])+len(self.interaction_sum["politics"]["type"]), "sport": 0, "music": 0, "other": 0}
+        
+        treba dokoncit overall do finalneho formatu
+
+        
+        html_content = f'''
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Vizualizácia grafov</title>
+            <style>
+                body {{ font-family: Arial, sans-serif; text-align: center; }}
+                .container {{ display: flex; flex-direction: column; align-items: center; gap: 20px; }}
+                .row {{ display: flex; justify-content: center; gap: 20px; width: 100%; }}
+                .chart {{ width: 45%; max-width: 600px; }}
+            </style>
+        </head>
+        <body>
+            <h1>{self.username} | {self.interval[0]} -> {self.interval[1]}</h1>
+            
+            <div class="container">
+                <h2>Basic info</h2>
+                <div class="row">
+                    <div class="chart">{self.create_pie_chart(list(self.languages.keys()), list(self.languages.values()), "Jazyky")}</div>
+                    <div class="chart">{self.create_pie_chart([f'{i}:00-{i+1}:00' for i in self.daily_activity.keys()], list(self.daily_activity.values()), "Denna aktivita")}</div>
+                </div>
+                <div class="row">
+                    <p>Top hashtagy: {'  '.join([f'#{i}' for i in self.top_hashtags])}</p>
+                    <p>Top zmienky: {'  '.join([f'@{i}' for i in self.top_mentions])}</p>
+                </div>
+                <div class="row">
+                    <div class="chart">{self.create_pie_chart(list(self.expression_sum.keys()), list(self.expression_sum.values()), "Expression topics")}</div>
+                </div>
+                <h2>Sport info</h2>
+                <h4>Sports</h4>
+                <div class="row">
+                    <div class="chart">{radar_html}</div>
+                    <div class="chart">{bar_html}</div>
+                </div>
+                <h4>Clubs</h4>
+                <div class="row">
+                    <div class="chart">{club_radar_html}</div>
+                    <div class="chart">{club_sentiment_html}</div>
+                </div>
+                <h4>Athletes</h4>
+                <div class="row">
+                    <div class="chart">{athlete_radar_html}</div>
+                    <div class="chart">{athlete_sentiment_html}</div>
+                </div>
+            </div>
+        </body>
+        </html>
+        '''
+        
+        with open(self.filename, "w", encoding="utf-8") as file:
+            file.write(html_content)
+        print(f"HTML file '{self.filename}' has been created.")
+        
+##        self.sports["sentiment"] = sum(self.sports["sentiment"])
+##        self.clubs["sentiment"] = sum(self.clubs["sentiment"])
+##        self.athletes["sentiment"] = sum(self.athletes["sentiment"])
+##        self.genres["sentiment"] = sum(self.genres["sentiment"])
+##        self.artists["sentiment"] = sum(self.artists["sentiment"])
+##        self.sports["mentions"] = sum(self.sports["mentions"])
+##        self.clubs["mentions"] = sum(self.clubs["mentions"])
+##        self.athletes["mentions"] = sum(self.athletes["mentions"])
+##        self.genres["mentions"] = sum(self.genres["mentions"])
+##        self.artists["mentions"] = sum(self.artists["mentions"])
+##
+##        return {"sport":self.sports,"club":self.clubs,"athlete":self.athletes,"genre":self.genres,"artist":self.artists}
+        
+        
         
             
         
@@ -353,9 +514,77 @@ politika
     krajiny zaujmu
 
 
+
+profile
+OVERALL
+    hashtagy
+    mentions
+    lokacia
+    jazyk  kolac
+    aktivita                       v profile
+    cas dna -> miera aktivity      v profile
+    topic interaction   kolac
+    topic expression    kolac
+    topic interest      kolac
+    topic overall       kolac
+    
+    
 SPORT:
-    mentions: pocet tweetov + counter following
-    sentiment: iba sport ako taky
+    mentions: pocet tweetov + counter following   ->  interest
+    sentiment: iba sport ako taky                 ->  sentiment
+    top krajiny: kolac graph                      ->  top krajiny
+
+KLUBY:
+    mentions:
+    sentiment:
+
+ATLETI:
+    mentions:    interest
+    sentiment:   sentiment
+
+ZANRE:
+    mentions: pocet tweetov + counter following   ->  interest
+    sentiment: iba zaner ako taky                 ->  sentiment
+    top krajiny: kolac graph                      ->  top krajiny
+
+INTERPRETI:
+    mentions:    interest
+    sentiment:   sentiment
+
+POLITIKA:
+
+
+pre kazdy profil
+zoznam zaujmov v kazdom poli, miera zaujmu v danych poliach, krajiny zaujmov v danych poliach, lokacia, zamestnanie, hashtagy
+casove useky: vyvoj v case, aktivita za interval
+
+
+
+BUBBLE
+    Zvyraznit ludi co splnaju podmienku nejaku   (mozno console app, ktora vybuduje bublinu a umozni interagovanie s nou)
+    napr. miera liberalnosti alebo take volaco, fanuskovia slovanu ...
+
+
+
+    INTEREST
+        najfollowovanejsi profil clenmi bubliny (list)
+        najsledovanejsia topic (list)
+        
+    
+
+    INTERACTION
+        najreagovanejsie topics | sentiment reakcii
+
+    EXPRESSION
+
+    OVERALL
+        najoblubenejsi/najneznasanejsi klub
+        -//- sport
+        -//- atlet
+        -//- zaner
+        -//- hudobnik
+        
+        
     
 '''
     
@@ -372,12 +601,18 @@ class Profile:
         self.comments = []
         self.quotes = []
         self.all_mentions = {}
+        self.avg_activity = None
+        self.daily_activity = {i: [] for i in range(24)}
+        self.hashtags = {}
+        self.summaries = {}
         
-        for status_id, username, text, type, source_tweet, source_username, hashtags, mentions in SCRAPPER.get_tweets(username):
+
+        
+        for status_id, username, text, type, source_tweet, source_username, hashtags, mentions, created in SCRAPPER.get_tweets(username):
             #print(type, source_tweet)
 ##            if status_id == "1877127950253822340":
 ##                print(self.username, status_id, username, text, type, source_tweet, source_username, hashtags, mentions, "\na\na\na\na\na\na\na\na\na\na\na\n")
-            tweet = Tweet(status_id, username, text, type, source_tweet, source_username, hashtags, mentions)
+            tweet = Tweet(status_id, username, text, type, created, source_tweet, source_username, hashtags, mentions)
             ALL_TWEETS[status_id] = tweet
             if tweet.get_type() == "repost":
                 self.reposts.append(tweet)
@@ -389,11 +624,20 @@ class Profile:
                 self.quotes.append(tweet)
             else:
                 raise ValueError("Incorrect type value")
+            
             for mention in mentions:
                 if mention not in self.all_mentions:
-                    self.all_mentions[mention] = 0
-                self.all_mentions[mention] += 1
-            
+                    self.all_mentions[mention] = [0, []]
+                self.all_mentions[mention][0] += 1
+                
+            for hashtag in hashtags:
+                if hashtag not in self.hashtags:
+                    self.hashtags[hashtag] = [0, []]
+                self.hashtags[hashtag][0] += 1
+
+            self.daily_activity[tweet.time.hour].append(tweet)
+        
+
 
     def following_outside_bubble_big_profiles(self, following_outside_bubble_list, follower_count):
         return_val = []
@@ -410,9 +654,7 @@ class Profile:
             f"Tweets: {len(self.tweets)}, Reposts: {len(self.reposts)}, Comments: {len(self.comments)}, Quotes: {len(self.quotes)}\n"
         )
 
-    def summary(self, time_interval=None, AI=False):
-        ### vyskusat normalne
-        ### vyskusat s AI
+    def summary(self, step=None):
 
         ### rozdelit si sumar a analyzu na jednoducho vydedukovatelne a tazko
         ### napr. jednoducho = sleduje vela americkych novinarov -> zaujima sa a o americku politiku
@@ -420,7 +662,67 @@ class Profile:
 ##        print(self.expression_sum())
 ##        print(self.interaction_sum())
 ##        print(self.interest_sum("profile_analysis.json"))
-        Summary(self.username, self.expression_sum(), self.interaction_sum(), self.interest_sum("profile_analysis.json"))
+        all_entries = self.tweets+self.reposts+self.comments+self.quotes
+        all_entries.sort(key=lambda x: x.created, reverse=True)
+        if all_entries:
+            self.avg_activity = f"{len(all_entries)/(((datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + relativedelta(months=1)).replace(day=1) - all_entries[-1].created.replace(day=1)).days / 30)} per month"
+        else:
+            self.avg_activity = "No activity"
+        #print("entries", all_entries)
+
+        if step and all_entries:
+            
+            start_date = all_entries[-1].created.replace(day=1)
+            current_date = (datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + relativedelta(months=1)).replace(day=1)
+            while current_date >= start_date:
+                previous_date = current_date - relativedelta(months=step)
+                
+                if previous_date < start_date:
+                    previous_date = start_date
+
+                mentions = {}
+                hashtags = {}
+                daily = {i: [] for i in range(24)}
+                for name, mention in self.all_mentions.items():
+                    for date in mention[1]:
+                        if date >= previous_date and date < current_date:
+                            if name not in mentions:
+                                mentions[name] = 0
+                            mentions[name] += 1
+                            
+                for name, hashtag in self.hashtags.items():
+                    for date in hashtag[1]:
+                        if date >= previous_date and date < current_date:
+                            if name not in hashtags:
+                                hashtags[name] = 0
+                            hashtags[name] += 1
+
+                #print(self.daily_activity)
+                number_of_tweets_in_step = 0
+                for hour, tweets in self.daily_activity.items():
+                    for tweet in tweets:
+                        if tweet.created >= previous_date and tweet.created < current_date:
+                            daily[hour].append(tweet)
+                            number_of_tweets_in_step += 1
+                avg_activity = f"{number_of_tweets_in_step/step} per month"
+                
+                #print(f"{previous_date.strftime('%Y-%m-%d')} -> {current_date.strftime('%Y-%m-%d')}")
+                self.summaries[f"{previous_date.strftime('%Y-%m-%d')} -> {current_date.strftime('%Y-%m-%d')}"] = Summary(self.username, self.expression_sum((previous_date, current_date)), self.interaction_sum((previous_date, current_date)), self.interest_sum("profile_analysis.json"), hashtags, mentions, self.location, avg_activity, daily, (previous_date, current_date))
+                
+                if previous_date == start_date:
+                    break 
+                current_date = previous_date
+                
+        else:
+            #print(self.all_mentions)
+            interval = (datetime.min, datetime.now())
+            self.summaries[f"{interval[0].strftime('%Y-%m-%d')} -> {interval[1].strftime('%Y-%m-%d')}"] =  Summary(self.username, self.expression_sum(), self.interaction_sum(), self.interest_sum("profile_analysis.json"), self.hashtags, self.all_mentions, self.location, self.avg_activity, self.daily_activity, interval)
+        
+
+        for i in self.summaries.values():
+            print(i)
+            i.show()
+        #print(self.summaries)
 ##        print('\n\n\n\n')
         
 
@@ -440,6 +742,10 @@ class Profile:
         }
         
         for tweet in self.tweets+self.reposts:
+            if time_interval:
+                if time_interval[0] > tweet.created or time_interval[1] <= tweet.created:
+                    continue
+                
             try:
                 ############## OPRAVIT TENTO ERROR ######################
                 type = tweet.content["type"]
@@ -558,6 +864,10 @@ class Profile:
             "artists": {}   # artist:{genre, country, [sentiments]}
         }
         for reaction in self.quotes+self.comments:
+            if time_interval:
+                if time_interval[0] > reaction.created or time_interval[1] <= reaction.created:
+                    continue
+                
             if self.username != reaction.username:
                 continue
             try:
@@ -593,8 +903,9 @@ class Profile:
                 source_tweet_content = source_tweet_content["reaction"]
 
                 
-            if type == "politics" or source_tweet_content["type"] == "sport":
+            if type == "politics" or source_tweet_content["type"] == "politics":
                 interaction_summary["politics"]["type"].append(reaction.content["reaction"]["politics"])
+                interaction_summary dorobit
                 #################### DOROBIT TUTO KED SA SFINALIZUJE FORMAT POLITIKY ####################
                 '''expression_summary["politics"]["type reaction"].append(source_tweet_content["type"])'''
             else:
@@ -778,7 +1089,7 @@ Edges
 
 ### repost retweet hashtagy 
 class Tweet:
-    def __init__(self, status_id, username, text, type, source_tweet=None, source_username=None, hashtags=[], mentions=[]):
+    def __init__(self, status_id, username, text, type, created, source_tweet=None, source_username=None, hashtags=[], mentions=[]):
         self.status_id = status_id
         self.username = username
         self.text = text
@@ -787,17 +1098,17 @@ class Tweet:
         self.source_username = source_username
         self.hashtags = hashtags
         self.mentions = mentions
-        self.date = None
         self.content = None
+        temp = created.split()
+        temp1 = temp[3].split(":")
+        self.created = datetime(int(temp[-1]), int(MONTH_MAP[temp[1]]), int(temp[2]))
+        self.time = time(int(temp1[0]), int(temp1[1]), int(temp1[2]))
 
     def analyse(self):     ###   analyza vynechava niektore,  mozno je to ze v threadoch
         ##########    riesenie => ak najde tweet bez contentu, retrospektivne ho analyzuje
         with open("tweet_analysis.json", 'r', encoding="utf-8") as file:
             cached_tweets = json.load(file)
-
-##        if "1877127950253822340" == self.status_id:
-##            print("\n\n\n ANO \n\n\n", self.status_id in cached_tweets, self.status_id in ALL_TWEETS, "\n\n\n")
-        
+  
         if self.status_id in cached_tweets:
             self.content = cached_tweets[self.status_id][-1]
             return
@@ -813,8 +1124,7 @@ class Tweet:
                 print(self.type, '\n', self.source_tweet, '\n', self.text, '\n', self.content, '\n')
                 cached_tweets[self.status_id] = [self.username, self.text, self.content]
                  
-        elif self.type == "comment":  ### problem je ziskavanie komentarov a threafdy
-##            print(self.status_id, self.text, self.source_tweet)# pozriet ci komenty maju spravne source id
+        elif self.type == "comment":
             if ALL_TWEETS.get(self.source_tweet, None):
                 self.content = TWEET_AI_ANALYSER.analyze_reaction(self.text, ALL_TWEETS[self.source_tweet].text)
                 print(self.type, '\n', self.source_tweet, '\n', self.text, '\n', self.content, '\n')
@@ -851,7 +1161,7 @@ class Tweet:
             SOURCE USER: {self.source_username}
             HASHTAGS: {self.hashtags}
             MENTIONS: {self.mentions}
-            DATE: {self.date}
+            DATE: {self.created}
             CONTENT: {self.content}
 
         """
@@ -991,7 +1301,7 @@ class SocialBubble:
                             node.edges.append(e)
                             self.nodes[mention].edges.append(e)
                         direction = e.direction(self.nodes[mention], node)
-                        e.weight["mentions"][direction] += quantity
+                        e.weight["mentions"][direction] += quantity[0]
                             
                     else:
                         self.mentioned_outside_bubble[mention] = username
@@ -1066,7 +1376,7 @@ class SocialBubble:
                                         n.edges.append(e)
                                         self.nodes[i].edges.append(e)
                                         self.edges.append(e)
-                                    e.weight["mentions"][e.direction(n, self.nodes[i])] += n.profile.all_mentions[i]
+                                    e.weight["mentions"][e.direction(n, self.nodes[i])] += n.profile.all_mentions[i][0]
 
                                 for i in self.mentioned_outside_bubble.get(tweet.source_username, []):
                                     temp = self.exist_edge(n, self.nodes[i])
@@ -1241,13 +1551,13 @@ class SocialBubble:
         with open(cache, "w", encoding="utf-8") as f:
             json.dump(cached_profiles, f, indent=4, ensure_ascii=False)
 
-
-    def profiles_summary(self, time_interval=None, steps=1):
-        sums = {}
+    #step => number of months in one summary
+    def profiles_summary(self, step=None):
         for username, node in self.nodes.items():
-            node.profile.summary()
+            node.profile.summary(step)
 
-
+    def bubble_summary(self):
+        return
 
             
 
@@ -1269,7 +1579,7 @@ SB.create_graph()
 
 SB.visualize_graph()
 
-opd = SB.get_outside_profiles_data(THRESHOLD)
+##opd = SB.get_outside_profiles_data(THRESHOLD)
 
 ##print(len(opd))
 
@@ -1286,7 +1596,7 @@ opd = SB.get_outside_profiles_data(THRESHOLD)
 ##
 ##print(filtered_dict)
 
-SB.profile_analysis(opd)
+##SB.profile_analysis(opd)
 
 SB.tweet_analysis()
 
@@ -1316,3 +1626,5 @@ mozne funkcie:
 
 #############   BUDE TREBA SKONTROLOVAT IMPLEMENTACIU CREATE_BUBBLE, CI
 #############   NIEKDE NIE SU VYNECHANE UDAJE ATD
+
+
