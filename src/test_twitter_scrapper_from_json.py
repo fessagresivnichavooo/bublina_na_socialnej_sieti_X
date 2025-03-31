@@ -59,7 +59,7 @@ class TwitterScrapper:
     def scrape_profile(self, username):
         return "NOT IMPLEMENTED", self.get_followers(username), self.get_following(username), "NOT IMPLEMENTED", "NOT IMPLEMENTED"
 
-    def get_tweets(self, username, time_interval=None):
+    def get_tweets(self, username):
         ### [text, type {repost, comment, tweet, quote}, ]
         tweets = []
         if username not in data:
@@ -69,6 +69,7 @@ class TwitterScrapper:
             source_username = None
             try:
                 text = tweet["content"]["itemContent"]["tweet_results"]["result"]["legacy"]["full_text"]
+                created = tweet["content"]["itemContent"]["tweet_results"]["result"]["legacy"]["created_at"]
             except Exception as e:
                 continue
             hashtags = self.get_hashtags_from_tweet(tweet)
@@ -94,18 +95,18 @@ class TwitterScrapper:
                 else:
                     type = "tweet"
                     
-                tweets.append((tweet["content"]["itemContent"]["tweet_results"]["result"]["legacy"]["id_str"], username, text, type, source_tweet, source_username, hashtags, mentions))
+                tweets.append((tweet["content"]["itemContent"]["tweet_results"]["result"]["legacy"]["id_str"], username, text, type, source_tweet, source_username, hashtags, mentions, created))
 
             except Exception as e:
                 print(e)
                 
-        for i in self.get_replies(username, time_interval):
+        for i in self.get_replies(username):
             if i not in tweets:
                 tweets.append(i)
         
         return tweets
     
-    def get_replies(self, username, time_interval=None):
+    def get_replies(self, username):
         replies = []
         if username not in data:
             return []
@@ -117,6 +118,7 @@ class TwitterScrapper:
                     for item in entry["content"]["items"]:
                         tweet_data = item["item"]["itemContent"]["tweet_results"]["result"]["legacy"]
                         text = tweet_data["full_text"]
+                        created = tweet_data["created_at"]
                         hashtags = [ht["text"] for ht in tweet_data["entities"].get("hashtags", [])]
                         mentions = [m["screen_name"] for m in tweet_data["entities"].get("user_mentions", [])]
                         source_tweet = None
@@ -139,12 +141,13 @@ class TwitterScrapper:
                         else:
                             type = "tweet"
 
-                        replies.append((tweet_data["id_str"], item["item"]["itemContent"]["tweet_results"]["result"]["core"]["user_results"]["result"]["legacy"]["screen_name"], text, type, source_tweet, source_username, hashtags, mentions))
+                        replies.append((tweet_data["id_str"], item["item"]["itemContent"]["tweet_results"]["result"]["core"]["user_results"]["result"]["legacy"]["screen_name"], text, type, source_tweet, source_username, hashtags, mentions, created))
 
                 else:
                     # Ak odpoveď nie je v zozname "items", spracujeme ju rovnako ako normálny tweet
                     tweet_data = entry["content"]["itemContent"]["tweet_results"]["result"]["legacy"]
                     text = tweet_data["full_text"]
+                    created = tweet_data["created_at"]
                     hashtags = [ht["text"] for ht in tweet_data["entities"].get("hashtags", [])]
                     mentions = [m["screen_name"] for m in tweet_data["entities"].get("user_mentions", [])]
                     source_tweet = None
@@ -167,7 +170,7 @@ class TwitterScrapper:
                     else:
                         type = "tweet"
 
-                    replies.append((tweet_data["id_str"], entry["content"]["itemContent"]["tweet_results"]["result"]["core"]["user_results"]["result"]["legacy"]["screen_name"], text, type, source_tweet, source_username, hashtags, mentions))
+                    replies.append((tweet_data["id_str"], entry["content"]["itemContent"]["tweet_results"]["result"]["core"]["user_results"]["result"]["legacy"]["screen_name"], text, type, source_tweet, source_username, hashtags, mentions, created))
 
             except Exception as e:
                 print(f"Error processing reply: {e}")
@@ -183,18 +186,3 @@ class TwitterScrapper:
     def get_mentions_from_tweet(self, tweet):
         return [i["screen_name"] for i in tweet["content"]["itemContent"]["tweet_results"]["result"]["legacy"]["entities"]["user_mentions"]]
     
-
-
-##ts = TwitterScrapper()
-##a = ts.get_tweets("statkar_miky")
-##for i in ts.get_replies("statkar_miky"):
-##    for j in a:
-##        if i == j:
-##            print(i)
-##            break
-##print("\n\n\n")
-##print(ts.get_replies("statkar_miky"))
-##print(ts.get_following("pushkicknadusu"))
-##print(ts.get_friends("pushkicknadusu"))
-
-
