@@ -41,18 +41,18 @@ class MusicFanpage(BaseModel):
 # === Politics Models ===
 class Politician(BaseModel):
     political_party: Optional[str] = Field(None, description="Political party the politician belongs to")
-    ideology: Optional[str] = Field(None, description="Political ideology (liberal, conservative, etc.)")
+    ideology: Optional[str] = Field(None, description="Political ideology (liberalism, nationalism, conservatism, socialism, communism, environmentalism, social democracy, progressivism, anarchism, centrism, libertarianism, fascism, authoritarianism, religious-based ideology)")
     country: str = Field(..., description="ISO 3166 code of country where the politician is active")
 
 
 class PoliticalPartyMovement(BaseModel):
-    ideology: str = Field(..., description="Political ideology (e.g., Conservative, Liberal, Socialist)")
+    ideology: str = Field(..., description="Political ideology (liberalism, nationalism, conservatism, socialism, communism, environmentalism, social democracy, progressivism, anarchism, centrism, libertarianism, fascism, authoritarianism, religious-based ideology)")
     country: str = Field(..., description="ISO 3166 code of country where the political party/movement is active")    
 
 
 class JournalistNews(BaseModel):
     country: str = Field(..., description="ISO 3166 code of country where the journalist/news is active")
-    ideology: Optional[str] = Field(None, description="Political ideology of the journalist/news")
+    ideology: Optional[str] = Field(None, description="Political ideology of the journalist/news (liberalism, nationalism, conservatism, socialism, communism, environmentalism, social democracy, progressivism, anarchism, centrism, libertarianism, fascism, authoritarianism, religious-based ideology)")
 
 # === Other Models ===
 
@@ -104,8 +104,8 @@ class TopicData(BaseModel):
 
 class CountryDetails(BaseModel):
     country: str = Field(..., description="Associated country")
-    clubs: List[str] = Field(..., description="List of mentioned clubs of this country")
-    athletes: List[str] = Field(..., description="List of mentioned athletes of this country")
+    clubs: Optional[List[str]] = Field(..., description="List of mentioned clubs of this country")
+    athletes: Optional[List[str]] = Field(..., description="List of mentioned athletes of this country")
 
 
 class SportEntry(BaseModel):
@@ -117,26 +117,26 @@ class SportEntry(BaseModel):
 class MusicEntry(BaseModel):
     genre: str = Field(..., description="Genre name")
     counter: int = Field(..., description="How many times this genre is mentioned or appears")
-    countries: List[str] = Field(..., description="List of countries mentioned in for this genre")
-    artists: List[str] = Field(..., description="Mentioned artists in this genre")
+    countries: Optional[List[str]] = Field(..., description="List of countries mentioned in for this genre")
+    artists: Optional[List[str]] = Field(..., description="Mentioned artists in this genre")
 
 class Ideology(BaseModel):
     ideology: str = Field(..., description="Name of ideology")
     counter: int = Field(..., description="Number of mentions")
 
 class Politics(BaseModel):
-    ideologies: List[Ideology] = Field(..., description="Mapping of ideology names to number of mentions")
-    countries: List[str] = Field(..., description="ISO 3166 code of mentioned countries")
+    ideologies: Optional[List[Ideology]] = Field(..., description="Mapping of ideology names to number of mentions (liberalism, nationalism, conservatism, socialism, communism, environmentalism, social democracy, progressivism, anarchism, centrism, libertarianism, fascism, authoritarianism, religious-based ideology)")
+    countries: Optional[List[str]] = Field(..., description="ISO 3166 code of mentioned countries")
 
 class OtherInterest(BaseModel):
     interest: str = Field(..., description="Name of topic/interest")
     counter: int = Field(..., description="Number of mentions")
 
 class Interests(BaseModel):
-    sport: List[SportEntry] = Field(..., description="Mapping of sport name to sport-related data")
-    music: List[MusicEntry] = Field(..., description="Mapping of music genre to genre-related data")
-    politics: Politics = Field(..., description="Political ideologies and mentioned countries")
-    other_interests: List[OtherInterest] = Field(..., description="Other interests and how many times they were mentioned, make it general and merge similar topics together")
+    sport: Optional[List[SportEntry]] = Field(..., description="Mapping of sport name to sport-related data")
+    music: Optional[List[MusicEntry]] = Field(..., description="Mapping of music genre to genre-related data")
+    politics: Optional[Politics] = Field(..., description="Political ideologies and mentioned countries")
+    other_interests: Optional[List[OtherInterest]] = Field(..., description="Other interests and how many times they were mentioned, make it general and merge similar topics together, use ONE word")
 
 
 
@@ -213,7 +213,7 @@ class GPT4o():
      
         
     class PoliticsModel(BaseModel):
-        ideology: str = Field(..., description="Choose ideology of author of the tweet: Liberalism, Conservatism, Socialism, Communism, Fascism, Nationalism, Anarchism, Environmentalism, Religious-Based Ideology, Centrism")
+        ideology: str = Field(..., description="Choose ideology of author of the tweet: liberalism, nationalism, conservatism, socialism, communism, environmentalism, social democracy, progressivism, anarchism, centrism, libertarianism, fascism, authoritarianism, religious-based ideology")
         #sentiment: str = Field(..., description="Describe relation of author to mentioned ideology: positive, neutral, negative, critical")
         
     class SportModel(BaseModel):
@@ -229,7 +229,7 @@ class GPT4o():
         type: str = Field(..., description="Type of analysis ('politics'/'sport'/'music'/'other')")
         language: str = Field(..., description="ISO 639 code of detected language")
         #professionality: float = Field(..., description="Professionality score (between 0 and 1)")
-        politics: str = Field(..., description="Choose ideology of author of the tweet: Liberalism, Conservatism, Socialism, Communism, Fascism, Nationalism, Anarchism, Environmentalism, Religious-Based Ideology, Centrism")  # Provide default values
+        politics: str = Field(..., description="Choose ideology of author of the tweet: liberalism, nationalism, conservatism, socialism, communism, environmentalism, social democracy, progressivism, anarchism, centrism, libertarianism, fascism, authoritarianism, religious-based ideology")  # Provide default values
         sport: Optional["SportModel"] = Field(..., description="Describe mentioned sports, players and clubs and analyse sentiment of each; notes: it should consider, that sentiment can change throughout the tweet (ex.: one club mentioned positively and other negatively; sport sentiment=positive, club sentiment=negative; etc), dislike for club doesnt mean dislike for sport") #, try also recognise famous sport chants and symbols
         music: Optional["MusicModel"] = Field(..., description="Describe mentioned music genres and musicians")
     ##    other_topics: Dict[str, str] = Field(default_factory=dict, description="Other topic sentiments")
@@ -280,7 +280,7 @@ class GPT4o():
         topic: str = Field(...,description="politics/music/sport/other")
         short_describtion: str = Field(...,description="Describe who it is")
         country: str = Field(...,description="Sphere of influence (example: if musician is born in russia but sing in france and in french, return 'france')")
-        political_orientation: str = Field(..., description="If topic is politics, choose from: liberal/libertarian/conservative/totalitarian/center")
+        political_orientation: str = Field(..., description="If topic is politics, choose from: liberalism, nationalism, conservatism, socialism, communism, environmentalism, social democracy, progressivism, anarchism, centrism, libertarianism, fascism, authoritarianism, religious-based ideology")
         music_genre: str = Field(..., description="If topic is music, return genre")
         sport: str = Field(..., description="If topic is sport, return: 'type, club, country'")
 
@@ -342,7 +342,7 @@ class GPT4o():
 
 
 class SerpAPI():
-    API_KEY = ""#""
+    API_KEY = ""
 
     def get_entity(self, name):
         params = {
@@ -375,15 +375,3 @@ class SerpAPI():
             formated_return["Type"] = kg.get("type", "N/A")
             formated_return["Entity"] = kg.get("entity_type", "N/A")
         return formated_return
-
-
-
-
-
-
-
-
-
-
-
-
