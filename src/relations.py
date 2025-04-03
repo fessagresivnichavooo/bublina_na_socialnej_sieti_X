@@ -177,6 +177,10 @@ class Summary:
         self.athletes = {}
         self.genres = {}
         self.artists = {}
+        self.others = {}
+        self.politics = {}
+        self.sport_countries = {}
+        self.music_countries = {}
 
         for sport, data in self.expression_sum["sports"].items():
             sentiment = self.interpret_sentiment_list(data["sentiments"], 1.1, 0.4, -0.5)
@@ -198,17 +202,25 @@ class Summary:
         if self.interest_sum["sport"]:
             for sport in self.interest_sum["sport"]:
                 sentiment = self.interpret_sentiment_list(["positive"]*sport["counter"], 0.6, 0, 0)
-                if sport["sport"].lower() not in self.sports:
+                temp = process.extractOne(sport["sport"].lower(), self.sports.keys()) or [0,0]
+                if sport["sport"].lower() not in self.sports and temp[1] < 85:
                     self.sports[sport["sport"].lower()] = {"sentiment": [sentiment], "mentions": {"expression": 0, "interaction": 0, "interest": sport["counter"]}}
                 else:
-                    self.sports[sport["sport"].lower()]["sentiment"].append(sentiment)
-                    self.sports[sport["sport"].lower()]["mentions"]["interest"] += sport["counter"]
+                    self.sports[temp[0]]["sentiment"].append(sentiment)
+                    self.sports[temp[0]]["mentions"]["interest"] += sport["counter"]
                 
 
         for club, data in self.expression_sum["clubs"].items():
             sentiment = self.interpret_sentiment_list(data["sentiments"], 1.1, 0.4, -0.7)
             mentions = len(data["sentiments"])
             self.clubs[club] = {"sentiment": [sentiment], "mentions": {"expression": mentions, "interaction": 0, "interest": 0}}
+            for sport in list(set(data["sports"])):
+                if sport.lower() not in self.sport_countries:
+                    self.sport_countries[sport.lower()] = {}
+                if data["country"].lower() not in self.sport_countries[sport.lower()]:
+                    self.sport_countries[sport.lower()][data["country"].lower()] = 0
+                self.sport_countries[sport.lower()][data["country"].lower()] += 1
+                
 
         for club, data in self.interaction_sum["clubs"].items():
             sentiment = self.interpret_sentiment_list(self.data["sentiments"], 1.1, 0.4, -0.7)
@@ -233,12 +245,26 @@ class Summary:
                 
             else:
                 self.clubs[club] = {"sentiment": [sentiment], "mentions": {"expression": 0, "interaction": mentions, "interest": 0}}
+
+            for sport in list(set(data["sports"])):
+                if sport.lower() not in self.sport_countries:
+                    self.sport_countries[sport.lower()] = {}
+                if data["country"].lower() not in self.sport_countries[sport.lower()]:
+                    self.sport_countries[sport.lower()][data["country"].lower()] = 0
+                self.sport_countries[sport.lower()][data["country"].lower()] += 1
+            
                 
 
         if self.interest_sum["sport"]:
             for sport in self.interest_sum["sport"]:
                 if sport["countries"]:
                     for country in sport["countries"]:
+                        if sport["sport"].lower() not in self.sport_countries:
+                            self.sport_countries[sport["sport"].lower()] = {}
+                        if country["country"].lower() not in self.sport_countries[sport["sport"].lower()]:
+                            self.sport_countries[sport["sport"].lower()][country["country"].lower()] = 0
+                        self.sport_countries[sport["sport"].lower()][country["country"].lower()] += len(country["clubs"] or []) + len(country["athletes"] or [])
+                        
                         if country["clubs"]:
                             for club in set(country["clubs"]):
                                 if self.clubs:
@@ -264,17 +290,33 @@ class Summary:
             sentiment = self.interpret_sentiment_list(data["sentiments"], 1.1, 0.4, -0.7)
             mentions = len(data["sentiments"])
             self.athletes[player] = {"sentiment": [sentiment], "mentions": {"expression": mentions, "interaction": 0, "interest": 0}}
+            for sport in list(set(data["sports"])):
+                if sport.lower() not in self.sport_countries:
+                    self.sport_countries[sport.lower()] = {}
+                if data["country"].lower() not in self.sport_countries[sport.lower()]:
+                    self.sport_countries[sport.lower()][data["country"].lower()] = 0
+                self.sport_countries[sport.lower()][data["country"].lower()] += 1
+            
 
         for player, data in self.interaction_sum["players"].items():
             sentiment = self.interpret_sentiment_list(self.data["sentiments"], 1.1, 0.4, -0.7)
             reaction_sentiment = self.interpret_sentiment_list(data["reaction sentiments"], 0.8, 0.1, -0.5)
             mentions = len(data["sentiments"]) + len(data["reaction sentiments"])
-            if player not in self.players:
+            temp = process.extractOne(sport, self.sports.keys()) or [0,0]
+            if player not in self.players and temp[1] < 85:
                 self.athletes[player] = {"sentiment": [sentiment], "mentions": {"expression": 0, "interaction": mentions, "interest": 0}}
             else:
-                self.athletes[player]["sentiment"].append(sentiment)
-                self.athletes[player]["sentiment"].append(reaction_sentiment)
-                self.athletes[player]["mentions"]["interaction"] += mentions
+                self.athletes[temp[0]]["sentiment"].append(sentiment)
+                self.athletes[temp[0]]["sentiment"].append(reaction_sentiment)
+                self.athletes[temp[0]]["mentions"]["interaction"] += mentions
+                
+            for sport in list(set(data["sports"])):
+                if sport.lower() not in self.sport_countries:
+                    self.sport_countries[sport.lower()] = {}
+                if data["country"].lower() not in self.sport_countries[sport.lower()]:
+                    self.sport_countries[sport.lower()][data["country"].lower()] = 0
+                self.sport_countries[sport.lower()][data["country"].lower()] += 1
+            
 
         if self.interest_sum["sport"]:
             for sport in self.interest_sum["sport"]:
@@ -319,11 +361,12 @@ class Summary:
         if self.interest_sum["music"]:
             for genre in self.interest_sum["music"]:
                 sentiment = self.interpret_sentiment_list(["positive"]*genre["counter"], 0.6, 0, 0)
-                if genre["genre"].lower() not in self.genres:
+                temp = process.extractOne(genre["genre"].lower(), self.genres.keys()) or [0,0]
+                if genre["genre"].lower() not in self.genres and temp[1] < 85:
                     self.genres[genre["genre"].lower()] = {"sentiment": [sentiment], "mentions": {"expression": 0, "interaction": 0, "interest": genre["counter"]}}
                 else:
-                    self.genres[genre["genre"].lower()]["sentiment"].append(sentiment)
-                    self.genres[genre["genre"].lower()]["mentions"]["interest"] += genre["counter"]
+                    self.genres[temp[0]]["sentiment"].append(sentiment)
+                    self.genres[temp[0]]["mentions"]["interest"] += genre["counter"]
 
 
 
@@ -331,20 +374,43 @@ class Summary:
             sentiment = self.interpret_sentiment_list(data["sentiments"], 1.1, 0.4, -0.7)
             mentions = len(data["sentiments"])
             self.artists[artist] = {"sentiment": [sentiment], "mentions": {"expression": mentions, "interaction": 0, "interest": 0}}
+            for genre in list(set(data["genres"])):
+                if genre.lower() not in self.music_countries:
+                    self.music_countries[genre.lower()] = {}
+                if data["country"].lower() not in self.music_countries[genre.lower()]:
+                    self.music_countries[genre.lower()][data["country"].lower()] = 0
+                self.music_countries[genre.lower()][data["country"].lower()] += 1
+            
 
         for artist, data in self.interaction_sum["players"].items():
             sentiment = self.interpret_sentiment_list(self.data["sentiments"], 1.1, 0.4, -0.7)
             reaction_sentiment = self.interpret_sentiment_list(data["reaction sentiments"], 0.8, 0.1, -0.5)
             mentions = len(data["sentiments"]) + len(data["reaction sentiments"])
-            if artist not in self.artists:
+            temp = process.extractOne(artist, self.artists.keys()) or [0,0]
+            if artist["artist"].lower() not in self.artists and temp[1] < 85:
                 self.artists[artist] = {"sentiment": [sentiment], "mentions": {"expression": 0, "interaction": mentions, "interest": 0}}
             else:
                 self.artists[artist]["sentiment"].append(sentiment)
                 self.artists[artist]["sentiment"].append(reaction_sentiment)
                 self.artists[artist]["mentions"]["interaction"] += mentions
+                
+            for genre in list(set(data["genres"])):
+                if genre.lower() not in self.music_countries:
+                    self.music_countries[genre.lower()] = {}
+                if data["country"].lower() not in self.music_countries[genre.lower()]:
+                    self.music_countries[genre.lower()][data["country"].lower()] = 0
+                self.music_countries[genre.lower()][data["country"].lower()] += 1
+            
 
         if self.interest_sum["music"]:
             for genre in self.interest_sum["music"]:
+                if genre["genre"].lower() not in self.music_countries:
+                    self.music_countries[genre["genre"].lower()] = {}
+                for country in genre["countries"] or []:
+                    if country.lower() not in self.music_countries[genre["genre"].lower()]:
+                        self.music_countries[genre["genre"].lower()][country.lower()] = 0
+                    self.music_countries[genre["genre"].lower()][country.lower()] += 1
+                
                 if genre["artists"]:
                     for artist in set(genre["artists"]):
                         if self.artists:
@@ -363,28 +429,193 @@ class Summary:
                             mentions = genre["artists"].count(artist)
                             sentiment = self.interpret_sentiment_list(["positive"]*mentions, 0.6, 0, 0)
                             self.artists[artist.lower()] = {"sentiment": [sentiment], "mentions": {"expression": 0, "interaction": 0, "interest": mentions}}
+                        
+        self.others = copy.deepcopy(self.interest_sum["other_interests"])
 
+        
+        for ideology in copy.deepcopy(self.expression_sum["politics"]["type"])+copy.deepcopy(self.interaction_sum["politics"]["type"]):
+            if ideology.lower() in ["", "n/a", "none", None, "unknown"]:
+                continue
+            
+            ideology_lower = ideology.lower()
+            first8 = ideology_lower[:8]
+            best_match = None
+            best_score = 0
+            
+            for existing_ideology in self.politics.keys():
+                existing_first8 = existing_ideology[:8]
+                score = fuzz.ratio(first8, existing_first8)
+                
+                if score > best_score:
+                    best_score = score
+                    best_match = existing_ideology
+                    if best_score == 100:
+                        break
+            
+
+            if best_match and best_score >= 93:
+                self.politics[best_match]["sentiment"] += 1
+                self.politics[best_match]["mentions"]["ex/int"] += 1
+            else:
+                self.politics[ideology_lower] = {
+                    "sentiment": 1,
+                    "mentions": {
+                        "ex/int": 1,
+                        "interest": 0
+                    }
+                }
+            
+        for ideology in copy.deepcopy(self.expression_sum["politics"]["no type"])+copy.deepcopy(self.interaction_sum["politics"]["no type"]):
+            if ideology.lower() in ["centrism", "", "n/a", "none", None, "unknown"]:
+                continue
+            ideology_lower = ideology.lower()
+            first8 = ideology_lower[:8]
+            best_match = None
+            best_score = 0
+            
+            for existing_ideology in self.politics.keys():
+                existing_first8 = existing_ideology[:8]
+                score = fuzz.ratio(first8, existing_first8)
+                
+                if score > best_score:
+                    best_score = score
+                    best_match = existing_ideology
+                    if best_score == 100:
+                        break
+            
+
+            if best_match and best_score >= 93:
+                self.politics[best_match]["sentiment"] += 1/7
+                self.politics[best_match]["mentions"]["ex/int"] += 1/7
+            else:
+                self.politics[ideology_lower] = {
+                    "sentiment": 1/7,
+                    "mentions": {
+                        "ex/int": 1/7,
+                        "interest": 0
+                    }
+                }
+
+        for ideology in copy.deepcopy(self.interaction_sum["politics"]["type reaction"]):
+            if ideology.lower() in ["", "n/a", "none", None, "unknown"]:
+                continue
+            i = ideology.lstrip("-")
+            num = len(ideology) - len(i)
+            add = -0.25 * num**2 - 0.5 * num + 1
+            ideology_lower = i.lower()
+            first8 = ideology_lower[:8]
+            best_match = None
+            best_score = 0
+            
+            for existing_ideology in self.politics.keys():
+                existing_first8 = existing_ideology[:8]
+                score = fuzz.ratio(first8, existing_first8)
+                
+                if score > best_score:
+                    best_score = score
+                    best_match = existing_ideology
+                    if best_score == 100:
+                        break
+            
+
+            if best_match and best_score >= 93:
+                self.politics[best_match]["sentiment"] += add
+                self.politics[best_match]["mentions"]["ex/int"] += add
+            else:
+                self.politics[ideology_lower] = {
+                    "sentiment": add,
+                    "mentions": {
+                        "ex/int": add,
+                        "interest": 0
+                    }
+                }
+
+        for ideology in copy.deepcopy(self.interaction_sum["politics"]["no type reaction"]):
+            if ideology.lower() in ["", "n/a", "none", None, "centrism", "unknown"]:
+                continue
+            i = ideology.lstrip("-")
+            num = len(ideology) - len(i)
+            add = -0.25 * num**2 - 0.5 * num + 1
+            ideology_lower = i.lower()
+            first8 = ideology_lower[:8]
+            best_match = None
+            best_score = 0
+            
+            for existing_ideology in self.politics.keys():
+                existing_first8 = existing_ideology[:8]
+                score = fuzz.ratio(first8, existing_first8)
+                
+                if score > best_score:
+                    best_score = score
+                    best_match = existing_ideology
+                    if best_score == 100:
+                        break
+            
+
+            if best_match and best_score >= 93:
+                self.politics[best_match]["sentiment"] += add/7
+                self.politics[best_match]["mentions"]["ex/int"] += add/7
+            else:
+                self.politics[ideology_lower] = {
+                    "sentiment": add/7,
+                    "mentions": {
+                        "ex/int": add/7,
+                        "interest": 0
+                    }
+                }
+
+        if self.interest_sum["politics"]:
+            for ideology in self.interest_sum["politics"]["ideologies"] or []:
+                ideology_lower = ideology["ideology"].lower()
+                first8 = ideology_lower[:8]
+                best_match = None
+                best_score = 0
+                
+                for existing_ideology in self.politics.keys():
+                    existing_first8 = existing_ideology[:8]
+                    score = fuzz.ratio(first8, existing_first8)
+                    
+                    if score > best_score:
+                        best_score = score
+                        best_match = existing_ideology
+                        if best_score == 100:
+                            break
+                
+
+                if best_match and best_score >= 93:
+                    self.politics[best_match]["sentiment"] += ideology["counter"]
+                    self.politics[best_match]["mentions"]["ex/int"] += ideology["counter"]
+                else:
+                    self.politics[ideology_lower] = {
+                        "sentiment": ideology["counter"],
+                        "mentions": {
+                            "ex/int": 0,
+                            "interest": ideology["counter"]
+                        }
+                    }
+                
         
         with open("test.json", 'w', encoding="utf-8") as file:
             json.dump([self.sports, self.clubs, self.athletes, self.genres, self.artists], file, indent=4)
 
-        return [self.sports, self.clubs, self.athletes, self.genres, self.artists]
-    """  DOKONCIT TUTO FUNKCIU  """
+
+        return {"sport":self.sports, "club":self.clubs, "athlete":self.athletes, "genre":self.genres, "artist":self.artists, "politics":self.politics, "other":self.others}
 
 
     def create_pie_chart(self, labels, values, title):
         pie_chart = go.Figure(go.Pie(labels=labels, values=values, title=title))
+        pie_chart.update_layout(width=350, height=350)
         return pie_chart.to_html(full_html=False)
 
     def create_radar_chart(self, labels, values, title):
         radar_chart = go.Figure()
-        radar_chart.add_trace(go.Scatterpolar(r=values + [values[0]], theta=labels + [labels[0]], fill='toself', name='Výkon'))
-        radar_chart.update_layout(title=title, polar=dict(radialaxis=dict(visible=True)))
+        radar_chart.add_trace(go.Scatterpolar(r=values, theta=labels, fill='toself'))
+        radar_chart.update_layout(title=title, polar=dict(radialaxis=dict(visible=False)), width=350, height=350)
         return radar_chart.to_html(full_html=False)
 
     def create_bar_chart(self, labels, values, title):
         bar_chart = go.Figure(go.Bar(x=labels, y=values, marker_color=['red' if v < -2 else 'yellow' if -2 <= v <= 2 else 'green' for v in values]))
-        bar_chart.update_layout(title=title, yaxis=dict(range=[-10, 10]))
+        bar_chart.update_layout(title=title, yaxis=dict(range=[-10, 10]), width=350, height=350)
         return bar_chart.to_html(full_html=False)
 
     def generate_html(self):
@@ -394,36 +625,28 @@ class Summary:
         print(self.interest_sum, '\n')
         print(self.overall, '\n')
 
-        # === 2. Športy ===
-        sports = ['Futbal', 'Basketbal', 'Tenis', 'Hokej', 'Plávanie']
-        sport_values = [8, 6, 9, 5, 7]
-        radar_html = self.create_radar_chart(sports, sport_values, "Interest")
-        
-        bar_values = [3, -7, 6, -4, 10]
-        bar_html = self.create_bar_chart(sports, bar_values, "Sentiment")
-        
-        # === 3. Športové kluby ===
-        clubs = ['FC Barcelona', 'Real Madrid', 'Lakers', 'Warriors', 'Juventus']
-        club_values = [7, 5, 8, 6, 9]
-        club_radar_html = self.create_radar_chart(clubs, club_values, "Interest")
-        
-        club_sentiment_values = [-1, 8, -3, 1, 4]
-        club_sentiment_html = self.create_bar_chart(clubs, club_sentiment_values, "Sentiment")
-        
-        # === 4. Športovci ===
-        athletes = ['Messi', 'Ronaldo', 'LeBron', 'Federer', 'Nadal']
-        athlete_values = [9, 7, 8, 6, 5]
-        athlete_radar_html = self.create_radar_chart(athletes, athlete_values, "Interest")
-        
-        athlete_sentiment_values = [4, -6, 0, -3, 7]
-        athlete_sentiment_html = self.create_bar_chart(athletes, athlete_sentiment_values, "Sentiment")
-        
-        # HTML content
-        topic_tweet_count = {"politics": len(self.expression_sum["politics"]["type"])+len(self.interaction_sum["politics"]["type reaction"])+len(self.interaction_sum["politics"]["type"]), "sport": 0, "music": 0, "other": 0}
-        
-        treba dokoncit overall do finalneho formatu
 
-        
+                # HTML content
+        topic_tweet_count = {"politics": len(self.expression_sum["politics"]["type"])+len(self.interaction_sum["politics"]["type reaction"])+len(self.interaction_sum["politics"]["type"]), "sport": 0, "music": 0, "other": 0}
+        for sport in list(self.overall["sport"].values()) + list(self.overall["club"].values()) + list(self.overall["athlete"].values()):
+            topic_tweet_count["sport"] += sport["mentions"]["expression"] + sport["mentions"]["interaction"]
+        for music in list(self.overall["genre"].values()) + list(self.overall["artist"].values()):
+            topic_tweet_count["music"] += music["mentions"]["expression"] + music["mentions"]["interaction"]
+##########        topic_tweet_count["others"] = "NOT IMPLEMENTED"
+
+        topic_interest_count = {"politics": 0, "sport": 0, "music": 0, "other": 0}
+        for politics in list(self.overall["politics"].values()):
+            topic_interest_count["politics"] += politics["mentions"]["interest"]
+        for sport in list(self.overall["sport"].values()) + list(self.overall["club"].values()) + list(self.overall["athlete"].values()):
+            topic_interest_count["sport"] += sport["mentions"]["interest"]
+        for music in list(self.overall["genre"].values()) + list(self.overall["artist"].values()):
+            topic_interest_count["music"] += music["mentions"]["interest"]
+        topic_interest_count["others"] = sum(map(lambda x: x["counter"], self.overall["other"]))
+
+        all_keys = topic_tweet_count.keys() | topic_interest_count.keys()  # Union of keys
+        topic_all_count = {key: topic_tweet_count.get(key, 0) + topic_interest_count.get(key, 0) for key in all_keys}
+
+        compass = 
         html_content = f'''
         <!DOCTYPE html>
         <html lang="en">
@@ -434,8 +657,20 @@ class Summary:
             <style>
                 body {{ font-family: Arial, sans-serif; text-align: center; }}
                 .container {{ display: flex; flex-direction: column; align-items: center; gap: 20px; }}
-                .row {{ display: flex; justify-content: center; gap: 20px; width: 100%; }}
-                .chart {{ width: 45%; max-width: 600px; }}
+                .row {{
+                    display: flex;
+                    justify-content: flex-start; /* Aligns items to the left */
+                    gap: 20px;
+                    width: 100%;
+                    overflow-x: auto; /* Allows horizontal scrolling if content overflows */
+                    white-space: nowrap; /* Prevents items from wrapping to next line */
+                    padding: 10px 0; /* Optional: adds some vertical padding */
+                }}
+                .chart {{
+                    flex: 0 0 auto; /* Prevents charts from shrinking/growing */
+                    width: 400px; /* Fixed width for each chart */
+                    height: 400px; /* Fixed height for each chart */
+                }}
             </style>
         </head>
         <body>
@@ -452,24 +687,45 @@ class Summary:
                     <p>Top zmienky: {'  '.join([f'@{i}' for i in self.top_mentions])}</p>
                 </div>
                 <div class="row">
-                    <div class="chart">{self.create_pie_chart(list(self.expression_sum.keys()), list(self.expression_sum.values()), "Expression topics")}</div>
+                    <div class="chart">{self.create_pie_chart(list(topic_tweet_count.keys()), list(topic_tweet_count.values()), "Topic tweets")}</div>
+                    <div class="chart">{self.create_pie_chart(list(topic_interest_count.keys()), list(topic_interest_count.values()), "Topic interests")}</div>
+                    <div class="chart">{self.create_pie_chart(list(topic_all_count.keys()), list(topic_all_count.values()), "Topic overall")}</div>
                 </div>
                 <h2>Sport info</h2>
                 <h4>Sports</h4>
                 <div class="row">
-                    <div class="chart">{radar_html}</div>
-                    <div class="chart">{bar_html}</div>
+                    <div class="chart">{self.create_radar_chart(list(self.overall["sport"].keys()), [sum(x["mentions"].values()) for x in self.overall["sport"].values()], "Interest")}</div>
+                    <div class="chart">{self.create_bar_chart(list(self.overall["sport"].keys()), [round(sum(x["sentiment"])*10, 2) for x in self.overall["sport"].values()], "Sentiment")}</div>
+                </div>
+                <div class="row">
+                    {" ".join([f'<div class="chart">{self.create_pie_chart(list(data.keys()), list(data.values()), sport)}</div>' for sport,data in self.sport_countries.items()])}
                 </div>
                 <h4>Clubs</h4>
                 <div class="row">
-                    <div class="chart">{club_radar_html}</div>
-                    <div class="chart">{club_sentiment_html}</div>
+                    <div class="chart">{self.create_radar_chart(list(self.overall["club"].keys()), [sum(x["mentions"].values()) for x in self.overall["club"].values()], "Interest")}</div>
+                    <div class="chart">{self.create_bar_chart(list(self.overall["club"].keys()), [round(sum(x["sentiment"])*10, 2) for x in self.overall["club"].values()], "Sentiment")}</div>
                 </div>
                 <h4>Athletes</h4>
                 <div class="row">
-                    <div class="chart">{athlete_radar_html}</div>
-                    <div class="chart">{athlete_sentiment_html}</div>
+                    <div class="chart">{self.create_radar_chart(list(self.overall["athlete"].keys()), [sum(x["mentions"].values()) for x in self.overall["athlete"].values()], "Interest")}</div>
+                    <div class="chart">{self.create_bar_chart(list(self.overall["athlete"].keys()), [round(sum(x["sentiment"])*10, 2) for x in self.overall["athlete"].values()], "Sentiment")}</div>
                 </div>
+
+                <h2>Music info</h2>
+                <h4>Genres</h4>
+                <div class="row">
+                    <div class="chart">{self.create_radar_chart(list(self.overall["genre"].keys()), [sum(x["mentions"].values()) for x in self.overall["genre"].values()], "Interest")}</div>
+                    <div class="chart">{self.create_bar_chart(list(self.overall["genre"].keys()), [round(sum(x["sentiment"])*10, 2) for x in self.overall["genre"].values()], "Sentiment")}</div>
+                </div>
+                <div class="row">
+                    {" ".join([f'<div class="chart">{self.create_pie_chart(list(data.keys()), list(data.values()), genre)}</div>' for genre,data in self.music_countries.items()])}
+                </div>
+                <h4>Artists</h4>
+                <div class="row">
+                    <div class="chart">{self.create_radar_chart(list(self.overall["artist"].keys()), [sum(x["mentions"].values()) for x in self.overall["artist"].values()], "Interest")}</div>
+                    <div class="chart">{self.create_bar_chart(list(self.overall["artist"].keys()), [round(sum(x["sentiment"])*10, 2) for x in self.overall["artist"].values()], "Sentiment")}</div>
+                </div>
+                
             </div>
         </body>
         </html>
@@ -478,21 +734,7 @@ class Summary:
         with open(self.filename, "w", encoding="utf-8") as file:
             file.write(html_content)
         print(f"HTML file '{self.filename}' has been created.")
-        
-##        self.sports["sentiment"] = sum(self.sports["sentiment"])
-##        self.clubs["sentiment"] = sum(self.clubs["sentiment"])
-##        self.athletes["sentiment"] = sum(self.athletes["sentiment"])
-##        self.genres["sentiment"] = sum(self.genres["sentiment"])
-##        self.artists["sentiment"] = sum(self.artists["sentiment"])
-##        self.sports["mentions"] = sum(self.sports["mentions"])
-##        self.clubs["mentions"] = sum(self.clubs["mentions"])
-##        self.athletes["mentions"] = sum(self.athletes["mentions"])
-##        self.genres["mentions"] = sum(self.genres["mentions"])
-##        self.artists["mentions"] = sum(self.artists["mentions"])
-##
-##        return {"sport":self.sports,"club":self.clubs,"athlete":self.athletes,"genre":self.genres,"artist":self.artists}
-        
-        
+             
         
             
         
@@ -517,16 +759,16 @@ politika
 
 profile
 OVERALL
-    hashtagy
-    mentions
-    lokacia
-    jazyk  kolac
-    aktivita                       v profile
-    cas dna -> miera aktivity      v profile
-    topic interaction   kolac
-    topic expression    kolac
-    topic interest      kolac
-    topic overall       kolac
+/    hashtagy
+/    mentions
+/    lokacia
+/    jazyk  kolac
+/    aktivita                       v profile
+/    cas dna -> miera aktivity      v profile
+/    topic interaction   kolac
+/    topic expression    kolac
+/    topic interest      kolac
+/    topic overall       kolac
     
     
 SPORT:
@@ -904,14 +1146,24 @@ class Profile:
 
                 
             if type == "politics" or source_tweet_content["type"] == "politics":
-                interaction_summary["politics"]["type"].append(reaction.content["reaction"]["politics"])
-                interaction_summary dorobit
-                #################### DOROBIT TUTO KED SA SFINALIZUJE FORMAT POLITIKY ####################
-                '''expression_summary["politics"]["type reaction"].append(source_tweet_content["type"])'''
+                if type == "politics":
+                    interaction_summary["politics"]["type"].append(reaction.content["reaction"]["politics"])
+                else:
+                    sentiment = reaction.content["reaction_sentiment"].lower()
+                    add = ""
+                    if sentiment.contains("disagree"):
+                        add = "--"
+                    elif sentiment.contains("neutral"):
+                        add = "-"
+                    elif sentiment.contains("agree"):
+                        add = ""
+                    else:
+                        raise "INVALID FORMAT OF REACTION SENTIMENT"
+                    interaction_summary["politics"]["type reaction"].append(add + source_tweet_content["type"])
             else:
                 interaction_summary["politics"]["no type"].append(reaction.content["reaction"]["politics"])
+                
             interaction_summary["languages"].append(reaction.content["reaction"]["language"])
-
             
             if type == "sport" or source_tweet_content["type"] == "sport":
                 temp_club_player_sports = set()
@@ -1573,7 +1825,7 @@ class SocialBubble:
 
 
 
-SB = SocialBubble("tofaaakt", "profile_centered", depth=0)
+SB = SocialBubble("pushkicknadusu", "profile_centered", depth=0)
 
 SB.create_graph()
 
@@ -1611,6 +1863,7 @@ mozne funkcie:
     UNION, INTERSECTION
     AK JE NEJAKA TOPIC, ZVYRAZNIT TIE KTORYCH SA TO TYKA + HRANY (INTERAKCIA, ROVNAKY FOLLOW NA DANU TOPIC ...)
 
+    CONTAINS => prejdenie tweetov s tým, že sa analyzuje, či obsahuje danú tému a sentiment na ňu
 
 '''
 
@@ -1626,5 +1879,3 @@ mozne funkcie:
 
 #############   BUDE TREBA SKONTROLOVAT IMPLEMENTACIU CREATE_BUBBLE, CI
 #############   NIEKDE NIE SU VYNECHANE UDAJE ATD
-
-
