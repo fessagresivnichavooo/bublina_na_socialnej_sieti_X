@@ -60,6 +60,7 @@ OUTSIDE_BUBBLE_PROFILES_ANALYSED = {}
 THRESHOLD = 2000
 OTHER_TOPICS = ["Finance", "Entertainment", "Technology", "Education"]
 MONTH_MAP = {"Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5, "Jun": 6, "Jul": 7, "Aug": 8, "Sep": 9, "Oct": 10, "Nov": 11, "Dec": 12}
+IDEOLOGIES_ANGLES = {"liberalism": 225, "nationalism": 45,"conservatism": 15,"socialism": 135,"communism": 135,"environmentalism": 145,"social democracy": 160,"progressivism": 195,"anarchism": 270,"centrism": None,"libertarianism": 315,"fascism": 70,"authoritarianism": 90,"religious-based ideology": 45}
 
 
 class Node:
@@ -152,8 +153,25 @@ class Summary:
         return raw_score * confidence
 
     def show(self):
-        self.generate_html()
+        self.generate_html(False)
 
+    def get_summary(self):
+        return {
+                "username": self.username,
+                "expression_sum": self.expression_sum,
+                "interaction_sum": self.interaction_sum,
+                "interest_sum": self.interest_sum,
+                "overall": self.overall,
+                "top_hashtags": self.top_hashtags,
+                "top_mentions": self.top_mentions,
+                "location": self.location,
+                "avg_activity": self.avg_activity,
+                "daily_activity": self.daily_activity,
+                "interval": self.interval,
+                "languages": self.languages,
+                "compass": self.compass,
+                "topic_counts": self.topic_counts
+            }
         
     def __str__(self):
         return f'''
@@ -178,7 +196,7 @@ class Summary:
         self.genres = {}
         self.artists = {}
         self.others = {}
-        self.politics = {}
+        self.politics = {k: {"sentiment": 0, "mentions": {"ex/int": 0, "interest": 0}} for k in ["liberalism", "nationalism", "conservatism", "socialism", "communism", "environmentalism", "social democracy", "progressivism", "anarchism", "centrism", "libertarianism", "fascism", "authoritarianism", "religious-based ideology"]}
         self.sport_countries = {}
         self.music_countries = {}
 
@@ -429,6 +447,7 @@ class Summary:
                             mentions = genre["artists"].count(artist)
                             sentiment = self.interpret_sentiment_list(["positive"]*mentions, 0.6, 0, 0)
                             self.artists[artist.lower()] = {"sentiment": [sentiment], "mentions": {"expression": 0, "interaction": 0, "interest": mentions}}
+
                         
         self.others = copy.deepcopy(self.interest_sum["other_interests"])
 
@@ -441,7 +460,7 @@ class Summary:
             first8 = ideology_lower[:8]
             best_match = None
             best_score = 0
-            
+
             for existing_ideology in self.politics.keys():
                 existing_first8 = existing_ideology[:8]
                 score = fuzz.ratio(first8, existing_first8)
@@ -452,7 +471,6 @@ class Summary:
                     if best_score == 100:
                         break
             
-
             if best_match and best_score >= 93:
                 self.politics[best_match]["sentiment"] += 1
                 self.politics[best_match]["mentions"]["ex/int"] += 1
@@ -603,27 +621,93 @@ class Summary:
 
 
     def create_pie_chart(self, labels, values, title):
-        pie_chart = go.Figure(go.Pie(labels=labels, values=values, title=title))
-        pie_chart.update_layout(width=350, height=350)
-        return pie_chart.to_html(full_html=False)
+        if labels and values:
+            pie_chart = go.Figure(go.Pie(labels=labels, values=values, title=title))
+            pie_chart.update_layout(width=350, height=350)
+            return pie_chart.to_html(full_html=False)
 
     def create_radar_chart(self, labels, values, title):
-        radar_chart = go.Figure()
-        radar_chart.add_trace(go.Scatterpolar(r=values, theta=labels, fill='toself'))
-        radar_chart.update_layout(title=title, polar=dict(radialaxis=dict(visible=False)), width=350, height=350)
-        return radar_chart.to_html(full_html=False)
+        if labels and values:
+            radar_chart = go.Figure()
+            radar_chart.add_trace(go.Scatterpolar(r=values, theta=labels, fill='toself'))
+            radar_chart.update_layout(title=title, polar=dict(radialaxis=dict(visible=False)), width=350, height=350)
+            return radar_chart.to_html(full_html=False)
 
     def create_bar_chart(self, labels, values, title):
-        bar_chart = go.Figure(go.Bar(x=labels, y=values, marker_color=['red' if v < -2 else 'yellow' if -2 <= v <= 2 else 'green' for v in values]))
-        bar_chart.update_layout(title=title, yaxis=dict(range=[-10, 10]), width=350, height=350)
-        return bar_chart.to_html(full_html=False)
+        if labels and values:
+            bar_chart = go.Figure(go.Bar(x=labels, y=values, marker_color=['red' if v < -2 else 'yellow' if -2 <= v <= 2 else 'green' for v in values]))
+            bar_chart.update_layout(title=title, yaxis=dict(range=[-10, 10]), width=350, height=350)
+            return bar_chart.to_html(full_html=False)
 
-    def generate_html(self):
+    def create_grid_chart(self, points, grid_size=10, background_colors=['#ff7575','#42aaff','#9aed97','#c09aec'], title="Political Compass"):
+        """
+        Creates an NxN grid plot with points at specified coordinates.
+        
+        Args:
+            points: List of tuples in format (x, y, label, color)
+            grid_size: Size of the grid (default 10 for -5 to +5)
+            background_colors: Optional list of colors for quadrants [Q1, Q2, Q3, Q4]
+            title: Chart title
+        """
+        # Create figure
+        fig = go.Figure()
+        
+        # Create grid background with optional quadrant colors
+        if background_colors and len(background_colors) >= 4:
+            # Add quadrant rectangles
+            fig.add_shape(type="rect", x0=-grid_size, y0=0, x1=0, y1=grid_size, 
+                         fillcolor=background_colors[0], opacity=0.7, layer="below")
+            fig.add_shape(type="rect", x0=0, y0=0, x1=grid_size, y1=grid_size, 
+                         fillcolor=background_colors[1], opacity=0.7, layer="below")
+            fig.add_shape(type="rect", x0=-grid_size, y0=-grid_size, x1=0, y1=0, 
+                         fillcolor=background_colors[2], opacity=0.7, layer="below")
+            fig.add_shape(type="rect", x0=0, y0=-grid_size, x1=grid_size, y1=0, 
+                         fillcolor=background_colors[3], opacity=0.7, layer="below")
+        
+        # Add grid lines
+        for i in range(-grid_size, grid_size+1):
+            fig.add_shape(type="line", x0=i, y0=-grid_size, x1=i, y1=grid_size, 
+                         line=dict(color="DarkGray", width=1))
+            fig.add_shape(type="line", x0=-grid_size, y0=i, x1=grid_size, y1=i, 
+                         line=dict(color="DarkGray", width=1))
+        
+        # Add axes
+        fig.add_shape(type="line", x0=-grid_size, y0=0, x1=grid_size, y1=0, 
+                     line=dict(color="Black", width=2))
+        fig.add_shape(type="line", x0=0, y0=-grid_size, x1=0, y1=grid_size, 
+                     line=dict(color="Black", width=2))
+        
+        # Add points with hover text
+        for x, y, label, color in points:
+            fig.add_trace(go.Scatter(
+                x=[x], y=[y],
+                name=label,
+                mode='markers+text',
+                marker=dict(size=12, color=color),
+                text=[label],
+                textposition="top center",
+                hoverinfo="text",
+                hovertext=f"{label}<br>X: {x:.2f}<br>Y: {y:.2f}"
+            ))
+        
+        # Set layout
+        fig.update_layout(
+            title=title,
+            xaxis=dict(range=[-grid_size, grid_size], title="Economic (Left-Right)"),
+            yaxis=dict(range=[-grid_size, grid_size], title="Social (Libertarian-Authoritarian)"),
+            width=400,
+            height=400,
+            showlegend=False
+        )
+        
+        return fig.to_html(full_html=False)
+
+    def generate_html(self, do_html=True):
         # === 1. Koláčový graf (jazyky) ===
-        print(self.expression_sum, '\n')
-        print(self.interaction_sum, '\n')
-        print(self.interest_sum, '\n')
-        print(self.overall, '\n')
+##        print(self.expression_sum, '\n')
+##        print(self.interaction_sum, '\n')
+##        print(self.interest_sum, '\n')
+##        print(self.overall, '\n')
 
 
                 # HTML content
@@ -641,12 +725,33 @@ class Summary:
             topic_interest_count["sport"] += sport["mentions"]["interest"]
         for music in list(self.overall["genre"].values()) + list(self.overall["artist"].values()):
             topic_interest_count["music"] += music["mentions"]["interest"]
-        topic_interest_count["others"] = sum(map(lambda x: x["counter"], self.overall["other"]))
+        topic_interest_count["other"] = sum(map(lambda x: x["counter"], self.overall["other"] or []))
 
         all_keys = topic_tweet_count.keys() | topic_interest_count.keys()  # Union of keys
         topic_all_count = {key: topic_tweet_count.get(key, 0) + topic_interest_count.get(key, 0) for key in all_keys}
 
-        compass = 
+        compass_x = sum(
+            [
+                data["sentiment"] * math.cos(math.radians(IDEOLOGIES_ANGLES.get(name, 90)))
+                for name, data in self.overall["politics"].items()
+                if name != "centrism"  # Explicitly exclude centrism
+            ]
+        )
+
+        compass_y = sum(
+            [
+                data["sentiment"] * math.sin(math.radians(IDEOLOGIES_ANGLES.get(name, 0)))
+                for name, data in self.overall["politics"].items()
+                if name != "centrism"  # Explicitly exclude centrism
+            ]
+        )
+
+        
+
+        max_r = sum([data["sentiment"] for name, data in self.overall["politics"].items() if name != "centrism"])
+        self.compass = (compass_x, compass_y, max_r)
+        self.topic_counts = (topic_tweet_count, topic_interest_count, topic_all_count)
+        
         html_content = f'''
         <!DOCTYPE html>
         <html lang="en">
@@ -685,6 +790,8 @@ class Summary:
                 <div class="row">
                     <p>Top hashtagy: {'  '.join([f'#{i}' for i in self.top_hashtags])}</p>
                     <p>Top zmienky: {'  '.join([f'@{i}' for i in self.top_mentions])}</p>
+                    <p>Aktivita: {self.avg_activity}</p>
+                    <p>Lokacia: {self.location}</p>
                 </div>
                 <div class="row">
                     <div class="chart">{self.create_pie_chart(list(topic_tweet_count.keys()), list(topic_tweet_count.values()), "Topic tweets")}</div>
@@ -725,15 +832,25 @@ class Summary:
                     <div class="chart">{self.create_radar_chart(list(self.overall["artist"].keys()), [sum(x["mentions"].values()) for x in self.overall["artist"].values()], "Interest")}</div>
                     <div class="chart">{self.create_bar_chart(list(self.overall["artist"].keys()), [round(sum(x["sentiment"])*10, 2) for x in self.overall["artist"].values()], "Sentiment")}</div>
                 </div>
-                
+                <h2>Politics info</h2>
+                <div class="row">
+                    <div class="chart">{self.create_grid_chart([(compass_x/max_r*10, compass_y/max_r*10, '', 'black')])}</div>
+                    <div class="chart">{self.create_radar_chart([x for x, y in self.overall["politics"].items()], [x["sentiment"] for x in self.overall["politics"].values()], "Ideologies")}</div>
+                    <p>Countries of interest: {",   ".join((self.interest_sum.get("politics", {}) or {}).get("countries", []) or [])}</p>
+                </div>
+                <h2>Other topics</h2>
+                <div class="row">
+                    <div class="chart">{self.create_pie_chart([x["interest"] for x in self.others], [x["counter"] for x in self.others], "Other topics")}</div> 
+                </div>
             </div>
         </body>
         </html>
         '''
-        
-        with open(self.filename, "w", encoding="utf-8") as file:
-            file.write(html_content)
-        print(f"HTML file '{self.filename}' has been created.")
+
+        if do_html:
+            with open(self.filename, "w", encoding="utf-8") as file:
+                file.write(html_content)
+            print(f"HTML file '{self.filename}' has been created.")
              
         
             
@@ -949,7 +1066,7 @@ class Profile:
                 avg_activity = f"{number_of_tweets_in_step/step} per month"
                 
                 #print(f"{previous_date.strftime('%Y-%m-%d')} -> {current_date.strftime('%Y-%m-%d')}")
-                self.summaries[f"{previous_date.strftime('%Y-%m-%d')} -> {current_date.strftime('%Y-%m-%d')}"] = Summary(self.username, self.expression_sum((previous_date, current_date)), self.interaction_sum((previous_date, current_date)), self.interest_sum("profile_analysis.json"), hashtags, mentions, self.location, avg_activity, daily, (previous_date, current_date))
+                self.summaries[f"{current_date.strftime('%Y-%m-%d')}"] = Summary(self.username, self.expression_sum((previous_date, current_date)), self.interaction_sum((previous_date, current_date)), self.interest_sum("profile_analysis.json"), hashtags, mentions, self.location, avg_activity, daily, (previous_date, current_date))
                 
                 if previous_date == start_date:
                     break 
@@ -957,12 +1074,15 @@ class Profile:
                 
         else:
             #print(self.all_mentions)
-            interval = (datetime.min, datetime.now())
-            self.summaries[f"{interval[0].strftime('%Y-%m-%d')} -> {interval[1].strftime('%Y-%m-%d')}"] =  Summary(self.username, self.expression_sum(), self.interaction_sum(), self.interest_sum("profile_analysis.json"), self.hashtags, self.all_mentions, self.location, self.avg_activity, self.daily_activity, interval)
+            min_date = datetime.min
+            if all_entries:
+                min_date = all_entries[-1].created.replace(day=1)
+            interval = (min_date, datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + relativedelta(months=1)).replace(day=1))
+            self.summaries[f"{interval[1].strftime('%Y-%m-%d')}"] =  Summary(self.username, self.expression_sum(), self.interaction_sum(), self.interest_sum("profile_analysis.json"), self.hashtags, self.all_mentions, self.location, self.avg_activity, self.daily_activity, interval)
         
 
         for i in self.summaries.values():
-            print(i)
+            #print(i)
             i.show()
         #print(self.summaries)
 ##        print('\n\n\n\n')
@@ -1151,11 +1271,11 @@ class Profile:
                 else:
                     sentiment = reaction.content["reaction_sentiment"].lower()
                     add = ""
-                    if sentiment.contains("disagree"):
+                    if "disagree" in sentiment:
                         add = "--"
-                    elif sentiment.contains("neutral"):
+                    elif "neutral" in sentiment:
                         add = "-"
-                    elif sentiment.contains("agree"):
+                    elif "agree" in sentiment:
                         add = ""
                     else:
                         raise "INVALID FORMAT OF REACTION SENTIMENT"
@@ -1807,6 +1927,8 @@ class SocialBubble:
     def profiles_summary(self, step=None):
         for username, node in self.nodes.items():
             node.profile.summary(step)
+            for i in node.profile.summaries.values():
+                print(i.get_summary())
 
     def bubble_summary(self):
         return
@@ -1866,16 +1988,3 @@ mozne funkcie:
     CONTAINS => prejdenie tweetov s tým, že sa analyzuje, či obsahuje danú tému a sentiment na ňu
 
 '''
-
-
-
-
-
-
-
-#############   AK SERPAPI NEVRATI KVALITNY OUTPUT, PREFEROVAT BIO
-
-#############   SKONTROLOVAT CI DESCRIPTION == BIO
-
-#############   BUDE TREBA SKONTROLOVAT IMPLEMENTACIU CREATE_BUBBLE, CI
-#############   NIEKDE NIE SU VYNECHANE UDAJE ATD
