@@ -138,9 +138,16 @@ class Interests(BaseModel):
     politics: Optional[Politics] = Field(..., description="Political ideologies and mentioned countries")
     other_interests: Optional[List[OtherInterest]] = Field(..., description="Other interests and how many times they were mentioned, make it general and merge similar topics together, use ONE word")
 
+class Counter(BaseModel):
+    profile_name: str = Field(..., description="Rewrite profile name")
+    counter: int = Field(...)
 
-
-
+class Topic(BaseModel):
+    interest: str = Field(..., description="Rewrite name of interest or return new generalised name after merging")
+    map_counter: List[Counter] = Field(..., description="Maps profile name and count, when merging topics sum the counts for same profiles")
+    
+class OtherTopics(BaseModel):
+    list_of_topics: List[Topic] = Field(..., description="Merge similar topics by finding super topic, which describes all found subtopics, mostly those with small count (ex. {Bitcoin : 1}, {Ethereum : 1} -> {Cryptocurrency : 2})")
 
 ###############################################################################
 
@@ -334,7 +341,23 @@ class GPT4o():
 
         output = response.choices[0].message.parsed.json()
         return json.loads(output)
+
+
     
+################## GENERALISATION OF OTHER TOPICS ################################
+    def generalise(self, data):
+        response = self.client.beta.chat.completions.parse(
+            model="gpt-4o-2024-08-06",
+            messages=[
+                {"role": "system", "content": "You are an AI that takes dictionary and merges keys with similar topic into one. (ex. {Bitcoin : 1}, {Ethereum : 1} -> {Cryptocurrency : 2})"},
+                {"role": "user", "content": f'{data}'}
+            ],
+            response_format=OtherTopics,
+            temperature=1
+        )
+
+        output = response.choices[0].message.parsed.json()
+        return json.loads(output)
 
     
 
@@ -342,7 +365,7 @@ class GPT4o():
 
 
 class SerpAPI():
-    API_KEY = ""
+    API_KEY = ""#""
 
     def get_entity(self, name):
         params = {
@@ -375,3 +398,4 @@ class SerpAPI():
             formated_return["Type"] = kg.get("type", "N/A")
             formated_return["Entity"] = kg.get("entity_type", "N/A")
         return formated_return
+
