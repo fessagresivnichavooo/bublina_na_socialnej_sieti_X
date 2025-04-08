@@ -53,6 +53,7 @@ import plotly.graph_objects as go
 SCRAPPER = test_twitter_scrapper_from_json.TwitterScrapper()
 PROFILE_AI_ANALYSER = AIAnalysis.GPT4o()
 TWEET_AI_ANALYSER = AIAnalysis.GPT4o()
+AI_GENERALISATION_PARSER = AIAnalysis.GPT4o()
 
 
 ALL_TWEETS = {}
@@ -114,6 +115,8 @@ class Summary:
         self.interaction_sum = interaction
         self.interest_sum = interest
         self.overall = self.overall_sum()
+        self.hashtags = hashtags
+        self.mentions = mentions
         self.top_hashtags = sorted(hashtags.keys(), key=lambda k: hashtags[k], reverse=True)[:5]
         self.top_mentions = sorted(mentions.keys(), key=lambda k: mentions[k], reverse=True)[:5]
         self.location = location
@@ -702,7 +705,7 @@ class Summary:
         
         return fig.to_html(full_html=False)
 
-    def generate_html(self, do_html=True):
+    def generate_html(self, do_html=False):
         # === 1. Koláčový graf (jazyky) ===
 ##        print(self.expression_sum, '\n')
 ##        print(self.interaction_sum, '\n')
@@ -751,103 +754,105 @@ class Summary:
         max_r = sum([data["sentiment"] for name, data in self.overall["politics"].items() if name != "centrism"])
         self.compass = (compass_x, compass_y, max_r)
         self.topic_counts = (topic_tweet_count, topic_interest_count, topic_all_count)
-        
-        html_content = f'''
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Vizualizácia grafov</title>
-            <style>
-                body {{ font-family: Arial, sans-serif; text-align: center; }}
-                .container {{ display: flex; flex-direction: column; align-items: center; gap: 20px; }}
-                .row {{
-                    display: flex;
-                    justify-content: flex-start; /* Aligns items to the left */
-                    gap: 20px;
-                    width: 100%;
-                    overflow-x: auto; /* Allows horizontal scrolling if content overflows */
-                    white-space: nowrap; /* Prevents items from wrapping to next line */
-                    padding: 10px 0; /* Optional: adds some vertical padding */
-                }}
-                .chart {{
-                    flex: 0 0 auto; /* Prevents charts from shrinking/growing */
-                    width: 400px; /* Fixed width for each chart */
-                    height: 400px; /* Fixed height for each chart */
-                }}
-            </style>
-        </head>
-        <body>
-            <h1>{self.username} | {self.interval[0]} -> {self.interval[1]}</h1>
-            
-            <div class="container">
-                <h2>Basic info</h2>
-                <div class="row">
-                    <div class="chart">{self.create_pie_chart(list(self.languages.keys()), list(self.languages.values()), "Jazyky")}</div>
-                    <div class="chart">{self.create_pie_chart([f'{i}:00-{i+1}:00' for i in self.daily_activity.keys()], list(self.daily_activity.values()), "Denna aktivita")}</div>
-                </div>
-                <div class="row">
-                    <p>Top hashtagy: {'  '.join([f'#{i}' for i in self.top_hashtags])}</p>
-                    <p>Top zmienky: {'  '.join([f'@{i}' for i in self.top_mentions])}</p>
-                    <p>Aktivita: {self.avg_activity}</p>
-                    <p>Lokacia: {self.location}</p>
-                </div>
-                <div class="row">
-                    <div class="chart">{self.create_pie_chart(list(topic_tweet_count.keys()), list(topic_tweet_count.values()), "Topic tweets")}</div>
-                    <div class="chart">{self.create_pie_chart(list(topic_interest_count.keys()), list(topic_interest_count.values()), "Topic interests")}</div>
-                    <div class="chart">{self.create_pie_chart(list(topic_all_count.keys()), list(topic_all_count.values()), "Topic overall")}</div>
-                </div>
-                <h2>Sport info</h2>
-                <h4>Sports</h4>
-                <div class="row">
-                    <div class="chart">{self.create_radar_chart(list(self.overall["sport"].keys()), [sum(x["mentions"].values()) for x in self.overall["sport"].values()], "Interest")}</div>
-                    <div class="chart">{self.create_bar_chart(list(self.overall["sport"].keys()), [round(sum(x["sentiment"])*10, 2) for x in self.overall["sport"].values()], "Sentiment")}</div>
-                </div>
-                <div class="row">
-                    {" ".join([f'<div class="chart">{self.create_pie_chart(list(data.keys()), list(data.values()), sport)}</div>' for sport,data in self.sport_countries.items()])}
-                </div>
-                <h4>Clubs</h4>
-                <div class="row">
-                    <div class="chart">{self.create_radar_chart(list(self.overall["club"].keys()), [sum(x["mentions"].values()) for x in self.overall["club"].values()], "Interest")}</div>
-                    <div class="chart">{self.create_bar_chart(list(self.overall["club"].keys()), [round(sum(x["sentiment"])*10, 2) for x in self.overall["club"].values()], "Sentiment")}</div>
-                </div>
-                <h4>Athletes</h4>
-                <div class="row">
-                    <div class="chart">{self.create_radar_chart(list(self.overall["athlete"].keys()), [sum(x["mentions"].values()) for x in self.overall["athlete"].values()], "Interest")}</div>
-                    <div class="chart">{self.create_bar_chart(list(self.overall["athlete"].keys()), [round(sum(x["sentiment"])*10, 2) for x in self.overall["athlete"].values()], "Sentiment")}</div>
-                </div>
-
-                <h2>Music info</h2>
-                <h4>Genres</h4>
-                <div class="row">
-                    <div class="chart">{self.create_radar_chart(list(self.overall["genre"].keys()), [sum(x["mentions"].values()) for x in self.overall["genre"].values()], "Interest")}</div>
-                    <div class="chart">{self.create_bar_chart(list(self.overall["genre"].keys()), [round(sum(x["sentiment"])*10, 2) for x in self.overall["genre"].values()], "Sentiment")}</div>
-                </div>
-                <div class="row">
-                    {" ".join([f'<div class="chart">{self.create_pie_chart(list(data.keys()), list(data.values()), genre)}</div>' for genre,data in self.music_countries.items()])}
-                </div>
-                <h4>Artists</h4>
-                <div class="row">
-                    <div class="chart">{self.create_radar_chart(list(self.overall["artist"].keys()), [sum(x["mentions"].values()) for x in self.overall["artist"].values()], "Interest")}</div>
-                    <div class="chart">{self.create_bar_chart(list(self.overall["artist"].keys()), [round(sum(x["sentiment"])*10, 2) for x in self.overall["artist"].values()], "Sentiment")}</div>
-                </div>
-                <h2>Politics info</h2>
-                <div class="row">
-                    <div class="chart">{self.create_grid_chart([(compass_x/max_r*10, compass_y/max_r*10, '', 'black')])}</div>
-                    <div class="chart">{self.create_radar_chart([x for x, y in self.overall["politics"].items()], [x["sentiment"] for x in self.overall["politics"].values()], "Ideologies")}</div>
-                    <p>Countries of interest: {",   ".join((self.interest_sum.get("politics", {}) or {}).get("countries", []) or [])}</p>
-                </div>
-                <h2>Other topics</h2>
-                <div class="row">
-                    <div class="chart">{self.create_pie_chart([x["interest"] for x in self.others], [x["counter"] for x in self.others], "Other topics")}</div> 
-                </div>
-            </div>
-        </body>
-        </html>
-        '''
-
+        if not max_r:
+            max_r = float('inf')
         if do_html:
+            html_content = f'''
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Vizualizácia grafov</title>
+                <style>
+                    body {{ font-family: Arial, sans-serif; text-align: center; }}
+                    .container {{ display: flex; flex-direction: column; align-items: center; gap: 20px; }}
+                    .row {{
+                        display: flex;
+                        justify-content: flex-start; /* Aligns items to the left */
+                        gap: 20px;
+                        width: 100%;
+                        overflow-x: auto; /* Allows horizontal scrolling if content overflows */
+                        white-space: nowrap; /* Prevents items from wrapping to next line */
+                        padding: 10px 0; /* Optional: adds some vertical padding */
+                    }}
+                    .chart {{
+                        flex: 0 0 auto; /* Prevents charts from shrinking/growing */
+                        width: 400px; /* Fixed width for each chart */
+                        height: 400px; /* Fixed height for each chart */
+                    }}
+                </style>
+            </head>
+            <body>
+                <h1>{self.username} | {self.interval[0]} -> {self.interval[1]}</h1>
+                
+                <div class="container">
+                    <h2>Basic info</h2>
+                    <div class="row">
+                        <div class="chart">{self.create_pie_chart(list(self.languages.keys()), list(self.languages.values()), "Jazyky")}</div>
+                        <div class="chart">{self.create_pie_chart([f'{i}:00-{i+1}:00' for i in self.daily_activity.keys()], list(self.daily_activity.values()), "Denna aktivita")}</div>
+                    </div>
+                    <div class="row">
+                        <p>Top hashtagy: {'  '.join([f'#{i}' for i in self.top_hashtags])}</p>
+                        <p>Top zmienky: {'  '.join([f'@{i}' for i in self.top_mentions])}</p>
+                        <p>Aktivita: {self.avg_activity} per month</p>
+                        <p>Lokacia: {self.location}</p>
+                    </div>
+                    <div class="row">
+                        <div class="chart">{self.create_pie_chart(list(topic_tweet_count.keys()), list(topic_tweet_count.values()), "Topic tweets")}</div>
+                        <div class="chart">{self.create_pie_chart(list(topic_interest_count.keys()), list(topic_interest_count.values()), "Topic interests")}</div>
+                        <div class="chart">{self.create_pie_chart(list(topic_all_count.keys()), list(topic_all_count.values()), "Topic overall")}</div>
+                    </div>
+                    <h2>Sport info</h2>
+                    <h4>Sports</h4>
+                    <div class="row">
+                        <div class="chart">{self.create_radar_chart(list(self.overall["sport"].keys()), [sum(x["mentions"].values()) for x in self.overall["sport"].values()], "Interest")}</div>
+                        <div class="chart">{self.create_bar_chart(list(self.overall["sport"].keys()), [round(sum(x["sentiment"])*10, 2) for x in self.overall["sport"].values()], "Sentiment")}</div>
+                    </div>
+                    <div class="row">
+                        {" ".join([f'<div class="chart">{self.create_pie_chart(list(data.keys()), list(data.values()), sport)}</div>' for sport,data in self.sport_countries.items()])}
+                    </div>
+                    <h4>Clubs</h4>
+                    <div class="row">
+                        <div class="chart">{self.create_radar_chart(list(self.overall["club"].keys()), [sum(x["mentions"].values()) for x in self.overall["club"].values()], "Interest")}</div>
+                        <div class="chart">{self.create_bar_chart(list(self.overall["club"].keys()), [round(sum(x["sentiment"])*10, 2) for x in self.overall["club"].values()], "Sentiment")}</div>
+                    </div>
+                    <h4>Athletes</h4>
+                    <div class="row">
+                        <div class="chart">{self.create_radar_chart(list(self.overall["athlete"].keys()), [sum(x["mentions"].values()) for x in self.overall["athlete"].values()], "Interest")}</div>
+                        <div class="chart">{self.create_bar_chart(list(self.overall["athlete"].keys()), [round(sum(x["sentiment"])*10, 2) for x in self.overall["athlete"].values()], "Sentiment")}</div>
+                    </div>
+
+                    <h2>Music info</h2>
+                    <h4>Genres</h4>
+                    <div class="row">
+                        <div class="chart">{self.create_radar_chart(list(self.overall["genre"].keys()), [sum(x["mentions"].values()) for x in self.overall["genre"].values()], "Interest")}</div>
+                        <div class="chart">{self.create_bar_chart(list(self.overall["genre"].keys()), [round(sum(x["sentiment"])*10, 2) for x in self.overall["genre"].values()], "Sentiment")}</div>
+                    </div>
+                    <div class="row">
+                        {" ".join([f'<div class="chart">{self.create_pie_chart(list(data.keys()), list(data.values()), genre)}</div>' for genre,data in self.music_countries.items()])}
+                    </div>
+                    <h4>Artists</h4>
+                    <div class="row">
+                        <div class="chart">{self.create_radar_chart(list(self.overall["artist"].keys()), [sum(x["mentions"].values()) for x in self.overall["artist"].values()], "Interest")}</div>
+                        <div class="chart">{self.create_bar_chart(list(self.overall["artist"].keys()), [round(sum(x["sentiment"])*10, 2) for x in self.overall["artist"].values()], "Sentiment")}</div>
+                    </div>
+                    <h2>Politics info</h2>
+                    <div class="row">
+                        <div class="chart">{self.create_grid_chart([(compass_x/max_r*10, compass_y/max_r*10, '', 'black')])}</div>
+                        <div class="chart">{self.create_radar_chart([x for x, y in self.overall["politics"].items()], [x["sentiment"] for x in self.overall["politics"].values()], "Ideologies")}</div>
+                        <p>Countries of interest: {",   ".join((self.interest_sum.get("politics", {}) or {}).get("countries", []) or [])}</p>
+                    </div>
+                    <h2>Other topics</h2>
+                    <div class="row">
+                        <div class="chart">{self.create_pie_chart([x["interest"] for x in self.others], [x["counter"] for x in self.others], "Other topics")}</div> 
+                    </div>
+                </div>
+            </body>
+            </html>
+            '''
+
+        
             with open(self.filename, "w", encoding="utf-8") as file:
                 file.write(html_content)
             print(f"HTML file '{self.filename}' has been created.")
@@ -986,13 +991,13 @@ class Profile:
             
             for mention in mentions:
                 if mention not in self.all_mentions:
-                    self.all_mentions[mention] = [0, []]
-                self.all_mentions[mention][0] += 1
+                    self.all_mentions[mention] = []
+                self.all_mentions[mention].append(tweet.created)
                 
             for hashtag in hashtags:
                 if hashtag not in self.hashtags:
-                    self.hashtags[hashtag] = [0, []]
-                self.hashtags[hashtag][0] += 1
+                    self.hashtags[hashtag] = []
+                self.hashtags[hashtag].append(tweet.created)
 
             self.daily_activity[tweet.time.hour].append(tweet)
         
@@ -1013,7 +1018,7 @@ class Profile:
             f"Tweets: {len(self.tweets)}, Reposts: {len(self.reposts)}, Comments: {len(self.comments)}, Quotes: {len(self.quotes)}\n"
         )
 
-    def summary(self, step=None):
+    def summary(self, step=1):
 
         ### rozdelit si sumar a analyzu na jednoducho vydedukovatelne a tazko
         ### napr. jednoducho = sleduje vela americkych novinarov -> zaujima sa a o americku politiku
@@ -1024,9 +1029,9 @@ class Profile:
         all_entries = self.tweets+self.reposts+self.comments+self.quotes
         all_entries.sort(key=lambda x: x.created, reverse=True)
         if all_entries:
-            self.avg_activity = f"{len(all_entries)/(((datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + relativedelta(months=1)).replace(day=1) - all_entries[-1].created.replace(day=1)).days / 30)} per month"
+            self.avg_activity = len(all_entries)/(((datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + relativedelta(months=1)).replace(day=1) - all_entries[-1].created.replace(day=1)).days / 30)
         else:
-            self.avg_activity = "No activity"
+            self.avg_activity = 0
         #print("entries", all_entries)
 
         if step and all_entries:
@@ -1042,15 +1047,15 @@ class Profile:
                 mentions = {}
                 hashtags = {}
                 daily = {i: [] for i in range(24)}
-                for name, mention in self.all_mentions.items():
-                    for date in mention[1]:
+                for name, dates in self.all_mentions.items():
+                    for date in dates:
                         if date >= previous_date and date < current_date:
                             if name not in mentions:
                                 mentions[name] = 0
                             mentions[name] += 1
                             
-                for name, hashtag in self.hashtags.items():
-                    for date in hashtag[1]:
+                for name, dates in self.hashtags.items():
+                    for date in dates:
                         if date >= previous_date and date < current_date:
                             if name not in hashtags:
                                 hashtags[name] = 0
@@ -1063,10 +1068,10 @@ class Profile:
                         if tweet.created >= previous_date and tweet.created < current_date:
                             daily[hour].append(tweet)
                             number_of_tweets_in_step += 1
-                avg_activity = f"{number_of_tweets_in_step/step} per month"
+                avg_activity = number_of_tweets_in_step/step
                 
                 #print(f"{previous_date.strftime('%Y-%m-%d')} -> {current_date.strftime('%Y-%m-%d')}")
-                self.summaries[f"{current_date.strftime('%Y-%m-%d')}"] = Summary(self.username, self.expression_sum((previous_date, current_date)), self.interaction_sum((previous_date, current_date)), self.interest_sum("profile_analysis.json"), hashtags, mentions, self.location, avg_activity, daily, (previous_date, current_date))
+                self.summaries[current_date] = Summary(self.username, self.expression_sum((previous_date, current_date)), self.interaction_sum((previous_date, current_date)), self.interest_sum("profile_analysis.json"), hashtags, mentions, self.location, avg_activity, daily, (previous_date, current_date))
                 
                 if previous_date == start_date:
                     break 
@@ -1077,8 +1082,8 @@ class Profile:
             min_date = datetime.min
             if all_entries:
                 min_date = all_entries[-1].created.replace(day=1)
-            interval = (min_date, datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + relativedelta(months=1)).replace(day=1))
-            self.summaries[f"{interval[1].strftime('%Y-%m-%d')}"] =  Summary(self.username, self.expression_sum(), self.interaction_sum(), self.interest_sum("profile_analysis.json"), self.hashtags, self.all_mentions, self.location, self.avg_activity, self.daily_activity, interval)
+            interval = (min_date, (datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + relativedelta(months=1)).replace(day=1))
+            self.summaries[interval[1]] =  Summary(self.username, self.expression_sum(), self.interaction_sum(), self.interest_sum("profile_analysis.json"), self.hashtags, self.all_mentions, self.location, self.avg_activity, self.daily_activity, interval)
         
 
         for i in self.summaries.values():
@@ -1748,7 +1753,7 @@ class SocialBubble:
                                         n.edges.append(e)
                                         self.nodes[i].edges.append(e)
                                         self.edges.append(e)
-                                    e.weight["mentions"][e.direction(n, self.nodes[i])] += n.profile.all_mentions[i][0]
+                                    e.weight["mentions"][e.direction(n, self.nodes[i])] += len(n.profile.all_mentions[i])
 
                                 for i in self.mentioned_outside_bubble.get(tweet.source_username, []):
                                     temp = self.exist_edge(n, self.nodes[i])
@@ -1759,7 +1764,7 @@ class SocialBubble:
                                         n.edges.append(e)
                                         self.nodes[i].edges.append(e)
                                         self.edges.append(e)
-                                    e.weight["mentions"][e.direction(self.nodes[i], n)] += self.nodes[i].all_mentions[tweet.source_username]
+                                    e.weight["mentions"][e.direction(self.nodes[i], n)] += len(self.nodes[i].all_mentions[tweet.source_username])
 
 
 
@@ -1924,21 +1929,708 @@ class SocialBubble:
             json.dump(cached_profiles, f, indent=4, ensure_ascii=False)
 
     #step => number of months in one summary
-    def profiles_summary(self, step=None):
+    def profiles_summary(self, step=1):
+        self.all_sums = {}
         for username, node in self.nodes.items():
+            print(username)
             node.profile.summary(step)
-            for i in node.profile.summaries.values():
-                print(i.get_summary())
 
-    def bubble_summary(self):
-        return
+            for date, summary in node.profile.summaries.items():
+                print(date)
+                if date not in self.all_sums:
+                    self.all_sums[date] = []
+                self.all_sums[date].append(summary)
+                
+        return self.all_sums
 
+
+class BubbleSummary:
+    def __init__(self, all_sums, social_bubble):
+        self.all_sums = all_sums
+        self.evolution_stats = {
+            "languages": {},
+            "daily_activity": {},
+            "top_hashtags": {}, # vezme top hashtagy z kazdeho profilu pre kazdy mesiac
+            "top_mentions": {},
+            "avg_activity": {},
+            "daily_activity": {},
+            "top_topic_tweets": {},
+            "top_topic_interests": {},
+            "top_topic_overall": {},
             
+            "hashtags": {},
+            "mentions": {},
+
+            "ideologies": {},   # expressed ideologies
+            
+            
+            
+        }
+        '''   stat: profil: interval: value   '''
+
+        self.overall_stats = {
+##            "mention_usage": {},
+##            "most_followed_profile": {},
+            "locations": {},
+            "topic_spread": {},
+            "major_topic_profiles": {},
+            "other_topics": {},  # topic : {profiles : counter}
+            "compass": {},   # profile : compass
+             # ideology : {+ : [profiles], - : [profiles]}
+            "ideologies_overall": {}
+            
+# overall
+            
+            
+            
+        }
+        self.bubble_summary()
+
+    def create_pie_chart(self, labels, values, title):
+        if labels and values:
+            pie_chart = go.Figure(go.Pie(labels=labels, values=values, title=title))
+            pie_chart.update_layout(width=550, height=550)
+            return pie_chart.to_html(full_html=False)
+
+    def create_radar_chart(self, labels, values, title):
+        if labels and values:
+            radar_chart = go.Figure()
+            radar_chart.add_trace(go.Scatterpolar(r=values, theta=labels, fill='toself'))
+            radar_chart.update_layout(title=title, polar=dict(radialaxis=dict(visible=False)), width=550, height=550)
+            return radar_chart.to_html(full_html=False)
+
+    def create_bar_chart(self, labels, values, title):
+        if labels and values:
+            bar_chart = go.Figure(go.Bar(x=labels, y=values, marker_color=['red' if v < -2 else 'yellow' if -2 <= v <= 2 else 'green' for v in values]))
+            bar_chart.update_layout(title=title, yaxis=dict(range=[-10, 10]), width=550, height=550)
+            return bar_chart.to_html(full_html=False)
+
+    def create_line_graph(self, x_values, y_values_list, line_names, title):
+        if not x_values or not y_values_list or not line_names:
+            return None
+            
+        if len(y_values_list) != len(line_names):
+            return None
+            
+        line_graph = go.Figure()
+        
+        for y_values, name in zip(y_values_list, line_names):
+            line_graph.add_trace(go.Scatter(
+                x=x_values,
+                y=y_values,
+                name=name,
+                mode='lines+markers'
+            ))
+        
+        line_graph.update_layout(
+            title=title,
+            xaxis_title='X Axis',
+            yaxis_title='Y Axis',
+            width=550,
+            height=550,
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=1.02,
+                xanchor="right",
+                x=1
+            )
+        )
+        
+        return line_graph.to_html(full_html=False)
+
+    def create_grid_chart(self, points, grid_size=10, background_colors=['#ff7575','#42aaff','#9aed97','#c09aec'], title="Political Compass"):
+        """
+        Creates an NxN grid plot with points at specified coordinates.
+        
+        Args:
+            points: List of tuples in format (x, y, label, color)
+            grid_size: Size of the grid (default 10 for -5 to +5)
+            background_colors: Optional list of colors for quadrants [Q1, Q2, Q3, Q4]
+            title: Chart title
+        """
+        # Create figure
+        fig = go.Figure()
+        
+        # Create grid background with optional quadrant colors
+        if background_colors and len(background_colors) >= 4:
+            # Add quadrant rectangles
+            fig.add_shape(type="rect", x0=-grid_size, y0=0, x1=0, y1=grid_size, 
+                         fillcolor=background_colors[0], opacity=0.7, layer="below")
+            fig.add_shape(type="rect", x0=0, y0=0, x1=grid_size, y1=grid_size, 
+                         fillcolor=background_colors[1], opacity=0.7, layer="below")
+            fig.add_shape(type="rect", x0=-grid_size, y0=-grid_size, x1=0, y1=0, 
+                         fillcolor=background_colors[2], opacity=0.7, layer="below")
+            fig.add_shape(type="rect", x0=0, y0=-grid_size, x1=grid_size, y1=0, 
+                         fillcolor=background_colors[3], opacity=0.7, layer="below")
+        
+        # Add grid lines
+        for i in range(-grid_size, grid_size+1):
+            fig.add_shape(type="line", x0=i, y0=-grid_size, x1=i, y1=grid_size, 
+                         line=dict(color="DarkGray", width=1))
+            fig.add_shape(type="line", x0=-grid_size, y0=i, x1=grid_size, y1=i, 
+                         line=dict(color="DarkGray", width=1))
+        
+        # Add axes
+        fig.add_shape(type="line", x0=-grid_size, y0=0, x1=grid_size, y1=0, 
+                     line=dict(color="Black", width=2))
+        fig.add_shape(type="line", x0=0, y0=-grid_size, x1=0, y1=grid_size, 
+                     line=dict(color="Black", width=2))
+        
+        # Add points with hover text
+        for x, y, label, color in points:
+            fig.add_trace(go.Scatter(
+                x=[x], y=[y],
+                name=label,
+                mode='markers+text',
+                marker=dict(size=12, color=color),
+                text=[label],
+                textposition="top center",
+                hoverinfo="text",
+                hovertext=f"{label}<br>X: {x:.2f}<br>Y: {y:.2f}"
+            ))
+        
+        # Set layout
+        fig.update_layout(
+            title=title,
+            xaxis=dict(range=[-grid_size, grid_size], title="Economic (Left-Right)"),
+            yaxis=dict(range=[-grid_size, grid_size], title="Social (Libertarian-Authoritarian)"),
+            width=400,
+            height=400,
+            showlegend=False
+        )
+        
+        return fig.to_html(full_html=False)
+
+        
+    def bubble_summary(self):
+        for date, summaries in self.all_sums.items():
+            for summary in summaries:
+                data = summary.get_summary()
+                for language, count in data["languages"].items():
+                    if date not in self.evolution_stats["languages"]:
+                        self.evolution_stats["languages"][date] = {}
+                    if language not in self.evolution_stats["languages"][date]:
+                        self.evolution_stats["languages"][date][language] = {}
+                    if data['username'] not in self.evolution_stats["languages"][date][language]:
+                        self.evolution_stats["languages"][date][language][data['username']] = 0          
+                    self.evolution_stats["languages"][date][language][data['username']] += count
+
+                for daily_activity, count in data["daily_activity"].items():
+                    if date not in self.evolution_stats["daily_activity"]:
+                        self.evolution_stats["daily_activity"][date] = {}
+                    if daily_activity not in self.evolution_stats["daily_activity"][date]:
+                        self.evolution_stats["daily_activity"][date][daily_activity] = {}
+                    if data['username'] not in self.evolution_stats["daily_activity"][date][daily_activity]:
+                        self.evolution_stats["daily_activity"][date][daily_activity][data['username']] = 0          
+                    self.evolution_stats["daily_activity"][date][daily_activity][data['username']] += count
+
+                
+                if date not in self.evolution_stats["avg_activity"]:
+                    self.evolution_stats["avg_activity"][date] = {}
+                if data['username'] not in self.evolution_stats["avg_activity"][date]:
+                    self.evolution_stats["avg_activity"][date][data['username']] = 0          
+                self.evolution_stats["avg_activity"][date][data['username']] += data["avg_activity"]
+
+                
+                if data["location"] not in self.overall_stats["locations"]:
+                    self.overall_stats["locations"][data["location"]] = []
+                self.overall_stats["locations"][data["location"]].append(data["username"])
+
+
+                for hashtag, count in summary.hashtags.items():
+                    if date not in self.evolution_stats["hashtags"]:
+                        self.evolution_stats["hashtags"][date] = {}
+                    if hashtag not in self.evolution_stats["hashtags"][date]:
+                        self.evolution_stats["hashtags"][date][hashtag] = {}
+                    if data['username'] not in self.evolution_stats["hashtags"][date][hashtag]:
+                        self.evolution_stats["hashtags"][date][hashtag][data['username']] = 0
+                    self.evolution_stats["hashtags"][date][hashtag][data['username']] = count
+
+                for mention, count in summary.mentions.items():
+                    if date not in self.evolution_stats["mentions"]:
+                        self.evolution_stats["mentions"][date] = {}
+                    if mention not in self.evolution_stats["mentions"][date]:
+                        self.evolution_stats["mentions"][date][mention] = {}
+                    if data['username'] not in self.evolution_stats["mentions"][date][mention]:
+                        self.evolution_stats["mentions"][date][mention][data['username']] = 0
+                    self.evolution_stats["mentions"][date][mention][data['username']] = count
+
+                for topic in ["sport", "club", "artist", "genre", "athlete"]:
+                    for item, item_data in data["overall"][topic].items():
+                        if f"{topic}_tweet_sentiment" not in self.evolution_stats:
+                            self.evolution_stats[f"{topic}_tweet_sentiment"] = {}
+                        if f"{topic}_overall_sentiment" not in self.evolution_stats:
+                            self.evolution_stats[f"{topic}_overall_sentiment"] = {}
+                        if f"{topic}_tweet_mentions" not in self.evolution_stats:
+                            self.evolution_stats[f"{topic}_tweet_mentions"] = {}
+                        if f"{topic}_overall_mentions" not in self.evolution_stats:
+                            self.evolution_stats[f"{topic}_overall_mentions"] = {}
+
+                        
+                        if date not in self.evolution_stats[f"{topic}_tweet_sentiment"]:
+                            self.evolution_stats[f"{topic}_tweet_sentiment"][date] = {}
+                        if date not in self.evolution_stats[f"{topic}_overall_sentiment"]:
+                            self.evolution_stats[f"{topic}_overall_sentiment"][date] = {}
+                        if date not in self.evolution_stats[f"{topic}_tweet_mentions"]:
+                            self.evolution_stats[f"{topic}_tweet_mentions"][date] = {}
+                        if date not in self.evolution_stats[f"{topic}_overall_mentions"]:
+                            self.evolution_stats[f"{topic}_overall_mentions"][date] = {}
+                            
+                        if item not in self.evolution_stats[f"{topic}_tweet_sentiment"][date]:
+                            self.evolution_stats[f"{topic}_tweet_sentiment"][date][item] = {}
+                        if item not in self.evolution_stats[f"{topic}_overall_sentiment"][date]:
+                            self.evolution_stats[f"{topic}_overall_sentiment"][date][item] = {}
+                        if item not in self.evolution_stats[f"{topic}_tweet_mentions"][date]:
+                            self.evolution_stats[f"{topic}_tweet_mentions"][date][item] = {}
+                        if item not in self.evolution_stats[f"{topic}_overall_mentions"][date]:
+                            self.evolution_stats[f"{topic}_overall_mentions"][date][item] = {}
+                            
+                        if data['username'] not in self.evolution_stats[f"{topic}_tweet_sentiment"][date][item]:
+                            self.evolution_stats[f"{topic}_tweet_sentiment"][date][item][data['username']] = 0
+                        if data['username'] not in self.evolution_stats[f"{topic}_overall_sentiment"][date][item]:
+                            self.evolution_stats[f"{topic}_overall_sentiment"][date][item][data['username']] = 0
+                        if data['username'] not in self.evolution_stats[f"{topic}_tweet_mentions"][date][item]:
+                            self.evolution_stats[f"{topic}_tweet_mentions"][date][item][data['username']] = 0
+                        if data['username'] not in self.evolution_stats[f"{topic}_overall_mentions"][date][item]:
+                            self.evolution_stats[f"{topic}_overall_mentions"][date][item][data['username']] = 0
+                            
+                        self.evolution_stats[f"{topic}_tweet_sentiment"][date][item][data['username']] += sum(item_data['sentiment'][:-1] if item_data["mentions"]['interest'] > 0 else item_data['sentiment'])
+                        self.evolution_stats[f"{topic}_overall_sentiment"][date][item][data['username']] += sum(item_data['sentiment'])
+                        self.evolution_stats[f"{topic}_tweet_mentions"][date][item][data['username']] += item_data['mentions'].get('expression', 0)+item_data['mentions'].get('interaction', 0)
+                        self.evolution_stats[f"{topic}_overall_mentions"][date][item][data['username']] += sum(item_data['mentions'].values())
+
+                for topic in data["overall"]["other"]:
+                    if topic['interest'] not in self.overall_stats['other_topics']:
+                        self.overall_stats['other_topics'][topic['interest']] = {}
+                    if data['username'] not in self.overall_stats['other_topics'][topic['interest']]:
+                        self.overall_stats['other_topics'][topic['interest']][data['username']] = 0
+                    self.overall_stats['other_topics'][topic['interest']][data['username']] += topic['counter']
+                for i in ["politics", "sport", "music"]:
+                    if i not in self.overall_stats['other_topics']:
+                        self.overall_stats['other_topics'][i] = {}
+                    if data['username'] not in self.overall_stats['other_topics'][i]:
+                        self.overall_stats['other_topics'][i][data['username']] = 0
+                        
+                    self.overall_stats['other_topics'][i][data['username']] += data["topic_counts"][2][i]
+
+                
+                if data['username'] not in self.overall_stats['compass']:
+                    self.overall_stats['compass'][data['username']] = [0,0,0]
+                for i in range(3):
+                    self.overall_stats['compass'][data['username']][i] += data['compass'][i]
+
+
+                for ideology, ideology_data in data["overall"]["politics"].items():
+                    if date not in self.evolution_stats["ideologies"]:
+                        self.evolution_stats["ideologies"][date] = {}
+                    if ideology not in self.overall_stats["ideologies_overall"]:
+                        self.overall_stats["ideologies_overall"][ideology] = {}
+                    if ideology not in self.evolution_stats["ideologies"][date]:
+                        self.evolution_stats["ideologies"][date][ideology] = {}
+                    if data['username'] not in self.overall_stats["ideologies_overall"][ideology]:
+                        self.overall_stats["ideologies_overall"][ideology][data['username']] = 0
+                    if data['username'] not in self.evolution_stats["ideologies"][date][ideology]:
+                        self.evolution_stats["ideologies"][date][ideology][data['username']] = 0
+                    self.overall_stats["ideologies_overall"][ideology][data['username']] += ideology_data["sentiment"]
+                    self.evolution_stats["ideologies"][date][ideology][data['username']] += ideology_data["mentions"]["ex/int"]
+ 
+                        
+                        
+                    
+
+
+
+                    
+                
+
+        with open("bubble_summary.json", "w", encoding="utf-8") as f:
+            json.dump(
+                {
+                    "evolution": self.convert_datetime_keys_to_strings(self.evolution_stats),
+                    "overall": self.convert_datetime_keys_to_strings(self.overall_stats)
+                },
+                f,
+                indent=4,
+                ensure_ascii=False
+            )            
+
+##                jazyk sum
+##                denna akt sum
+##                ziskat hashtagy z profiles
+##                ziskat mentions z profiles
+##            {
+##                "username": self.username,
+##                "expression_sum": self.expression_sum,
+##                "interaction_sum": self.interaction_sum,
+##                "interest_sum": self.interest_sum,
+##                "overall": self.overall,
+##                "top_hashtags": self.top_hashtags,
+##                "top_mentions": self.top_mentions,
+##                "location": self.location,
+##                "avg_activity": self.avg_activity,
+##                "daily_activity": self.daily_activity,
+##                "interval": self.interval,
+##                "languages": self.languages,
+##                "compass": self.compass,
+##                "topic_counts": self.topic_counts
+##            }
+
+    # date lang profile count
+    def convert_datetime_keys_to_strings(self, obj):
+        if isinstance(obj, dict):
+            new_dict = {}
+            for key, value in obj.items():
+                # Convert datetime key to string
+                new_key = key.isoformat() if isinstance(key, datetime) else key
+                
+                # Recursively process the value
+                new_value = self.convert_datetime_keys_to_strings(value)
+                
+                new_dict[new_key] = new_value
+            return new_dict
+        elif isinstance(obj, list):
+            return [self.convert_datetime_keys_to_strings(item) for item in obj]
+        else:
+            return obj
+
+
+        
+    def avg_activity_evolution(self, PROFILES=None):
+        #print(self.evolution_stats["avg_activity"])
+        # {jazyk% : []}
+        summary = {"dates":[], "avg_activity": {}}
+        for date, profiles in sorted(self.evolution_stats["avg_activity"].items()):
+            summary["dates"].append(date)
+            
+            for profile, count in profiles.items():
+                if not PROFILES:
+                    if profile not in summary["avg_activity"]:
+                        summary["avg_activity"][profile] = []
+                    summary["avg_activity"][profile].append(count)
+                else:
+                    if profile not in PROFILES:
+                        continue
+                    if profile not in summary["avg_activity"]:
+                        summary["avg_activity"][profile] = []
+                    summary["avg_activity"][profile].append(count)
+                
+        max_len = max(len(lst) for lst in summary["avg_activity"].values())
+    
+        summary["avg_activity"] = {
+            key: [0] * (max_len - len(lst)) + lst
+            for key, lst in summary["avg_activity"].items()
+        }
+                
+            
+        
+        return f'''
+            <div class="row">
+                <div class="chart">{self.create_line_graph(
+                    list(summary['dates']), 
+                    [j for i,j in summary['avg_activity'].items()],
+                    list(summary['avg_activity'].keys()),
+                    f"Average activity evolution for {', '.join(PROFILES) if PROFILES else 'all profiles'}"
+                )}</div>
+            </div>  
+        '''  
+
+    def avg_activity_sum(self, PROFILES=[]):
+        summary = {}
+        for date, profiles in self.evolution_stats["avg_activity"].items():
+            for profile, count in profiles.items():
+                if profile not in summary:
+                    summary[profile] = 0
+                if not PROFILES:
+                    summary[profile] += count
+                elif profile in PROFILES:
+                    summary[profile] += count
+
+        return f'''
+            <div class="row">
+                <div class="chart">
+                    <p>Average tweet rate of bubble: {sum(summary.values())} per month   </p>
+                    <p>Average tweet rate per profile: {sum(summary.values())/len(set(PROFILES)&set(summary.keys()) if PROFILES else set(summary.keys()))} per month</p>
+                </div>
+            </div>  
+        '''
+
+    def locations_sum(self, PROFILES=[]):
+        return f'''
+            <div class="row">
+                <div class="chart">{self.create_pie_chart(
+                    list(self.overall_stats["locations"].keys()), 
+                    [len(set(j) & set(PROFILES)) for i,j in self.overall_stats["locations"].items()], 
+                    f"Locations of {', '.join(PROFILES) if PROFILES else 'all profiles'}"
+                )}</div>
+            </div>  
+        '''
+    def most_followed_profiles(self, PROFILES=[], threshold=0, show_number=float('inf')):
+        summary = {}
+        for i, j in SB.get_outside_profiles_data(threshold).items():
+            if PROFILES:
+                summary[i] = len(set(PROFILES) & set(SB.followed_outside_bubble[i]))
+            else:
+                summary[i] = len(SB.followed_outside_bubble[i])
+                
+        summary = sorted(summary.items(), key=lambda x: x[1], reverse=True)
+        summary = ', '.join([x[0] for x in summary][:min(len(summary), show_number)])
+                
+        return f'''
+            <div class="row">
+                <p>Most followed profiles outside bubble: {summary}</p>
+            </div>  
+        '''
+
+    def item_usage(self, ITEM, PROFILES=[], show_number=float('inf')): # item is "hashtags" or "mentions"
+        summary = {}
+        for date, items in self.evolution_stats[ITEM].items():
+            for item, data in items.items():
+                if item not in summary:
+                    summary[item] = 0
+                for profile, count in data.items():
+                    if not PROFILES:
+                        summary[item] += count
+                    elif profile in PROFILES:
+                        summary[item] += count
+
+        summary = dict(sorted(summary.items(), key=lambda x: x[1], reverse=True)[:min(show_number, len(summary))])
+
+        return f'''
+            <div class="row">
+                <div class="chart">
+                    {self.create_pie_chart(
+                        list(summary.keys()), 
+                        list(summary.values()), 
+                        f"{' '.join(ITEM.capitalize().split('_'))} usage of {', '.join(PROFILES) if PROFILES else 'all profiles'}"
+                    ) if 'sentiment' not in ITEM else self.create_bar_chart(
+                        list(summary.keys()), 
+                        [10*i for i in summary.values()], 
+                        f"{' '.join(ITEM.capitalize().split('_'))} in {', '.join(PROFILES) if PROFILES else 'all profiles'}"
+                    )}
+                </div>
+            </div>  
+        '''
+
+    def item_spread(self, ITEM, PROFILES=[], show_number=float('inf')):
+        summary = {}
+        for date, items in self.evolution_stats[ITEM].items():
+            for item, data in items.items():
+                if item not in summary:
+                    summary[item] = set()
+                if not PROFILES:
+                    summary[item] |= {k for k, v in data.items() if v > 0}
+                else:
+                    summary[item] |= {k for k, v in data.items() if v > 0}&set(PROFILES)
+        for key in summary.keys():
+            summary[key] = len(summary[key])
+
+        summary = dict(sorted(summary.items(), key=lambda x: x[1], reverse=True)[:min(show_number, len(summary))])
+
+        return f'''
+            <div class="row">
+                <div class="chart">
+                    {self.create_pie_chart(
+                        list(summary.keys()), 
+                        list(summary.values()), 
+                        f"{' '.join(ITEM.capitalize().split('_'))} spread of {', '.join(PROFILES) if PROFILES else 'all profiles'}"
+                    )}
+                </div>
+            </div>  
+        '''
+
+    def item_evolution(self, ITEM, PROFILES=None):
+        #print(self.evolution_stats[ITEM])
+        # {jazyk% : []}
+        summary = {"dates":[], ITEM: {}}
+        for date, item in sorted(self.evolution_stats[ITEM].items()):
+            summary["dates"].append(date)
+            
+            for item, profiles in item.items():
+                if item not in summary[ITEM]:
+                    summary[ITEM][item] = []
+                if PROFILES:
+                    summary[ITEM][item].append(sum([j for i,j in profiles.items() if i in PROFILES]))
+                else:
+                    summary[ITEM][item].append(sum(profiles.values()))
+                
+        max_len = max(len(lst) for lst in summary[ITEM].values())
+    
+        summary[ITEM] = {
+            key: [0] * (max_len - len(lst)) + lst
+            for key, lst in summary[ITEM].items()
+        }
+                
+            
+        
+        return f'''
+            <div class="row">
+                <div class="chart">{self.create_line_graph(
+                    list(summary['dates']), 
+                    [j for i,j in summary[ITEM].items()],
+                    list(summary[ITEM].keys()),
+                    f"{' '.join(ITEM.capitalize().split('_'))} evolution for {', '.join(PROFILES) if PROFILES else 'all profiles'}"
+                )}</div>
+            </div>  
+        '''
+
+    def other_topics(self, PROFILES=[], show_number=float('inf')):
+        summary = {}
+##        print(self.overall_stats["other_topics"])
+        merged = AI_GENERALISATION_PARSER.generalise(self.overall_stats["other_topics"])
+##        print(merged)
+        for i in merged["list_of_topics"]:
+            if i["interest"] not in summary:
+                summary[i["interest"]] = 0
+            for j in i["map_counter"]:
+                if PROFILES and j["profile_name"] not in PROFILES:
+                    continue
+                summary[i["interest"]] += j["counter"]
+
+        summary = dict(sorted(summary.items(), key=lambda x: x[1], reverse=True)[:min(show_number, len(summary))])
+                
+        return f'''
+            <div class="row">
+                <div class="chart">
+                    {self.create_pie_chart(
+                        list(summary.keys()), 
+                        list(summary.values()), 
+                        f"Topics of interest for {', '.join(PROFILES) if PROFILES else 'all profiles'}"
+                    )}
+                </div>
+            </div>  
+        '''
+    def other_topics_spread(self, PROFILES=[], show_number=float('inf')):
+        summary = {}
+##        print(self.overall_stats["other_topics"])
+        merged = AI_GENERALISATION_PARSER.generalise(self.overall_stats["other_topics"])
+##        print(merged)
+        for i in merged["list_of_topics"]:
+            if i["interest"] not in summary:
+                summary[i["interest"]] = 0
+            if PROFILES:
+                summary[i["interest"]] += len(set([j['profile_name'] for j in i["map_counter"]])&set(PROFILES))
+            else:
+                summary[i["interest"]] += len([j['profile_name'] for j in i["map_counter"]])
+
+        summary = dict(sorted(summary.items(), key=lambda x: x[1], reverse=True)[:min(show_number, len(summary))])
+##        print(summary)
+        return f'''
+            <div class="row">
+                <div class="chart">
+                    {self.create_pie_chart(
+                        list(summary.keys()), 
+                        list(summary.values()), 
+                        f"Topics of interest for {', '.join(PROFILES) if PROFILES else 'all profiles'}"
+                    )}
+                </div>
+            </div>  
+        ''' 
+
+    def compass(self, PROFILES=[]):
+        summary = []
+        for name, (x,y,r) in self.overall_stats["compass"].items():
+            if PROFILES and name not in PROFILES:
+                continue
+            summary.append((x/r*10, y/r*10, name, 'black'))
+            
+        avg_x = sum([x[0] for x in summary])/len(summary)
+        avg_y = sum([y[1] for y in summary])/len(summary)
+        summary.append((avg_x, avg_y, 'Average', 'yellow'))
+        
+        return f'''
+            <div class="row">
+                <div class="chart">
+                    {self.create_grid_chart(summary)}
+                </div>
+            </div>  
+        '''
+
+    def ideology_usage(self, PROFILES=[], show_number=float('inf')):
+        summary = {}
+        for item, data in self.overall_stats['ideologies_overall'].items():
+            if item not in summary:
+                summary[item] = 0
+            for profile, count in data.items():
+                if not PROFILES:
+                    summary[item] += count
+                elif profile in PROFILES:
+                    summary[item] += count
+
+        summary = dict(sorted(summary.items(), key=lambda x: x[1], reverse=True)[:min(show_number, len(summary))])
+
+        return f'''
+            <div class="row">
+                <div class="chart">
+                    {self.create_pie_chart(
+                        list(summary.keys()), 
+                        list(summary.values()), 
+                        f"Prefered ideologies of {', '.join(PROFILES) if PROFILES else 'all profiles'}"
+                    )}
+                </div>
+            </div>  
+        '''
+    
+        
+    
 
         
 
+    def test_show(self):
+        html_content = f'''
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Vizualizácia grafov</title>
+            <style>
+                body {{ font-family: Arial, sans-serif; text-align: center; }}
+                .container {{ display: flex; flex-direction: column; align-items: center; gap: 20px; }}
+                .row {{
+                    display: flex;
+                    justify-content: flex-start; /* Aligns items to the left */
+                    gap: 20px;
+                    width: 100%;
+                    height: 700px;
+                    overflow-x: auto; /* Allows horizontal scrolling if content overflows */
+                    white-space: nowrap; /* Prevents items from wrapping to next line */
+                    padding: 10px 0; /* Optional: adds some vertical padding */
+                }}
+                .chart {{
+                    flex: 0 0 auto; /* Prevents charts from shrinking/growing */
+                    width: 550px; /* Fixed width for each chart */
+                    height: 550px; /* Fixed height for each chart */
+                }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                {self.compass()}
 
+                {self.ideology_usage()}
+            
+                {self.other_topics([], 20)}
 
+                {self.other_topics_spread([], 20)}
+                
+                {self.avg_activity_sum()}{self.avg_activity_sum(['pushkicknadusu'])}{self.avg_activity_evolution()}
+                {self.locations_sum()}{self.locations_sum(['pushkicknadusu'])}
+                {self.most_followed_profiles([], 100, 5)}
+                
+                {[self.item_spread(i, [], 5) for i in list(set(self.evolution_stats.keys())-{'avg_activity'}) if self.evolution_stats[i]]}
+                {[self.item_usage(i, [], 5) for i in list(set(self.evolution_stats.keys())-{'avg_activity'}) if self.evolution_stats[i]]}
+                {[self.item_evolution(i) for i in list(set(self.evolution_stats.keys())-{'avg_activity'}) if self.evolution_stats[i]]}
+                
+            </div>
+        </body>
+        </html>
+        '''
+
+        
+        with open("test.html", "w", encoding="utf-8") as file:
+            file.write(html_content)
+        print(f"HTML file has been created.")
 
             
         
@@ -1957,24 +2649,15 @@ SB.visualize_graph()
 
 ##print(len(opd))
 
-##outside_bubble_data={}
-##for node in SB.nodes.values():
-##    for profile in node.profile.following_outside_bubble_big_profiles(SB.followed_outside_bubble, 2000):
-##        a,b,c = profile
-##        if a not in outside_bubble_data.keys():
-##            outside_bubble_data[a] = (b,c)
-##
-##a = set(outside_bubble_data)- set(SB.nodes["jarro01"].profile.following) - set(SB.nodes["pushkicknadusu"].profile.following)
-##
-##filtered_dict = {k: v for k, v in outside_bubble_data.items() if k in a}
-##
-##print(filtered_dict)
-
 ##SB.profile_analysis(opd)
 
 SB.tweet_analysis()
 
-SB.profiles_summary()
+BS = BubbleSummary(SB.profiles_summary(6), SB)
+
+BS.test_show()
+
+
 
 
 '''
@@ -1986,5 +2669,9 @@ mozne funkcie:
     AK JE NEJAKA TOPIC, ZVYRAZNIT TIE KTORYCH SA TO TYKA + HRANY (INTERAKCIA, ROVNAKY FOLLOW NA DANU TOPIC ...)
 
     CONTAINS => prejdenie tweetov s tým, že sa analyzuje, či obsahuje danú tému a sentiment na ňu
+
+
+2. VYTVORIT SUHRN BUBLINY + ANALYZY
+3. KONZOLOVA APLIKACIA + VIZUALIZACIE
 
 '''
