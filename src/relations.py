@@ -12,6 +12,7 @@ from flask import Flask, render_template_string
 from datetime import datetime, time
 from dateutil.relativedelta import relativedelta
 import plotly.graph_objects as go
+from pyvis.network import Network
 
 
 ### follower/followed
@@ -68,6 +69,14 @@ class Node:
     def __init__(self, username):
         self.edges = []
         self.profile = Profile(username)
+        
+    def compute_interaction_strength(self, PROFILES=[]):
+        total = 0
+        for edge in self.edges:
+            if PROFILES and edge.get_second_node(self).profile.username not in PROFILES:
+                continue
+            total += edge.get_weight_eval()
+        return total
 
 class Edge:
     def __init__(self, weight, node1, node2):
@@ -88,6 +97,25 @@ class Edge:
         ### follows: friends, 1->2, 2->1
         ### reactions: ...
         #self.interactions = {likes, comments, reposts}
+    def get_weight_eval(self):
+        reactions_1_to_2 = len(self.weight["reactions"]["1->2"])
+        reactions_2_to_1 = len(self.weight["reactions"]["2->1"])
+        reaction_base = (reactions_1_to_2 + reactions_2_to_1) * 1  # Base: 1 per reaction
+        reaction_bonus = 2 if (reactions_1_to_2 > 0 and reactions_2_to_1 > 0) else 0  # Mutual bonus
+
+        # Mentions
+        mentions_1_to_2 = self.weight["mentions"]["1->2"]
+        mentions_2_to_1 = self.weight["mentions"]["2->1"]
+        mention_base = (mentions_1_to_2 + mentions_2_to_1) * 0.5  # Base: 0.5 per mention
+        mention_bonus = 1 if (mentions_1_to_2 > 0 and mentions_2_to_1 > 0) else 0  # Mutual bonus
+
+        # Follows
+        follows = self.weight["follows"]
+        follow_bonus = 3 if follows == "friends" else 1 if follows in ["->", "<-"] else 0
+
+        # Total weight
+        total_weight = reaction_base + reaction_bonus + mention_base + mention_bonus + follow_bonus
+        return total_weight
 
     def get_second_node(self, node):
         return self.directions[node]
@@ -104,7 +132,9 @@ class Edge:
     def __str__(self):
         return f"{self.node1.profile.username}; {self.node2.profile.username} | {self.weight}"
 
-
+    def __contains__(self, item):
+        if isinstance(item, Node):
+            return self.node1 == item or self.node2 == item
 
 
         
@@ -209,7 +239,7 @@ class Summary:
             self.sports[sport] = {"sentiment": [sentiment], "mentions": {"expression": mentions, "interaction": 0, "interest": 0}}
 
         for sport, data in self.interaction_sum["sports"].items():
-            sentiment = self.interpret_sentiment_list(self.data["sentiments"], 1.1, 0.4, -0.5)
+            sentiment = self.interpret_sentiment_list(data["sentiments"], 1.1, 0.4, -0.5)
             reaction_sentiment = self.interpret_sentiment_list(data["reaction sentiments"], 0.8, 0.1, -0.5)
             mentions = len(data["sentiments"]) + data["c/p tweets"] + len(data["reaction sentiments"])
             temp = process.extractOne(sport, self.sports.keys()) or [0,0]
@@ -220,7 +250,7 @@ class Summary:
                 self.sports[temp[0]]["sentiment"].append(reaction_sentiment)
                 self.sports[temp[0]]["mentions"]["interaction"] += mentions
 
-        if self.interest_sum["sport"]:
+        if self.interest_sum.get("sport", None):
             for sport in self.interest_sum["sport"]:
                 sentiment = self.interpret_sentiment_list(["positive"]*sport["counter"], 0.6, 0, 0)
                 temp = process.extractOne(sport["sport"].lower(), self.sports.keys()) or [0,0]
@@ -230,7 +260,7 @@ class Summary:
                     self.sports[temp[0]]["sentiment"].append(sentiment)
                     self.sports[temp[0]]["mentions"]["interest"] += sport["counter"]
                 
-
+        
         for club, data in self.expression_sum["clubs"].items():
             sentiment = self.interpret_sentiment_list(data["sentiments"], 1.1, 0.4, -0.7)
             mentions = len(data["sentiments"])
@@ -244,7 +274,7 @@ class Summary:
                 
 
         for club, data in self.interaction_sum["clubs"].items():
-            sentiment = self.interpret_sentiment_list(self.data["sentiments"], 1.1, 0.4, -0.7)
+            sentiment = self.interpret_sentiment_list(data["sentiments"], 1.1, 0.4, -0.7)
             reaction_sentiment = self.interpret_sentiment_list(data["reaction sentiments"], 0.8, 0.1, -0.5)
             mentions = len(data["sentiments"]) + len(data["reaction sentiments"])
             temp = process.extractOne(club, self.clubs.keys()) or [0,0]
@@ -276,7 +306,7 @@ class Summary:
             
                 
 
-        if self.interest_sum["sport"]:
+        if self.interest_sum.get("sport", None):
             for sport in self.interest_sum["sport"]:
                 if sport["countries"]:
                     for country in sport["countries"]:
@@ -311,7 +341,7 @@ class Summary:
             sentiment = self.interpret_sentiment_list(data["sentiments"], 1.1, 0.4, -0.7)
             mentions = len(data["sentiments"])
             self.athletes[player] = {"sentiment": [sentiment], "mentions": {"expression": mentions, "interaction": 0, "interest": 0}}
-            for sport in list(set(data["sports"])):
+            for sport in [data["sport"]]:
                 if sport.lower() not in self.sport_countries:
                     self.sport_countries[sport.lower()] = {}
                 if data["country"].lower() not in self.sport_countries[sport.lower()]:
@@ -320,7 +350,7 @@ class Summary:
             
 
         for player, data in self.interaction_sum["players"].items():
-            sentiment = self.interpret_sentiment_list(self.data["sentiments"], 1.1, 0.4, -0.7)
+            sentiment = self.interpret_sentiment_list(data["sentiments"], 1.1, 0.4, -0.7)
             reaction_sentiment = self.interpret_sentiment_list(data["reaction sentiments"], 0.8, 0.1, -0.5)
             mentions = len(data["sentiments"]) + len(data["reaction sentiments"])
             temp = process.extractOne(sport, self.sports.keys()) or [0,0]
@@ -331,7 +361,7 @@ class Summary:
                 self.athletes[temp[0]]["sentiment"].append(reaction_sentiment)
                 self.athletes[temp[0]]["mentions"]["interaction"] += mentions
                 
-            for sport in list(set(data["sports"])):
+            for sport in [data["sport"]]:
                 if sport.lower() not in self.sport_countries:
                     self.sport_countries[sport.lower()] = {}
                 if data["country"].lower() not in self.sport_countries[sport.lower()]:
@@ -339,7 +369,7 @@ class Summary:
                 self.sport_countries[sport.lower()][data["country"].lower()] += 1
             
 
-        if self.interest_sum["sport"]:
+        if self.interest_sum.get("sport", None):
             for sport in self.interest_sum["sport"]:
                 if sport["countries"]:
                     for country in sport["countries"]:
@@ -350,8 +380,8 @@ class Summary:
                                     if temp[1] > 85:
                                         mentions = country["athletes"].count(temp[0])
                                         sentiment = self.interpret_sentiment_list(["positive"]*mentions, 0.6, 0, 0)
-                                        self.athletes[temp[0].lower()]["sentiment"].append(sentiment)
-                                        self.athletes[temp[0].lower()]["mentions"]["interest"] += mentions
+                                        self.athletes[temp[0]]["sentiment"].append(sentiment)
+                                        self.athletes[temp[0]]["mentions"]["interest"] += mentions
                                     else:
                                         mentions = country["athletes"].count(athlete)
                                         sentiment = self.interpret_sentiment_list(["positive"]*mentions, 0.6, 0, 0)
@@ -368,7 +398,7 @@ class Summary:
             self.genres[genre] = {"sentiment": [sentiment], "mentions": {"expression": mentions, "interaction": 0, "interest": 0}}
 
         for genre, data in self.interaction_sum["genres"].items():
-            sentiment = self.interpret_sentiment_list(self.data["sentiments"], 1.1, 0.4, -0.5)
+            sentiment = self.interpret_sentiment_list(data["sentiments"], 1.1, 0.4, -0.5)
             reaction_sentiment = self.interpret_sentiment_list(data["reaction sentiments"], 0.8, 0.1, -0.5)
             mentions = len(data["sentiments"]) + data["artist tweets"] + len(data["reaction sentiments"])
             temp = process.extractOne(genre, self.genres.keys()) or [0,0]
@@ -379,7 +409,7 @@ class Summary:
                 self.genres[temp[0]]["sentiment"].append(reaction_sentiment)
                 self.genres[temp[0]]["mentions"]["interaction"] += mentions
 
-        if self.interest_sum["music"]:
+        if self.interest_sum.get("music", None):
             for genre in self.interest_sum["music"]:
                 sentiment = self.interpret_sentiment_list(["positive"]*genre["counter"], 0.6, 0, 0)
                 temp = process.extractOne(genre["genre"].lower(), self.genres.keys()) or [0,0]
@@ -404,7 +434,7 @@ class Summary:
             
 
         for artist, data in self.interaction_sum["players"].items():
-            sentiment = self.interpret_sentiment_list(self.data["sentiments"], 1.1, 0.4, -0.7)
+            sentiment = self.interpret_sentiment_list(data["sentiments"], 1.1, 0.4, -0.7)
             reaction_sentiment = self.interpret_sentiment_list(data["reaction sentiments"], 0.8, 0.1, -0.5)
             mentions = len(data["sentiments"]) + len(data["reaction sentiments"])
             temp = process.extractOne(artist, self.artists.keys()) or [0,0]
@@ -423,7 +453,7 @@ class Summary:
                 self.music_countries[genre.lower()][data["country"].lower()] += 1
             
 
-        if self.interest_sum["music"]:
+        if self.interest_sum.get("music", None):
             for genre in self.interest_sum["music"]:
                 if genre["genre"].lower() not in self.music_countries:
                     self.music_countries[genre["genre"].lower()] = {}
@@ -452,7 +482,7 @@ class Summary:
                             self.artists[artist.lower()] = {"sentiment": [sentiment], "mentions": {"expression": 0, "interaction": 0, "interest": mentions}}
 
                         
-        self.others = copy.deepcopy(self.interest_sum["other_interests"])
+        self.others = copy.deepcopy(self.interest_sum.get("other_interests", []))
 
         
         for ideology in copy.deepcopy(self.expression_sum["politics"]["type"])+copy.deepcopy(self.interaction_sum["politics"]["type"]):
@@ -585,7 +615,7 @@ class Summary:
                     }
                 }
 
-        if self.interest_sum["politics"]:
+        if self.interest_sum.get("politics", None):
             for ideology in self.interest_sum["politics"]["ideologies"] or []:
                 ideology_lower = ideology["ideology"].lower()
                 first8 = ideology_lower[:8]
@@ -1117,7 +1147,7 @@ class Profile:
                 ############## OPRAVIT TENTO ERROR ######################
                 type = tweet.content["type"]
             except TypeError:
-                print("ERROR expression tweet.content[\"type\"]", tweet.text, ALL_TWEETS)
+                print("ERROR expression tweet.content[\"type\"]")
                 continue
             if tweet.content["sport"]:
                 clubs = tweet.content["sport"].get("clubs", [])
@@ -1241,7 +1271,7 @@ class Profile:
                 ############## OPRAVIT TENTO ERROR ######################
                 type = reaction.content["reaction"]["type"]
             except TypeError:
-                print("\nERROR: type = reaction.content[\"reaction\"][\"type\"]  ", reaction.text, reaction.content,ALL_TWEETS)
+                print("\nERROR: type = reaction.content[\"reaction\"][\"type\"]  ")
                 continue
             except KeyError:
                 reaction.content["reaction"] = reaction.content.copy()
@@ -1260,7 +1290,7 @@ class Profile:
             
 
             if not ALL_TWEETS.get(reaction.source_tweet, None):
-                print("\nZMAZANY OG TWEET  ", reaction.source_tweet, "\n")
+                print("\nZMAZANY OG TWEET \n")
                 continue
             
             source_tweet_content = ALL_TWEETS[reaction.source_tweet].content
@@ -1390,7 +1420,7 @@ class Profile:
             if username in self.following:
                 data[username] = analysis
 
-        return PROFILE_AI_ANALYSER.profiles_summary(data)
+        return PROFILE_AI_ANALYSER.profiles_summary(data) if data else {}
         
 
 '''
@@ -1604,12 +1634,16 @@ class SocialBubble:
                         n = self.nodes.get(friend, None)
                         if not n:
                             n = Node(friend)
-                        e = Edge("friends", node, n)
+                        e = self.exist_edge(node, n)
+                        if not e:
+                            e = Edge("friends", node, n)
+                            self.edges.append(e)
                         new_queue.append(n)
                         self.nodes[friend] = n
-                        self.edges.append(e)
-                        n.edges.append(e)
-                        node.edges.append(e)
+                        if e not in n.edges:
+                            n.edges.append(e)
+                        if e not in node.edges:
+                            node.edges.append(e)
                         
                     visited.append(node.profile.username)
                     
@@ -1619,12 +1653,12 @@ class SocialBubble:
             for node in queue:
                 for friend in node.profile.friends:
                     if friend in self.nodes.keys():
-                        edge = self.exist_edge(node, self.nodes[friend])
-                        if not edge:
+                        e = self.exist_edge(node, self.nodes[friend])
+                        if not e:
                             e = Edge("friends", node, self.nodes[friend])
                             self.edges.append(e)
-                            node.edges.append(e)
-                            self.nodes[friend].edges.append(e)
+                        node.edges.append(e)
+                        self.nodes[friend].edges.append(e)
 
                          
             ### zamedzuje vynechaniu ludi ktory napr nefollowli naspat
@@ -1633,7 +1667,11 @@ class SocialBubble:
                     if following in self.nodes.keys():
                         ### pridat jednosmerny edge do grafu
                         if not self.exist_edge(node, self.nodes[following]):
-                            self.edges.append(Edge("->", node, self.nodes[following]))
+                            e = Edge("->", node, self.nodes[following])
+                            self.edges.append(e)
+                            node.edges.append(e)
+                            self.nodes[following].edges.append(e)
+                            
                     else:
                         ### pridat following do struktury kde sa spocita kym je sledovana
                         if following not in self.followed_outside_bubble:
@@ -1643,7 +1681,10 @@ class SocialBubble:
                 for follower in list(set(node.profile.followers) - set(node.profile.friends)):
                     if follower in self.nodes.keys():
                         if not self.exist_edge(node, self.nodes[follower]):
-                            self.edges.append(Edge("<-", node, self.nodes[follower]))
+                            e = Edge("->", node, self.nodes[follower])
+                            self.edges.append(e)
+                            node.edges.append(e)
+                            self.nodes[follower].edges.append(e)
                     else:
                         ### pridat following do struktury kde sa spocita kym je sledovana
                         if follower not in self.following_outside_bubble:
@@ -1653,11 +1694,12 @@ class SocialBubble:
             for name in list(set(self.following_outside_bubble.keys()) & set(self.followed_outside_bubble.keys())):
                 self.nodes[name] = Node(name)
                 for name2 in self.following_outside_bubble[name]:
-                    if not self.exist_edge(self.nodes[name], self.nodes[name2]):
+                    e = self.exist_edge(self.nodes[name], self.nodes[name2])
+                    if not e:
                         e = Edge("<-", self.nodes[name], self.nodes[name2])
                         self.edges.append(e)
-                        self.nodes[name].edges.append(e)
-                        self.nodes[name2].edges.append(e)
+                    self.nodes[name].edges.append(e)
+                    self.nodes[name2].edges.append(e)
                     
                 for name2 in self.followed_outside_bubble[name]:
                     if not self.exist_edge(self.nodes[name], self.nodes[name2]):
@@ -1673,20 +1715,24 @@ class SocialBubble:
                     if mention in self.nodes.keys():
                         e = self.exist_edge(self.nodes[mention], node)
                         if not e:
+                            if self.nodes[mention] == node:
+                                continue
                             e = Edge("X", self.nodes[mention], node)
                             self.edges.append(e)
                             node.edges.append(e)
                             self.nodes[mention].edges.append(e)
                         direction = e.direction(self.nodes[mention], node)
-                        e.weight["mentions"][direction] += quantity[0]
+                        e.weight["mentions"][direction] += len(quantity)
                             
                     else:
-                        self.mentioned_outside_bubble[mention] = username
+                        if mention not in self.mentioned_outside_bubble:
+                            self.mentioned_outside_bubble[mention] = []
+                        self.mentioned_outside_bubble[mention].append(username)
 
                    
             ### spracovat reakcie tweetove
             queue = list(self.nodes.values())
-            self.interacted_outside_bubble = []
+            self.interacted_outside_bubble = {}
             while queue:
                 node = queue.pop(0)
                 for tweet in node.profile.reposts + node.profile.comments + node.profile.quotes:
@@ -1699,6 +1745,8 @@ class SocialBubble:
                         if node2:
                             e = self.exist_edge(node, node2)
                             if not e:
+                                if node == node2:
+                                    continue
                                 e = Edge('X', node, node2)
                                 self.edges.append(e)
                                 node.edges.append(e)
@@ -1720,6 +1768,8 @@ class SocialBubble:
                                 queue.append(n)
                                 e = self.exist_edge(n, node)
                                 if not e:
+                                    if n == node:
+                                        continue
                                     e = Edge('X', n, node)
                                     n.edges.append(e)
                                     node.edges.append(e)
@@ -1738,6 +1788,8 @@ class SocialBubble:
                                     if temp:
                                         e = temp
                                     else:
+                                        if n == self.nodes[i]:
+                                            continue
                                         e = Edge("X", n, self.nodes[i])
                                         n.edges.append(e)
                                         self.nodes[i].edges.append(e)
@@ -1749,6 +1801,8 @@ class SocialBubble:
                                     if temp:
                                         e = temp
                                     else:
+                                        if n == self.nodes[i]:
+                                            continue
                                         e = Edge("X", n, self.nodes[i])
                                         n.edges.append(e)
                                         self.nodes[i].edges.append(e)
@@ -1760,6 +1814,8 @@ class SocialBubble:
                                     if temp:
                                         e = temp
                                     else:
+                                        if n == self.nodes[i]:
+                                            continue
                                         e = Edge("X", n, self.nodes[i])
                                         n.edges.append(e)
                                         self.nodes[i].edges.append(e)
@@ -1779,6 +1835,8 @@ class SocialBubble:
                                     if temp:
                                         e = temp
                                     else:
+                                        if n == self.nodes[i]:
+                                            continue
                                         e = Edge("X", n, self.nodes[i])
                                         n.edges.append(e)
                                         self.nodes[i].edges.append(e)
@@ -1797,7 +1855,9 @@ class SocialBubble:
                                                     
 
                             else:
-                                self.interacted_outside_bubble.append((tweet.source_username, tweet))
+                                if tweet.source_username not in self.interacted_outside_bubble:
+                                    self.interacted_outside_bubble[tweet.source_username] = []
+                                self.interacted_outside_bubble[tweet.source_username].append(tweet.username)
                         
             #print(self.followed_outside_bubble, self.mentioned_outside_bubble)
                 
@@ -1841,51 +1901,297 @@ class SocialBubble:
         ### prejde tweety, pozrie ci su nejake retweety
 
 
-    def visualize_graph(self):
-        G = nx.DiGraph()  # Use a directed graph for arrows
-
+    def visualize_graph(self):        
+        # Create a directed network
+        net = Network(directed=True, notebook=False, height="750px", width="100%")
+        
         # Add nodes
         for node in self.nodes.values():
-            G.add_node(node.profile.username)
-            for i in node.profile.tweets + node.profile.reposts + node.profile.comments + node.profile.quotes:
-                repr(i)
-##        for edge in self.edges:
-##            print(edge)
-
+            net.add_node(node.profile.username, label=node.profile.username)
+        
         # Define edge lists for different colors
-        red_edges = []  # For "->" or "<-"
-        green_edges = []  # For "friends"
-        blue_edges = []  # For "X"
-
+        edge_colors = {
+            "->": "red",
+            "<-": "red",
+            "friends": "green",
+            "X": "blue"
+        }
+        
         # Add edges with color classification
         for edge in self.edges:
             node1 = list(edge.directions.keys())[0]
             node2 = edge.get_second_node(node1)
             follow_type = edge.weight.get("follows", "friends")
 
-            if follow_type == "->" or follow_type == "<-":
-                red_edges.append((node1.profile.username, node2.profile.username))
+            if follow_type == "->":
+                net.add_edge(node1.profile.username, node2.profile.username, color="red", arrows="to")
+            elif follow_type == "<-":
+                net.add_edge(node2.profile.username, node1.profile.username, color="red", arrows="to")
             elif follow_type == "friends":
-                green_edges.append((node1.profile.username, node2.profile.username))
+                # Bidirectional edge (arrows on both ends)
+                net.add_edge(node1.profile.username, node2.profile.username, color="green", arrows="to, from")
             elif follow_type == "X":
-                blue_edges.append((node1.profile.username, node2.profile.username))
+                net.add_edge(node1.profile.username, node2.profile.username, color="blue", arrows="to")
+        # Configure physics for better layout
+        net.set_options("""
+        {
+          "physics": {
+            "forceAtlas2Based": {
+              "gravitationalConstant": -50,
+              "centralGravity": 0.01,
+              "springLength": 100,
+              "springConstant": 0.08
+            },
+            "minVelocity": 0.75,
+            "solver": "forceAtlas2Based"
+          }
+        }
+        """)
+        
+        # Show the network
+        net.show("social_graph.html", notebook=False)
 
-        # Draw the graph
-        plt.figure(figsize=(10, 8))
+    def visualize_outside_relations(self):
+        # Clean up the dictionaries first
+        for i in self.nodes.keys():
+            if i in self.followed_outside_bubble:
+                self.followed_outside_bubble.pop(i)
+            if i in self.following_outside_bubble:
+                self.following_outside_bubble.pop(i)
+            if i in self.mentioned_outside_bubble:
+                self.mentioned_outside_bubble.pop(i)
+            if i in self.interacted_outside_bubble:
+                self.interacted_outside_bubble.pop(i)
+        
+        # Create a new Pyvis network
+        net = Network(height="1000px", width="100%", bgcolor="#222222", font_color="white", directed=True)
+        
+        # Convert all node IDs to strings
+        def safe_str(id):
+            return str(id) if id is not None else "None"
+        
+        # Get all unique profiles and users
+        followed_profiles = set(safe_str(p) for p in self.followed_outside_bubble.keys()) - set(safe_str(n) for n in self.nodes.keys())
+        following_profiles = set(safe_str(p) for p in self.following_outside_bubble.keys()) - set(safe_str(n) for n in self.nodes.keys())
+        
+        # Add all nodes with their properties
+        # Following profiles (left group) - blue boxes
+        for profile in following_profiles:
+            net.add_node(profile, 
+                        label=profile,
+                        color="#45B7D1",
+                        shape="box",
+                        font={'size': 14},
+                        margin=10)
+        
+        # Main users (center group) - turquoise circles
+        for user in [safe_str(n) for n in self.nodes.keys()]:
+            net.add_node(user,
+                        label=user,
+                        color="#4ECDC4",
+                        font={'size': 12},
+                        margin=8)
+        
+        # Followed profiles (right group)
+        for profile in followed_profiles:
+            # Check if profile is in mentioned or interacted
+            if profile in [safe_str(p) for p in self.mentioned_outside_bubble.keys()] or \
+               profile in [safe_str(p) for p in self.interacted_outside_bubble.keys()]:
+                net.add_node(profile,
+                            label=profile,
+                            color="#FFA500",  # Orange for mentioned/interacted
+                            shape="box",
+                            font={'size': 14},
+                            margin=10)
+            else:
+                net.add_node(profile,
+                            label=profile,
+                            color="#FF6B6B",  # Red for regular followed
+                            shape="box",
+                            font={'size': 14},
+                            margin=10)
+        
+        # Add nodes from mentioned/interacted that aren't in followed
+        all_profiles = followed_profiles.union(following_profiles)
+        mentioned_interacted = set(safe_str(p) for p in self.mentioned_outside_bubble.keys()).union(
+                              set(safe_str(p) for p in self.interacted_outside_bubble.keys()))
+        
+        for profile in mentioned_interacted:
+            if profile not in all_profiles and profile not in [safe_str(n) for n in self.nodes.keys()]:
+                net.add_node(profile,
+                            label=profile,
+                            color="#FFA500",
+                            shape="box",
+                            font={'size': 14},
+                            margin=10)
+        
+        # Add edges - following relationships (always blue)
+        for profile, users in self.following_outside_bubble.items():
+            profile_str = safe_str(profile)
+            for user in users:
+                user_str = safe_str(user)
+                if user_str in [safe_str(n) for n in self.nodes.keys()] and profile_str in following_profiles:
+                    net.add_edge(profile_str, user_str, 
+                               color="#45B7D1",  # Blue for following
+                               width=1.5,
+                               arrows='to')
+        
+        # Add edges - followed relationships (red unless from mentioned/interacted)
+        for profile, users in self.followed_outside_bubble.items():
+            profile_str = safe_str(profile)
+            for user in users:
+                user_str = safe_str(user)
+                if user_str in [safe_str(n) for n in self.nodes.keys()] and profile_str in followed_profiles:
+                    # Check if this edge comes from a mentioned/interacted relationship
+                    is_mentioned = any(user_str == safe_str(u) and profile_str == safe_str(p) 
+                                     for p, us in self.mentioned_outside_bubble.items() for u in us)
+                    is_interacted = any(user_str == safe_str(u) and profile_str == safe_str(p) 
+                                      for p, us in self.interacted_outside_bubble.items() for u in us)
+                    
+                    if is_mentioned or is_interacted:
+                        net.add_edge(user_str, profile_str,
+                                   color="#FFA500",  # Orange for mentioned/interacted
+                                   width=1.5,
+                                   arrows='to')
+                    else:
+                        net.add_edge(user_str, profile_str,
+                                   color="#FF6B6B",  # Red for regular followed
+                                   width=1.5,
+                                   arrows='to')
+        
+        # Add edges for mentioned/interacted that aren't in followed
+        for profile, users in self.mentioned_outside_bubble.items():
+            profile_str = safe_str(profile)
+            for user in users:
+                user_str = safe_str(user)
+                if user_str in [safe_str(n) for n in self.nodes.keys()]:
+                    # Only add if not already in followed relationships
+                    if not any(user_str == safe_str(u) and profile_str == safe_str(p) 
+                              for p, us in self.followed_outside_bubble.items() for u in us):
+                        net.add_edge(user_str, profile_str,
+                                   color="#FFA500",
+                                   width=1.5,
+                                   arrows='to')
+        
+        for profile, users in self.interacted_outside_bubble.items():
+            profile_str = safe_str(profile)
+            for user in users:
+                user_str = safe_str(user)
+                if user_str in [safe_str(n) for n in self.nodes.keys()]:
+                    # Only add if not already in followed relationships
+                    if not any(user_str == safe_str(u) and profile_str == safe_str(p) 
+                              for p, us in self.followed_outside_bubble.items() for u in us):
+                        net.add_edge(user_str, profile_str,
+                                   color="#FFA500",
+                                   width=1.5,
+                                   arrows='to')
+        
+        # Configure physics
+        net.toggle_physics(True)
+        net.set_options("""
+        {
+          "physics": {
+            "forceAtlas2Based": {
+              "gravitationalConstant": -50,
+              "centralGravity": 0.01,
+              "springLength": 100,
+              "springConstant": 0.08
+            },
+            "minVelocity": 0.75,
+            "solver": "forceAtlas2Based"
+          }
+        }
+        """)
+        
+        # Save and show the graph
+        net.show("bubble_graph.html", notebook=False)
+        return net
 
-        # More spread-out nodes
-        pos = nx.spring_layout(G, seed=42, k=1.2, iterations=100, scale=1)
 
-        # Draw nodes
-        nx.draw(G, pos, with_labels=True, node_color="skyblue", node_size=2000, font_size=10)
+    def visualize_hashtags(self, start=datetime.min, end=datetime.now()):
+        """
+        Visualize hashtag usage across all profiles in the network.
+        
+        Args:
+            start (datetime): Start date for filtering hashtags
+            end (datetime): End date for filtering hashtags
+        """
+        # Create a new Pyvis network
+        net = Network(height="1000px", width="100%", bgcolor="#222222", font_color="white", directed=True)
+        
+        # Add all profile nodes (left side)
+        profile_nodes = {}
+        for i, profile_id in enumerate(self.nodes.keys()):
+            profile = self.nodes[profile_id]
+            net.add_node(f"profile_{profile_id}",
+                        color="#4ECDC4",
+                        font={'size': 12},
+                        margin=8)  # Profiles on level 1 (left)
+            profile_nodes[profile_id] = f"profile_{profile_id}"
+        
+        # Collect all hashtags used in date range
+        hashtag_counts = {}
+        for profile_id in self.nodes.keys():
+            profile = self.nodes[profile_id]
+            for hashtag, dates in profile.profile.hashtags.items():
+                for date in dates:
+                    if date >= start and date <= end:
+                        hashtag_counts[hashtag] = hashtag_counts.get(hashtag, 0) + 1
+        
+        # Add hashtag nodes (right side) - size based on usage frequency
+        hashtag_nodes = {}
+        for i, (hashtag, count) in enumerate(sorted(hashtag_counts.items(), key=lambda x: -x[1])):
+            size = 10 + min(count, 20)  # Cap size at 30
+            net.add_node(f"hashtag_{hashtag}", 
+                        label=f"#{hashtag}",
+                        color="#45B7D1",
+                        shape="box",
+                        font={'size': 14},
+                        margin=10
+                        )  # Hashtags on level 2 (right)
+            hashtag_nodes[hashtag] = f"hashtag_{hashtag}"
+        
+        # Add edges between profiles and hashtags they've used
+        for profile_id in self.nodes.keys():
+            profile = self.nodes[profile_id]
+            for hashtag, dates in profile.profile.hashtags.items():
+                if hashtag in hashtag_nodes:  # Only if hashtag was used in date range
+                    usage_count = sum(1 for date in dates if date >= start and date <= end)
+                    if usage_count > 0:
+                        net.add_edge(profile_nodes[profile_id], 
+                                   hashtag_nodes[hashtag],
+                                   value=usage_count,
+                                   color="#FFA500",
+                                   width=1.5,
+                                   arrows='to')  # Thicker for more usage
+        
+        # Configure physics for better layout
+        net.toggle_physics(True)
+        net.set_options("""
+        {
+          "physics": {
+            "forceAtlas2Based": {
+              "gravitationalConstant": -50,
+              "centralGravity": 0.01,
+              "springLength": 100,
+              "springConstant": 0.08
+            },
+            "minVelocity": 0.75,
+            "solver": "forceAtlas2Based"
+          }
+        }
+        """)
+        
 
-        # Draw edges with different colors
-        nx.draw_networkx_edges(G, pos, edgelist=red_edges, edge_color="red", width=2, arrows=True, arrowsize=15)
-        nx.draw_networkx_edges(G, pos, edgelist=green_edges, edge_color="green", width=2)
-        nx.draw_networkx_edges(G, pos, edgelist=blue_edges, edge_color="blue", width=2)
-
-        plt.title("Social Graph Visualization (With Colored Edges)")
-        plt.show()
+        
+        # Add date range to title
+        title = f"Hashtag Usage: {start.strftime('%Y-%m-%d')} to {end.strftime('%Y-%m-%d')}"
+        
+        # Save and show the graph
+        filename = f"hashtag_network_{start.strftime('%Y%m%d')}_to_{end.strftime('%Y%m%d')}.html"
+        net.show(filename, notebook=False)
+        return net
+        
 
     def get_outside_profiles_data(self, follower_count):
         outside_bubble_data = {}
@@ -1947,6 +2253,7 @@ class SocialBubble:
 class BubbleSummary:
     def __init__(self, all_sums, social_bubble):
         self.all_sums = all_sums
+        self.social_bubble = social_bubble
         self.evolution_stats = {
             "languages": {},
             "daily_activity": {},
@@ -2200,7 +2507,7 @@ class BubbleSummary:
                         self.evolution_stats[f"{topic}_tweet_mentions"][date][item][data['username']] += item_data['mentions'].get('expression', 0)+item_data['mentions'].get('interaction', 0)
                         self.evolution_stats[f"{topic}_overall_mentions"][date][item][data['username']] += sum(item_data['mentions'].values())
 
-                for topic in data["overall"]["other"]:
+                for topic in data["overall"]["other"] or []:
                     if topic['interest'] not in self.overall_stats['other_topics']:
                         self.overall_stats['other_topics'][topic['interest']] = {}
                     if data['username'] not in self.overall_stats['other_topics'][topic['interest']]:
@@ -2295,6 +2602,8 @@ class BubbleSummary:
             return obj
 
 
+
+
         
     def avg_activity_evolution(self, PROFILES=None):
         #print(self.evolution_stats["avg_activity"])
@@ -2367,11 +2676,11 @@ class BubbleSummary:
         '''
     def most_followed_profiles(self, PROFILES=[], threshold=0, show_number=float('inf')):
         summary = {}
-        for i, j in SB.get_outside_profiles_data(threshold).items():
+        for i, j in self.social_bubble.get_outside_profiles_data(threshold).items():
             if PROFILES:
-                summary[i] = len(set(PROFILES) & set(SB.followed_outside_bubble[i]))
+                summary[i] = len(set(PROFILES) & set(self.social_bubble.followed_outside_bubble[i]))
             else:
-                summary[i] = len(SB.followed_outside_bubble[i])
+                summary[i] = len(self.social_bubble.followed_outside_bubble[i])
                 
         summary = sorted(summary.items(), key=lambda x: x[1], reverse=True)
         summary = ', '.join([x[0] for x in summary][:min(len(summary), show_number)])
@@ -2532,7 +2841,8 @@ class BubbleSummary:
         for name, (x,y,r) in self.overall_stats["compass"].items():
             if PROFILES and name not in PROFILES:
                 continue
-            summary.append((x/r*10, y/r*10, name, 'black'))
+            if r:
+                summary.append((x/r*10, y/r*10, name, 'black'))
             
         avg_x = sum([x[0] for x in summary])/len(summary)
         avg_y = sum([y[1] for y in summary])/len(summary)
@@ -2632,6 +2942,44 @@ class BubbleSummary:
             file.write(html_content)
         print(f"HTML file has been created.")
 
+    def graph_properties(self, PROFILES=[]):
+        traffic = {}
+        interconnection = {}
+        top_conversation = [None, 0]
+        one_dir_edges = 0
+        both_dir_edges = 0
+        
+        
+        for name, node in self.social_bubble.nodes.items():
+            traffic[name] = node.compute_interaction_strength(PROFILES)
+            interconnection[name] = len(node.edges)
+
+        for edge in self.social_bubble.edges:
+            weight = edge.get_weight_eval()
+            if top_conversation[1] >= weight:
+                if PROFILES and (edge.node1 not in PROFILES or edge.node2 not in PROFILES):
+                    continue
+                top_conversation = [edge, weight]
+                
+            if edge.weight["follows"] in ["->", "<-"]:
+                one_dir_edges += 1
+            if edge.weight["follows"] == 'friends':
+                both_dir_edges += 1
+                
+            
+        traffic = dict(sorted(traffic.items(), key=lambda x: x[1], reverse=True))
+        interconnection = dict(sorted(interconnection.items(), key=lambda x: x[1], reverse=True))
+
+        density_one_dir = (one_dir_edges+2*both_dir_edges)/(math.factorial(len(self.social_bubble.nodes))/math.factorial(len(self.social_bubble.nodes)-2))
+        density_both_dir = both_dir_edges/(math.factorial(len(self.social_bubble.nodes))/(math.factorial(len(self.social_bubble.nodes)-2)*2))
+        
+        self.graph_prop = {'traffic':traffic, 'interconnection':interconnection, 'top_conversation':top_conversation, 'density_one_dir':density_one_dir, 'density_both_dir':density_both_dir}
+        return self.graph_prop
+
+    
+        
+        
+         
             
         
 
@@ -2639,11 +2987,20 @@ class BubbleSummary:
 
 
 
-SB = SocialBubble("pushkicknadusu", "profile_centered", depth=0)
+SB = SocialBubble("pushkicknadusu", "profile_centered", depth=3)
 
 SB.create_graph()
 
-SB.visualize_graph()
+for name, node in SB.nodes.items():
+    print(name)
+    for edge in set(node.edges):
+        print(edge)
+
+##SB.visualize_graph()
+
+##SB.visualize_outside_relations()
+
+SB.visualize_hashtags()
 
 ##opd = SB.get_outside_profiles_data(THRESHOLD)
 
@@ -2651,11 +3008,13 @@ SB.visualize_graph()
 
 ##SB.profile_analysis(opd)
 
-SB.tweet_analysis()
-
-BS = BubbleSummary(SB.profiles_summary(6), SB)
-
-BS.test_show()
+##SB.tweet_analysis()
+##
+##BS = BubbleSummary(SB.profiles_summary(6), SB)
+##
+###BS.test_show()
+##
+##print(BS.graph_properties())
 
 
 
@@ -2670,8 +3029,11 @@ mozne funkcie:
 
     CONTAINS => prejdenie tweetov s tým, že sa analyzuje, či obsahuje danú tému a sentiment na ňu
 
+    CROP -> oreze veci z bubliny podla volby
 
 2. VYTVORIT SUHRN BUBLINY + ANALYZY
 3. KONZOLOVA APLIKACIA + VIZUALIZACIE
 
+
 '''
+
