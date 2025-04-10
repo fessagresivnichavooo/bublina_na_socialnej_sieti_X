@@ -13,6 +13,8 @@ from datetime import datetime, time
 from dateutil.relativedelta import relativedelta
 import plotly.graph_objects as go
 from pyvis.network import Network
+import community as community_louvain
+import random
 
 
 ### follower/followed
@@ -1598,6 +1600,7 @@ class Tweet:
 class SocialBubble:
     def __init__(self, username, type, **args):
         self.time_interval = args.get("time_interval", None)
+        self.decentralised_profiles = args.get("profiles", None)
         self.type = type
         self.minimal_edge_weight = args.get("minimal_edge_weight", 0)
         if self.type == "entity_centered":
@@ -1607,8 +1610,10 @@ class SocialBubble:
         self.username = username
         self.edges = []
         self.nodes = {}  ### name : Node
-        self.followed_outside_bubble = {}  ### sledovane profily ucastnikmi bubliny ktore sa v nej nenachadzaju
-        self.following_outside_bubble = {} ### sledujuci profilov bubliny ktori nie su v nej
+        self.followed_outside_bubble = {}
+        self.following_outside_bubble = {}
+        self.mentioned_outside_bubble = {}
+        self.interacted_outside_bubble = {}
         
 
     def exist_edge(self, node1: Node, node2: Node):
@@ -1867,31 +1872,62 @@ class SocialBubble:
             ### ak je repost/comment/quote a og tweet autor sleduje niekoho v bubline tak je pridany
 
 
+        
+        elif self.type == "decentralised":
+            tuto som skoncil
+            '''
+                Vzajomne interakcie
+                Pre kazdy profil spolocne sledovane/sledovany
 
+                1.  prejde vsetky a vytvori profil, pre kazdy vytvori do hlbky jedna prieskum
+                ak ich spaja nejaky friend tak ho to prida
+            '''
+            for username in self.decentralised_profiles:
+                self.nodes[username] = Node(username)
 
+            nodes_to_add = {}
+            for node1 in self.nodes.values():
+                for node2 in self.nodes.values():
+                    if node1 == node2:
+                        continue
+                    intersection = set(node1.profile.friends) & set(node2.profile.friends)
+                    if not intersection:
+                        intersection = set(node1.profile.friends) & set(node2.profile.followers)
+                    if not intersection:
+                        intersection = set(node1.profile.friends) & set(node2.profile.following)
+                    for mutual_friend in intersection:
+                        if mutual_friend not in nodes_to_add:
+                            nodes_to_add[mutual_friend] = Node(mutual_friend)
 
-                            
-            
+            for username, node in nodes_to_add.items():
+                self.nodes[username] = node
+
+            for node1 in self.nodes.values():
+                for node2 in self.nodes.values():
+                    if self.exist_edge(node1, node2) or node1 == node2:
+                        continue
+                    if node1.profile.username in node2.profile.friends:
+                        self.edges.append(Edge("friends", node1, node2))
+                    elif node1.profile.username in node2.profile.followers:
+                        self.edges.append(Edge("->", node1, node2))
+                    elif node1.profile.username in node2.profile.following:
+                        self.edges.append(Edge("<-", node1, node2))
+
+            for username, node in self.nodes.items():
+                for followed in list(set(node.profile.following)-set(self.nodes.keys())):
+                    if followed not in self.followed_outside_bubble:
+                        self.followed_outside_bubble[followed] = []
+                    self.followed_outside_bubble[followed].append(username)
+                    
+                for following in list(set(node.profile.followers)-set(self.nodes.keys())):
+                    if following not in self.following_outside_bubble:
+                        self.following_outside_bubble[following] = []
+                    self.following_outside_bubble[following].append(username)
                 
-            
-
-                
-                
-        elif self.type == "entity_centered":
-            base = Node(self.username)
-            self.nodes[self.username] = base
-            for follower in base.profile.followers:
-                n = Node(follower)
-                e = Edge("friends", base, n)
-                self.nodes[follower] = n
-                self.edges.append(e)
-                n.edges.append(e)
-                base.edges.append(e)
-                for i in list(set(n.profile.friends) & set(self.nodes.keys()) - set(self.username)):
-                    e2 = Edge("friends", self.nodes[i], n)
-                    self.edges.append(e2)
-                    self.nodes[i].edges.append(e2)
-                    n.edges.append(e2)
+               
+        
+                        
+            'popridavat chybajuce edges az na konci naraz'
             ### najdenie vzajomnych prepojeni
 
 
@@ -2261,9 +2297,6 @@ class BubbleSummary:
             "top_mentions": {},
             "avg_activity": {},
             "daily_activity": {},
-            "top_topic_tweets": {},
-            "top_topic_interests": {},
-            "top_topic_overall": {},
             
             "hashtags": {},
             "mentions": {},
@@ -2280,7 +2313,6 @@ class BubbleSummary:
 ##            "most_followed_profile": {},
             "locations": {},
             "topic_spread": {},
-            "major_topic_profiles": {},
             "other_topics": {},  # topic : {profiles : counter}
             "compass": {},   # profile : compass
              # ideology : {+ : [profiles], - : [profiles]}
@@ -2291,7 +2323,7 @@ class BubbleSummary:
             
             
         }
-        self.bubble_summary()
+######        self.bubble_summary()
 
     def create_pie_chart(self, labels, values, title):
         if labels and values:
@@ -2506,6 +2538,7 @@ class BubbleSummary:
                         self.evolution_stats[f"{topic}_overall_sentiment"][date][item][data['username']] += sum(item_data['sentiment'])
                         self.evolution_stats[f"{topic}_tweet_mentions"][date][item][data['username']] += item_data['mentions'].get('expression', 0)+item_data['mentions'].get('interaction', 0)
                         self.evolution_stats[f"{topic}_overall_mentions"][date][item][data['username']] += sum(item_data['mentions'].values())
+                        
 
                 for topic in data["overall"]["other"] or []:
                     if topic['interest'] not in self.overall_stats['other_topics']:
@@ -2543,8 +2576,20 @@ class BubbleSummary:
                     self.evolution_stats["ideologies"][date][ideology][data['username']] += ideology_data["mentions"]["ex/int"]
  
                         
+##        print(self.evolution_stats[f"{topic}_overall_sentiment"], self.evolution_stats[f"{topic}_overall_mentions"])
+        for topic in ["sport", "club", "artist", "genre", "athlete"]:
+            for i in ["sentiment", "mentions"]:
+                result = {}
+                for datetime_data in self.evolution_stats[f"{topic}_overall_{i}"].values():
+                    for item, profiles in datetime_data.items():
+                        for profile, value in profiles.items():
+                            if item not in result:
+                                result[item] = {}
+                            if profile not in result[item]:
+                                result[item][profile] = 0
+                            result[item][profile] += value
+                self.evolution_stats[f"{topic}_overall_{i}"] = result      
                         
-                    
 
 
 
@@ -2928,9 +2973,9 @@ class BubbleSummary:
                 {self.locations_sum()}{self.locations_sum(['pushkicknadusu'])}
                 {self.most_followed_profiles([], 100, 5)}
                 
-                {[self.item_spread(i, [], 5) for i in list(set(self.evolution_stats.keys())-{'avg_activity'}) if self.evolution_stats[i]]}
-                {[self.item_usage(i, [], 5) for i in list(set(self.evolution_stats.keys())-{'avg_activity'}) if self.evolution_stats[i]]}
-                {[self.item_evolution(i) for i in list(set(self.evolution_stats.keys())-{'avg_activity'}) if self.evolution_stats[i]]}
+                {[self.item_spread(i, [], 5) for i in list(set(self.evolution_stats.keys())-{'avg_activity'}) if self.evolution_stats[i] and 'overall' not in i]}
+                {[self.item_usage(i, [], 5) for i in list(set(self.evolution_stats.keys())-{'avg_activity'}) if self.evolution_stats[i] and 'overall' not in i]}
+                {[self.item_evolution(i) for i in list(set(self.evolution_stats.keys())-{'avg_activity'}) if self.evolution_stats[i] and 'overall' not in i]}
                 
             </div>
         </body>
@@ -2976,31 +3021,359 @@ class BubbleSummary:
         self.graph_prop = {'traffic':traffic, 'interconnection':interconnection, 'top_conversation':top_conversation, 'density_one_dir':density_one_dir, 'density_both_dir':density_both_dir}
         return self.graph_prop
 
-    
+    def create_entity_based_graph(self, topic, entity, intervals=False):
         
-        
-         
+        if not intervals:
+            net = Network(notebook=True, height="600px", width="100%", bgcolor="#222222", font_color="white")
+            active_nodes = {i:{'sentiment': 0, 'mentions':0} for i in self.social_bubble.nodes.keys()}
+            data = self.evolution_stats.get(f"{topic}_overall_sentiment", False)
+            if data:
+                if entity in data:
+                    for username, sentiment in data[entity].items():
+                        active_nodes[username] = {'sentiment': sentiment, 'mentions':0}
+                else:
+                    print(f"NO SENTIMENT DATA FOUND FOR ENTITY {entity}")
             
+            data = self.evolution_stats.get(f"{topic}_overall_mentions", False)
+            if data:
+                if entity in data:
+                    for username, mention in data[entity].items():
+                        if username not in active_nodes:
+                            active_nodes[username] = {'sentiment': 0, 'mentions':0}
+                        active_nodes[username]['mentions'] = mention
+                else:
+                    print(f"NO MENTIONS DATA FOUND FOR ENTITY {entity}")
+            else:
+                if entity in self.overall_stats["other_topics"]:
+                    for username, mention in data[entity].items():
+                        if username not in active_nodes:
+                            active_nodes[username] = {'sentiment': 0, 'mentions':0}
+                        active_nodes[username]['mentions'] = mention
+                else:
+                    print(f"NO MENTIONS DATA FOUND FOR ENTITY {entity}")
+
+            for username, data in active_nodes.items():
+                sentiment = data['sentiment']
+                mentions = data['mentions']
+                
+                # Color logic: Red (< -0.2), Yellow (-0.2 to 0.2), Green (> 0.2)
+                if not mentions:
+                    color = "#c0c0c0"
+                elif sentiment < -0.2:
+                    color = "#ff6666"  # Red
+                elif -0.2 <= sentiment <= 0.2:
+                    color = "#ffcc00"  # Yellow
+                else:
+                    color = "#66ff66"  # Green
+                
+                # Size logic: Base size = 10, scales with mentions (min size = 10)
+                size = 10 + (1.3 * mentions) if mentions > 0 else 10
+                
+                net.add_node(
+                    username,
+                    title=f"Sentiment: {sentiment:.2f}\nMentions: {mentions}",
+                    color=color,
+                    size=size
+                )
+            
+            # --- 4. Add edges from social_bubble with STRICT sentiment coloring ---
+            for edge in self.social_bubble.edges:
+                node1 = edge.node1.profile.username
+                node2 = edge.node2.profile.username
+                if node1 in active_nodes and node2 in active_nodes:
+                    # Count reaction sentiments
+                    reaction_sentiments = {'Disagreeing': 0, 'Agreeing': 0, 'Neutral': 0}
+                    
+                    for tweet in edge.weight['reactions']["1->2"] + edge.weight['reactions']["2->1"]:
+                        if tweet.content:
+                            # Case 1: Direct reaction matches topic
+                            if tweet.content.get('reaction', {}).get('type') == topic:
+                                sentiment = tweet.content.get("reaction_sentiment")
+                                if sentiment in reaction_sentiments:
+                                    reaction_sentiments[sentiment] += 1
+                            
+                            # Case 2: Source tweet matches topic
+                            elif tweet.source_tweet and ALL_TWEETS.get(tweet.source_tweet, None):
+                                if ALL_TWEETS.get(tweet.source_tweet, None).content:
+                                    source_type = ALL_TWEETS[tweet.source_tweet].content.get('type')
+                                    source_reaction_type = ALL_TWEETS[tweet.source_tweet].content.get('reaction', {}).get('type')
+                                    if source_type == topic or source_reaction_type == topic:
+                                        sentiment = tweet.content.get("reaction_sentiment")
+                                        if sentiment in reaction_sentiments:
+                                            reaction_sentiments[sentiment] += 1
+
+                    # STRICT dominant sentiment logic (requires 2x majority)
+                    total = sum(reaction_sentiments.values())
+                    edge_color = "#c0c0c0"
+                    
+                    if total > 0:
+                        agreeing_ratio = reaction_sentiments['Agreeing'] / total
+                        disagreeing_ratio = reaction_sentiments['Disagreeing'] / total
+                        
+                        # Only color if one sentiment has 2x more than the other
+                        if agreeing_ratio >= 2 * disagreeing_ratio:
+                            edge_color = "#66ff66"  # Green (Clear Agreeing majority)
+                        elif disagreeing_ratio >= 2 * agreeing_ratio:
+                            edge_color = "#ff6666"  # Red (Clear Disagreeing majority)
+                        else:
+                            edge_color = "#ffcc00"
+                    
+                    # Add edge with determined color
+                    net.add_edge(
+                        node1, 
+                        node2, 
+                        width=0.5,
+                        color=edge_color,
+                        title=f"Reactions:\n"
+                             f"Agreeing: {reaction_sentiments['Agreeing']}\n"
+                             f"Neutral: {reaction_sentiments['Neutral']}\n"
+                             f"Disagreeing: {reaction_sentiments['Disagreeing']}"
+                    )
+            
+            
+            
+            return net 
+            
+        else:
+            graphs = {}
+            for date, data in self.evolution_stats.get(f"{topic}_tweet_sentiment", {}).items():
+                net = Network(notebook=True, height="600px", width="100%", bgcolor="#222222", font_color="white")
+                active_nodes = {i:{'sentiment': 0, 'mentions':0} for i in self.social_bubble.nodes.keys()}
+                if data:
+                    if entity in data:
+                        for username, sentiment in data[entity].items():
+                            active_nodes[username] = {'sentiment': sentiment, 'mentions':0}
+                    else:
+                        print(f"NO SENTIMENT DATA FOUND FOR ENTITY {entity} DURING {date}")
+                
+                data_mentions = self.evolution_stats.get(f"{topic}_tweet_mentions", {}).get(date, False)
+                if data_mentions:
+                    if entity in data_mentions:
+                        for username, mention in data_mentions[entity].items():
+                            if username not in active_nodes:
+                                active_nodes[username] = {'sentiment': 0, 'mentions':0}
+                            active_nodes[username]['mentions'] = mention
+                    else:
+                        print(f"NO MENTIONS DATA FOUND FOR ENTITY {entity} DURING {date}")
+                
+                for username, data in active_nodes.items():
+                    sentiment = data['sentiment']
+                    mentions = data['mentions']
+                    
+                    # Color logic: Red (< -0.2), Yellow (-0.2 to 0.2), Green (> 0.2)
+                    if not mentions:
+                        color = "#c0c0c0"
+                    elif sentiment < -0.2:
+                        color = "#ff6666"  # Red
+                    elif -0.2 <= sentiment <= 0.2:
+                        color = "#ffcc00"  # Yellow
+                    else:
+                        color = "#66ff66"  # Green
+                    
+                    # Size logic: Base size = 10, scales with mentions (min size = 10)
+                    size = 10 + (1.3 * mentions) if mentions > 0 else 10
+                    
+                    net.add_node(
+                        username,
+                        title=f"Sentiment: {sentiment:.2f}\nMentions: {mentions}",
+                        color=color,
+                        size=size
+                    )
+                
+                # --- 4. Add edges from social_bubble with STRICT sentiment coloring ---
+                for edge in self.social_bubble.edges:
+                    node1 = edge.node1.profile.username
+                    node2 = edge.node2.profile.username
+                    if node1 in active_nodes and node2 in active_nodes:
+                        # Count reaction sentiments
+                        reaction_sentiments = {'Disagreeing': 0, 'Agreeing': 0, 'Neutral': 0}
+                        
+                        for tweet in edge.weight['reactions']["1->2"] + edge.weight['reactions']["2->1"]:
+                            if tweet.content:
+                                # Case 1: Direct reaction matches topic
+                                if tweet.content.get('reaction', {}).get('type') == topic:
+                                    sentiment = tweet.content.get("reaction_sentiment")
+                                    if sentiment in reaction_sentiments:
+                                        reaction_sentiments[sentiment] += 1
+                                
+                                # Case 2: Source tweet matches topic
+                                elif tweet.source_tweet and ALL_TWEETS.get(tweet.source_tweet, None):
+                                    if ALL_TWEETS.get(tweet.source_tweet, None).content:
+                                        source_type = ALL_TWEETS[tweet.source_tweet].content.get('type')
+                                        source_reaction_type = ALL_TWEETS[tweet.source_tweet].content.get('reaction', {}).get('type')
+                                        if source_type == topic or source_reaction_type == topic:
+                                            sentiment = tweet.content.get("reaction_sentiment")
+                                            if sentiment in reaction_sentiments:
+                                                reaction_sentiments[sentiment] += 1
+
+                        # STRICT dominant sentiment logic (requires 2x majority)
+                        total = sum(reaction_sentiments.values())
+                        edge_color = "#c0c0c0"
+                        
+                        if total > 0:
+                            agreeing_ratio = reaction_sentiments['Agreeing'] / total
+                            disagreeing_ratio = reaction_sentiments['Disagreeing'] / total
+                            
+                            # Only color if one sentiment has 2x more than the other
+                            if agreeing_ratio >= 2 * disagreeing_ratio:
+                                edge_color = "#66ff66"  # Green (Clear Agreeing majority)
+                            elif disagreeing_ratio >= 2 * agreeing_ratio:
+                                edge_color = "#ff6666"  # Red (Clear Disagreeing majority)
+                            else:
+                                edge_color = "#ffcc00"
+                        
+                        # Add edge with determined color
+                        net.add_edge(
+                            node1, 
+                            node2, 
+                            width=0.5,
+                            color=edge_color,
+                            title=f"Reactions:\n"
+                                 f"Agreeing: {reaction_sentiments['Agreeing']}\n"
+                                 f"Neutral: {reaction_sentiments['Neutral']}\n"
+                                 f"Disagreeing: {reaction_sentiments['Disagreeing']}"
+                        )
+                
+                # --- 5. Finalize and save graph ---
+                graphs[date] = net
+                
+            return graphs
+                #net.show(f"{entity}_network.html")
+                
+                
+            
+
+
+        for topic in ["sport", "club", "artist", "genre", "athlete"]:
+            print(topic)
+            print(self.evolution_stats[f"{topic}_tweet_sentiment"])
+            print(self.evolution_stats[f"{topic}_overall_sentiment"])
+            print(self.evolution_stats[f"{topic}_tweet_mentions"])
+            print(self.evolution_stats[f"{topic}_overall_mentions"])
+
+    ##### entity moze byt none iba pri mentions
+    
+    def interactions_subbubbles(self):
+        # Prepare graph data
+        nodes = list(self.social_bubble.nodes.keys())
+        edges = {}
+        for edge in self.social_bubble.edges:
+            edges[(edge.node1.profile.username, edge.node2.profile.username)] = edge.get_weight_eval()
+
+        # Create networkx graph
+        G = nx.Graph()
+        G.add_nodes_from(nodes)
+        G.add_edges_from((u, v, {'weight': w}) for (u, v), w in edges.items())
+
+        # Detect communities (including single-node communities)
+        partition = community_louvain.best_partition(G, weight='weight', randomize=False)
+        
+        # Ensure all nodes are in partition (some might be isolated)
+        for node in nodes:
+            if node not in partition:
+                partition[node] = max(partition.values()) + 1 if partition else 0
+
+        # Generate visually distinct colors
+        community_colors = {}
+        for comm_id in set(partition.values()):
+            hue = comm_id / max(1, len(set(partition.values())))  # Evenly distribute hues
+            community_colors[comm_id] = f"hsl({int(hue*360)}, 80%, 60%)"
+
+        # Create PyVis network
+        net = Network(notebook=True, height="800px", width="100%", 
+                     bgcolor="#222222", font_color="white", directed=False)
+        
+        # Add nodes with community colors
+        for node in nodes:
+            community_id = partition.get(node, -1)
+            net.add_node(
+                node,
+                color=community_colors.get(community_id, "#888888"),
+                title=f"User: {node}<br>Community: {community_id}",
+                size=15  # Base size for all nodes
+            )
+        
+        # Add edges with special treatment for inter-community connections
+        for (node1, node2), weight in edges.items():
+            comm1 = partition.get(node1, -1)
+            comm2 = partition.get(node2, -1)
+            
+            # Determine edge properties
+            if comm1 == comm2:
+                # Intra-community edge
+                edge_color = community_colors.get(comm1, "#888888")
+                edge_length = 100  # Shorter length for same-group connections
+            else:
+                # Inter-community edge
+                edge_color = "#aaaaaa"
+                edge_length = 200 + (1-weight)*100  # Longer for weaker connections
+            
+            net.add_edge(
+                node1,
+                node2,
+                color=edge_color,
+                value=weight,
+                title=f"Interaction: {weight:.3f}",
+                length=edge_length,
+                width=0.5 + weight * 3,
+                smooth={'enabled': True, 'type': 'continuous'}
+            )
+        
+        # Configure physics for better group separation
+        net.set_options("""
+        {
+          "physics": {
+            "barnesHut": {
+              "gravitationalConstant": -5000,
+              "centralGravity": 0.1,
+              "springLength": 150,
+              "springConstant": 0.01,
+              "damping": 0.2
+            },
+            "minVelocity": 0.75
+          }
+        }
+        """)
+        
+        # Add community legend
+        legend_html = """
+        <div style="position: absolute; top: 10px; left: 10px; z-index: 1000; 
+                    background: rgba(40,40,40,0.8); color: white; padding: 10px; border-radius: 5px;">
+        <b>Community Legend</b><br>
+        """
+        for comm_id, color in community_colors.items():
+            legend_html += f'<span style="color:{color}">■</span> Community {comm_id}<br>'
+        legend_html += '<span style="color:#aaaaaa">■</span> Between communities</div>'
+        
+        net.html = legend_html + net.html
+        
+        # Save and return
+        net.show("communities.html")
+        return net
+            
+         
+'''
+DECENTRLISED
+CONSOLE WINDOW
+PODBUBLINY
+'''    
         
 
-''' hrany s interakciami ohladom konkretnej temy '''
 
 
-
-SB = SocialBubble("pushkicknadusu", "profile_centered", depth=3)
+SB = SocialBubble("pushkicknadusu", "decentralised", depth=3, profiles=["pushkicknadusu", "statkar_miky"])
 
 SB.create_graph()
 
-for name, node in SB.nodes.items():
-    print(name)
-    for edge in set(node.edges):
-        print(edge)
+##################################################BS = BubbleSummary({}, SB)
+##################################################
+####################################################BS.interactions_subbubbles()
 
-##SB.visualize_graph()
+SB.visualize_graph()
 
-##SB.visualize_outside_relations()
+SB.visualize_outside_relations()
 
-SB.visualize_hashtags()
+##SB.visualize_hashtags()
 
 ##opd = SB.get_outside_profiles_data(THRESHOLD)
 
@@ -3008,12 +3381,12 @@ SB.visualize_hashtags()
 
 ##SB.profile_analysis(opd)
 
-##SB.tweet_analysis()
-##
-##BS = BubbleSummary(SB.profiles_summary(6), SB)
-##
-###BS.test_show()
-##
+####SB.tweet_analysis()
+
+####BS = BubbleSummary(SB.profiles_summary(6), SB)
+
+####BS.test_show()
+
 ##print(BS.graph_properties())
 
 
@@ -3036,4 +3409,3 @@ mozne funkcie:
 
 
 '''
-
