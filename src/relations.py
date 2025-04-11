@@ -103,20 +103,21 @@ class Edge:
         reactions_1_to_2 = len(self.weight["reactions"]["1->2"])
         reactions_2_to_1 = len(self.weight["reactions"]["2->1"])
         reaction_base = (reactions_1_to_2 + reactions_2_to_1) * 1  # Base: 1 per reaction
-        reaction_bonus = 2 if (reactions_1_to_2 > 0 and reactions_2_to_1 > 0) else 0  # Mutual bonus
+        reaction_bonus = 2 if (reactions_1_to_2 > 0 and reactions_2_to_1 > 0) else 1  # Mutual bonus
 
         # Mentions
         mentions_1_to_2 = self.weight["mentions"]["1->2"]
         mentions_2_to_1 = self.weight["mentions"]["2->1"]
         mention_base = (mentions_1_to_2 + mentions_2_to_1) * 0.5  # Base: 0.5 per mention
-        mention_bonus = 1 if (mentions_1_to_2 > 0 and mentions_2_to_1 > 0) else 0  # Mutual bonus
+        mention_bonus = 3 if (mentions_1_to_2 > 0 and mentions_2_to_1 > 0) else 1  # Mutual bonus
 
         # Follows
         follows = self.weight["follows"]
-        follow_bonus = 3 if follows == "friends" else 1 if follows in ["->", "<-"] else 0
+        follow_bonus = 3 if follows == "friends" else 1 if follows in ["->", "<-"] else 0.25
+
 
         # Total weight
-        total_weight = reaction_base + reaction_bonus + mention_base + mention_bonus + follow_bonus
+        total_weight = (reaction_base*reaction_bonus + mention_base*mention_bonus + 1) * follow_bonus
         return total_weight
 
     def get_second_node(self, node):
@@ -1874,7 +1875,6 @@ class SocialBubble:
 
         
         elif self.type == "decentralised":
-            tuto som skoncil
             '''
                 Vzajomne interakcie
                 Pre kazdy profil spolocne sledovane/sledovany
@@ -1907,11 +1907,20 @@ class SocialBubble:
                     if self.exist_edge(node1, node2) or node1 == node2:
                         continue
                     if node1.profile.username in node2.profile.friends:
-                        self.edges.append(Edge("friends", node1, node2))
+                        e = Edge("friends", node1, node2)
+                        self.edges.append(e)
+                        node1.edges.append(e)
+                        node2.edges.append(e)
                     elif node1.profile.username in node2.profile.followers:
-                        self.edges.append(Edge("->", node1, node2))
+                        e = Edge("->", node1, node2)
+                        self.edges.append(e)
+                        node1.edges.append(e)
+                        node2.edges.append(e)
                     elif node1.profile.username in node2.profile.following:
-                        self.edges.append(Edge("<-", node1, node2))
+                        e = Edge("<-", node1, node2)
+                        self.edges.append(e)
+                        node1.edges.append(e)
+                        node2.edges.append(e)
 
             for username, node in self.nodes.items():
                 for followed in list(set(node.profile.following)-set(self.nodes.keys())):
@@ -1923,7 +1932,154 @@ class SocialBubble:
                     if following not in self.following_outside_bubble:
                         self.following_outside_bubble[following] = []
                     self.following_outside_bubble[following].append(username)
-                
+
+            for username, node in self.nodes.items():
+                for mention, quantity in node.profile.all_mentions.items():
+                    if mention in self.nodes.keys():
+                        e = self.exist_edge(self.nodes[mention], node)
+                        if not e:
+                            if self.nodes[mention] == node:
+                                continue
+                            e = Edge("X", self.nodes[mention], node)
+                            self.edges.append(e)
+                            node.edges.append(e)
+                            self.nodes[mention].edges.append(e)
+                        direction = e.direction(self.nodes[mention], node)
+                        e.weight["mentions"][direction] += len(quantity)
+                            
+                    else:
+                        if mention not in self.mentioned_outside_bubble:
+                            self.mentioned_outside_bubble[mention] = []
+                        self.mentioned_outside_bubble[mention].append(username)
+
+            queue = list(self.nodes.values())
+            self.interacted_outside_bubble = {}
+            while queue:
+                node = queue.pop(0)
+                for tweet in node.profile.reposts + node.profile.comments + node.profile.quotes:
+                    node2 = self.nodes.get(tweet.source_username, None)
+                    edge = self.exist_edge(node, node2)
+                    if edge:
+                        direction = edge.direction(node, node2)
+                        edge.weight["reactions"][direction].append(tweet)
+                    else:
+                        if node2:
+                            e = self.exist_edge(node, node2)
+                            if not e:
+                                if node == node2:
+                                    continue
+                                e = Edge('X', node, node2)
+                                self.edges.append(e)
+                                node.edges.append(e)
+                                node2.edges.append(e)
+                            e.weight["reactions"][e.direction(node, node2)].append(tweet)
+                        else:
+                            n = Node(tweet.source_username)
+                            mentions = set(n.profile.all_mentions.keys()) & set(self.nodes.keys())
+                            reactions = {}
+                            for i in n.profile.reposts + n.profile.quotes + n.profile.comments:
+                                if i.source_username in self.nodes.keys():
+                                    reactions[i.source_username] = i
+                            follows = set(n.profile.following) & set(self.nodes.keys())
+                            if mentions or reactions or follows:
+                                self.following_outside_bubble.pop(tweet.source_username, None)
+                                self.followed_outside_bubble.pop(tweet.source_username, None)
+                                self.mentioned_outside_bubble.pop(tweet.source_username, None)
+                                self.nodes[tweet.source_username] = n
+                                queue.append(n)
+                                e = self.exist_edge(n, node)
+                                if not e:
+                                    if n == node:
+                                        continue
+                                    e = Edge('X', n, node)
+                                    n.edges.append(e)
+                                    node.edges.append(e)
+                                    self.edges.append(e)
+                                e.weight["reactions"][e.direction(node, n)].append(tweet)
+                                
+                                for i in list(follows):
+                                    if not self.exist_edge(n, self.nodes[i]):
+                                        e = Edge("->", n, self.nodes[i])
+                                        n.edges.append(e)
+                                        self.nodes[i].edges.append(e)
+                                        self.edges.append(e)
+                                    
+                                for i,j in reactions.items():
+                                    temp = self.exist_edge(n, self.nodes[i])
+                                    if temp:
+                                        e = temp
+                                    else:
+                                        if n == self.nodes[i]:
+                                            continue
+                                        e = Edge("X", n, self.nodes[i])
+                                        n.edges.append(e)
+                                        self.nodes[i].edges.append(e)
+                                        self.edges.append(e)
+                                    e.weight["reactions"][e.direction(n, self.nodes[i])].append(j)
+                                
+                                for i in mentions:
+                                    temp = self.exist_edge(n, self.nodes[i])
+                                    if temp:
+                                        e = temp
+                                    else:
+                                        if n == self.nodes[i]:
+                                            continue
+                                        e = Edge("X", n, self.nodes[i])
+                                        n.edges.append(e)
+                                        self.nodes[i].edges.append(e)
+                                        self.edges.append(e)
+                                    e.weight["mentions"][e.direction(n, self.nodes[i])] += len(n.profile.all_mentions[i])
+
+                                for i in self.mentioned_outside_bubble.get(tweet.source_username, []):
+                                    temp = self.exist_edge(n, self.nodes[i])
+                                    if temp:
+                                        e = temp
+                                    else:
+                                        if n == self.nodes[i]:
+                                            continue
+                                        e = Edge("X", n, self.nodes[i])
+                                        n.edges.append(e)
+                                        self.nodes[i].edges.append(e)
+                                        self.edges.append(e)
+                                    e.weight["mentions"][e.direction(self.nodes[i], n)] += len(self.nodes[i].all_mentions[tweet.source_username])
+
+
+
+
+                                ''' prekontrolovat ci followers/ing dole'''
+
+
+
+
+                                for i in list(set(n.profile.followers) & set(self.nodes.keys())):
+                                    temp = self.exist_edge(n, self.nodes[i])
+                                    if temp:
+                                        e = temp
+                                    else:
+                                        if n == self.nodes[i]:
+                                            continue
+                                        e = Edge("X", n, self.nodes[i])
+                                        n.edges.append(e)
+                                        self.nodes[i].edges.append(e)
+                                        self.edges.append(e)
+                                    if e.direction(self.nodes[i], n) == "1->2":
+                                        direction = '->'
+                                    elif e.direction(self.nodes[i], n) == "2->1":
+                                        direction = '<-'
+                                    else:
+                                        raise ValueError("nejaka chyba")
+                                    
+                                    if e.weight["follows"] == 'X' or e.weight["follows"] == direction:
+                                        e.weight["follows"] = direction
+                                    else:
+                                        e.weight["follows"] = "friends"
+                                                    
+
+                            else:
+                                if tweet.source_username not in self.interacted_outside_bubble:
+                                    self.interacted_outside_bubble[tweet.source_username] = []
+                                self.interacted_outside_bubble[tweet.source_username].append(tweet.username)
+                        
                
         
                         
@@ -2323,7 +2479,7 @@ class BubbleSummary:
             
             
         }
-######        self.bubble_summary()
+        self.bubble_summary()
 
     def create_pie_chart(self, labels, values, title):
         if labels and values:
@@ -2998,10 +3154,11 @@ class BubbleSummary:
         for name, node in self.social_bubble.nodes.items():
             traffic[name] = node.compute_interaction_strength(PROFILES)
             interconnection[name] = len(node.edges)
+            print(name, traffic[name], interconnection[name])
 
         for edge in self.social_bubble.edges:
             weight = edge.get_weight_eval()
-            if top_conversation[1] >= weight:
+            if top_conversation[1] <= weight:
                 if PROFILES and (edge.node1 not in PROFILES or edge.node2 not in PROFILES):
                     continue
                 top_conversation = [edge, weight]
@@ -3011,7 +3168,7 @@ class BubbleSummary:
             if edge.weight["follows"] == 'friends':
                 both_dir_edges += 1
                 
-            
+        print("aaaaaa", traffic, interconnection)
         traffic = dict(sorted(traffic.items(), key=lambda x: x[1], reverse=True))
         interconnection = dict(sorted(interconnection.items(), key=lambda x: x[1], reverse=True))
 
@@ -3022,7 +3179,6 @@ class BubbleSummary:
         return self.graph_prop
 
     def create_entity_based_graph(self, topic, entity, intervals=False):
-        
         if not intervals:
             net = Network(notebook=True, height="600px", width="100%", bgcolor="#222222", font_color="white")
             active_nodes = {i:{'sentiment': 0, 'mentions':0} for i in self.social_bubble.nodes.keys()}
@@ -3252,7 +3408,9 @@ class BubbleSummary:
             print(self.evolution_stats[f"{topic}_overall_mentions"])
 
     ##### entity moze byt none iba pri mentions
+
     
+
     def interactions_subbubbles(self):
         # Prepare graph data
         nodes = list(self.social_bubble.nodes.keys())
@@ -3265,9 +3423,89 @@ class BubbleSummary:
         G.add_nodes_from(nodes)
         G.add_edges_from((u, v, {'weight': w}) for (u, v), w in edges.items())
 
-        # Detect communities (including single-node communities)
+        # First pass community detection
         partition = community_louvain.best_partition(G, weight='weight', randomize=False)
         
+        # Post-process communities based on our rules
+        def should_be_in_same_community(node1, node2, G, partition):
+            # If nodes are already in different communities, check if they should be merged
+            if partition[node1] != partition[node2]:
+                # Check direct connection
+                if G.has_edge(node1, node2):
+                    if G[node1][node2]['weight'] >= 2.9:
+                        return True
+                    else:
+                        return False
+                
+                # Check indirect connections through neighbors
+                common_neighbors = set(G.neighbors(node1)) & set(G.neighbors(node2))
+                strong_path = False
+                for neighbor in common_neighbors:
+                    if (G[node1][neighbor]['weight'] >= 2.9 and 
+                        G[node2][neighbor]['weight'] >= 2.9):
+                        strong_path = True
+                        break
+                return strong_path
+            return True
+
+        # Merge communities based on connections
+        changed = True
+        while changed:
+            changed = False
+            communities = {}
+            for node, comm_id in partition.items():
+                communities.setdefault(comm_id, set()).add(node)
+            
+            # Check all pairs of communities for merging
+            comm_ids = list(communities.keys())
+            for i in range(len(comm_ids)):
+                for j in range(i+1, len(comm_ids)):
+                    comm1 = comm_ids[i]
+                    comm2 = comm_ids[j]
+                    
+                    # Check if any node in comm1 is strongly connected to comm2
+                    strong_connection = False
+                    for node1 in communities[comm1]:
+                        for node2 in communities[comm2]:
+                            if should_be_in_same_community(node1, node2, G, partition):
+                                strong_connection = True
+                                break
+                        if strong_connection:
+                            break
+                    
+                    if strong_connection:
+                        # Merge communities
+                        for node in communities[comm2]:
+                            partition[node] = comm1
+                        changed = True
+                        break
+                if changed:
+                    break
+
+        # Ensure nodes strongly connected to a community are part of it
+        communities = {}
+        for node, comm_id in partition.items():
+            communities.setdefault(comm_id, set()).add(node)
+        
+        for node in nodes:
+            current_comm = partition[node]
+            neighbor_comms = {}
+            
+            # Analyze all neighbors and their communities
+            for neighbor in G.neighbors(node):
+                if G[node][neighbor]['weight'] >= 3:
+                    neighbor_comm = partition[neighbor]
+                    neighbor_comms[neighbor_comm] = neighbor_comms.get(neighbor_comm, 0) + 1
+            
+            # If node is strongly connected to another community's majority, move it
+            if neighbor_comms:
+                strongest_comm = max(neighbor_comms.items(), key=lambda x: x[1])[0]
+                if (strongest_comm != current_comm and 
+                    neighbor_comms[strongest_comm] >= len(communities.get(strongest_comm, set())) * 0.5):
+                    partition[node] = strongest_comm
+                    communities[current_comm].remove(node)
+                    communities[strongest_comm].add(node)
+
         # Ensure all nodes are in partition (some might be isolated)
         for node in nodes:
             if node not in partition:
@@ -3350,30 +3588,46 @@ class BubbleSummary:
         # Save and return
         net.show("communities.html")
         return net
+
+
+    def absolute_edge_evaluation(self): ### potom ked tak pridat INTERVAL
+         hrana = spolocne sledovane, sentimenty - prejde vsetky sentimenty a vytvori index (sentimentVacsi/(sentimentVacsi - sentimentMensi)), miera interakcii, zdielane hashtagy
+        nodes = list(self.social_bubble.nodes.keys())
+        edges = {}
+        for edge in self.social_bubble.edges:
+            edges[(edge.node1.profile.username, edge.node2.profile.username)] = edge.get_weight_eval()
+
+        for topic in ["sport", "club", "athlete", "genre", "artist"]:
+            for entity, data in self.evolution_stats[f"{topic}_overall_sentiment"].items():
+                ak sa aspon jeden nenachadza, nechaj neutral
+                ak su obaja, vzorec
             
-         
+
+        politika sentiments
+        others sentiments
+          
+
 '''
-DECENTRLISED
 CONSOLE WINDOW
-PODBUBLINY
+VIAC TESTOVACICH DAT -> TESTOVAT PODBUBLINY
+
 '''    
         
 
 
-
-SB = SocialBubble("pushkicknadusu", "decentralised", depth=3, profiles=["pushkicknadusu", "statkar_miky"])
+SB = SocialBubble("pushkicknadusu", "decentralised", depth=3, profiles=["tofaaakt", "jarro01", "SKSlovan", "IvanKmotrik", "communistsusa", "statkar_miky"])
 
 SB.create_graph()
 
-##################################################BS = BubbleSummary({}, SB)
-##################################################
-####################################################BS.interactions_subbubbles()
+##BS = BubbleSummary({}, SB)
+##
+##BS.interactions_subbubbles()
 
 SB.visualize_graph()
 
 SB.visualize_outside_relations()
 
-##SB.visualize_hashtags()
+SB.visualize_hashtags()
 
 ##opd = SB.get_outside_profiles_data(THRESHOLD)
 
@@ -3381,13 +3635,13 @@ SB.visualize_outside_relations()
 
 ##SB.profile_analysis(opd)
 
-####SB.tweet_analysis()
+SB.tweet_analysis()
 
-####BS = BubbleSummary(SB.profiles_summary(6), SB)
+BS = BubbleSummary(SB.profiles_summary(6), SB)
 
-####BS.test_show()
+##BS.test_show()
 
-##print(BS.graph_properties())
+print(BS.graph_properties())
 
 
 
@@ -3409,3 +3663,4 @@ mozne funkcie:
 
 
 '''
+
