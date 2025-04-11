@@ -19,6 +19,12 @@ class TwitterScrapper:
                 followers.append(i["content"]["itemContent"]["user_results"]["result"]["legacy"]["screen_name"])
             except KeyError:
                 continue
+        if "verified_followers" in data[username]:
+            for i in data[username]["verified_followers"]["data"]["user"]["result"]["timeline"]["timeline"]["instructions"][3]["entries"]:
+                try:
+                    followers.append(i["content"]["itemContent"]["user_results"]["result"]["legacy"]["screen_name"])
+                except KeyError:
+                    continue
         return followers
 
     def get_following_extended(self, username):
@@ -64,7 +70,8 @@ class TwitterScrapper:
         tweets = []
         if username not in data:
             return []
-        for tweet in data[username]["tweets"]["data"]["user"]["result"]["timeline_v2"]["timeline"]["instructions"][-1]["entries"]:
+        a = data[username]["tweets"]["data"]["user"]["result"].get("timeline_v2", None) or data[username]["tweets"]["data"]["user"]["result"].get("timeline", None)
+        for tweet in a["timeline"]["instructions"][-1]["entries"]:
             source_tweet = None
             source_username = None
             try:
@@ -110,8 +117,8 @@ class TwitterScrapper:
         replies = []
         if username not in data:
             return []
-        
-        for entry in data[username]["replies"]["data"]["user"]["result"]["timeline_v2"]["timeline"]["instructions"][-1]["entries"]:
+        a = data[username]["replies"]["data"]["user"]["result"].get("timeline_v2", None) or data[username]["replies"]["data"]["user"]["result"].get("timeline", None)        
+        for entry in a["timeline"]["instructions"][-1]["entries"]:
             try:
                 if "items" in entry["content"]:
                     # Ak odpoveď obsahuje zoznam položiek, prejdeme ich všetky
