@@ -71,6 +71,7 @@ class Node:
     def __init__(self, username):
         self.edges = []
         self.profile = Profile(username)
+        self.sentiment_edges = []
         
     def compute_interaction_strength(self, PROFILES=[]):
         total = 0
@@ -79,6 +80,24 @@ class Node:
                 continue
             total += edge.get_weight_eval()
         return total
+
+class SentimentEdge:
+    def __init__(self, weight, node1, node2, interval=None):
+        self.node1 = node1
+        self.node2 = node2
+        self.directions = {
+            node1 : node2,
+            node2 : node1
+        }
+        self.weight = weight
+        self.interval = interval
+
+    def get_weight_eval(self):
+    kvoli kompasu a tejto funkcii ziskat pocet type politics tweetov/sledovanych profilov
+    implementovat tuto funkciu a vytvorit graf
+        ak jeden z profilov nema ani jeden politicky tweet, dat /4 
+    spravit funkciu co vyhodnoti absolute edge weight
+        print(self.weight)
 
 class Edge:
     def __init__(self, weight, node1, node2):
@@ -1051,7 +1070,7 @@ class Profile:
             f"Tweets: {len(self.tweets)}, Reposts: {len(self.reposts)}, Comments: {len(self.comments)}, Quotes: {len(self.quotes)}\n"
         )
 
-    def summary(self, step=1):
+    def summary(self, step=None):
 
         ### rozdelit si sumar a analyzu na jednoducho vydedukovatelne a tazko
         ### napr. jednoducho = sleduje vela americkych novinarov -> zaujima sa a o americku politiku
@@ -1495,9 +1514,6 @@ Edges
 
 '''
 
-
-
-### repost retweet hashtagy 
 class Tweet:
     def __init__(self, status_id, username, text, type, created, source_tweet=None, source_username=None, hashtags=[], mentions=[]):
         self.status_id = status_id
@@ -1581,23 +1597,6 @@ class Tweet:
     def get_type(self):
         return self.type
 
-    
-
-
-
-
-        
-
-
-
-
-
-
-
-#TYPES = ["entity_centered", "profile_centered"]  # mozno hashtag centered,
-
-#ARGS = depth, time_interval, minimal_edge_weight
-
 class SocialBubble:
     def __init__(self, username, type, **args):
         self.time_interval = args.get("time_interval", None)
@@ -1610,6 +1609,7 @@ class SocialBubble:
             self.depth = args["depth"]
         self.username = username
         self.edges = []
+        self.sentiment_edges = []
         self.nodes = {}  ### name : Node
         self.followed_outside_bubble = {}
         self.following_outside_bubble = {}
@@ -1622,6 +1622,12 @@ class SocialBubble:
             if edge.node1 == node1 and edge.node2 == node2 or edge.node1 == node2 and edge.node2 == node1:
                 return edge
         return None    
+    
+    def exist_sentiment_edge(self, node1: Node, node2: Node):
+        for edge in self.sentiment_edges:
+            if edge.node1 == node1 and edge.node2 == node2 or edge.node1 == node2 and edge.node2 == node1:
+                return edge
+        return None 
 
     def create_graph(self):
         if self.type == "profile_centered":
@@ -2427,7 +2433,7 @@ class SocialBubble:
             json.dump(cached_profiles, f, indent=4, ensure_ascii=False)
 
     #step => number of months in one summary
-    def profiles_summary(self, step=1):
+    def profiles_summary(self, step=None):
         self.all_sums = {}
         for username, node in self.nodes.items():
             print(username)
@@ -2480,6 +2486,7 @@ class BubbleSummary:
             
         }
         self.bubble_summary()
+        self.create_sentiment_edges()
 
     def create_pie_chart(self, labels, values, title):
         if labels and values:
@@ -2596,8 +2603,7 @@ class BubbleSummary:
         )
         
         return fig.to_html(full_html=False)
-
-        
+       
     def bubble_summary(self):
         for date, summaries in self.all_sums.items():
             for summary in summaries:
@@ -2752,16 +2758,16 @@ class BubbleSummary:
                     
                 
 
-        with open("bubble_summary.json", "w", encoding="utf-8") as f:
-            json.dump(
-                {
-                    "evolution": self.convert_datetime_keys_to_strings(self.evolution_stats),
-                    "overall": self.convert_datetime_keys_to_strings(self.overall_stats)
-                },
-                f,
-                indent=4,
-                ensure_ascii=False
-            )            
+##        with open("bubble_summary.json", "w", encoding="utf-8") as f:
+##            json.dump(
+##                {
+##                    "evolution": self.convert_datetime_keys_to_strings(self.evolution_stats),
+##                    "overall": self.convert_datetime_keys_to_strings(self.overall_stats)
+##                },
+##                f,
+##                indent=4,
+##                ensure_ascii=False
+##            )            
 
 ##                jazyk sum
 ##                denna akt sum
@@ -2802,10 +2808,6 @@ class BubbleSummary:
         else:
             return obj
 
-
-
-
-        
     def avg_activity_evolution(self, PROFILES=None):
         #print(self.evolution_stats["avg_activity"])
         # {jazyk% : []}
@@ -2875,6 +2877,7 @@ class BubbleSummary:
                 )}</div>
             </div>  
         '''
+    
     def most_followed_profiles(self, PROFILES=[], threshold=0, show_number=float('inf')):
         summary = {}
         for i, j in self.social_bubble.get_outside_profiles_data(threshold).items():
@@ -3010,6 +3013,7 @@ class BubbleSummary:
                 </div>
             </div>  
         '''
+    
     def other_topics_spread(self, PROFILES=[], show_number=float('inf')):
         summary = {}
 ##        print(self.overall_stats["other_topics"])
@@ -3082,11 +3086,6 @@ class BubbleSummary:
             </div>  
         '''
     
-        
-    
-
-        
-
     def test_show(self):
         html_content = f'''
         <!DOCTYPE html>
@@ -3121,23 +3120,23 @@ class BubbleSummary:
 
                 {self.ideology_usage()}
             
-                {self.other_topics([], 20)}
-
-                {self.other_topics_spread([], 20)}
-                
-                {self.avg_activity_sum()}{self.avg_activity_sum(['pushkicknadusu'])}{self.avg_activity_evolution()}
-                {self.locations_sum()}{self.locations_sum(['pushkicknadusu'])}
-                {self.most_followed_profiles([], 100, 5)}
-                
-                {[self.item_spread(i, [], 5) for i in list(set(self.evolution_stats.keys())-{'avg_activity'}) if self.evolution_stats[i] and 'overall' not in i]}
-                {[self.item_usage(i, [], 5) for i in list(set(self.evolution_stats.keys())-{'avg_activity'}) if self.evolution_stats[i] and 'overall' not in i]}
-                {[self.item_evolution(i) for i in list(set(self.evolution_stats.keys())-{'avg_activity'}) if self.evolution_stats[i] and 'overall' not in i]}
                 
             </div>
         </body>
         </html>
         '''
-
+##{self.other_topics([], 20)}
+##
+##                {self.other_topics_spread([], 20)}
+##                
+##                {self.avg_activity_sum()}{self.avg_activity_sum(['pushkicknadusu'])}{self.avg_activity_evolution()}
+##                {self.locations_sum()}{self.locations_sum(['pushkicknadusu'])}
+##                {self.most_followed_profiles([], 100, 5)}
+##                
+##                {[self.item_spread(i, [], 5) for i in list(set(self.evolution_stats.keys())-{'avg_activity'}) if self.evolution_stats[i] and 'overall' not in i]}
+##                {[self.item_usage(i, [], 5) for i in list(set(self.evolution_stats.keys())-{'avg_activity'}) if self.evolution_stats[i] and 'overall' not in i]}
+##                {[self.item_evolution(i) for i in list(set(self.evolution_stats.keys())-{'avg_activity'}) if self.evolution_stats[i] and 'overall' not in i]}
+                
         
         with open("test.html", "w", encoding="utf-8") as file:
             file.write(html_content)
@@ -3590,44 +3589,143 @@ class BubbleSummary:
         return net
 
 
-    def absolute_edge_evaluation(self): ### potom ked tak pridat INTERVAL
-         hrana = spolocne sledovane, sentimenty - prejde vsetky sentimenty a vytvori index (sentimentVacsi/(sentimentVacsi - sentimentMensi)), miera interakcii, zdielane hashtagy
-        nodes = list(self.social_bubble.nodes.keys())
-        edges = {}
-        for edge in self.social_bubble.edges:
-            edges[(edge.node1.profile.username, edge.node2.profile.username)] = edge.get_weight_eval()
-
-        for topic in ["sport", "club", "athlete", "genre", "artist"]:
-            for entity, data in self.evolution_stats[f"{topic}_overall_sentiment"].items():
-                ak sa aspon jeden nenachadza, nechaj neutral
-                ak su obaja, vzorec
-            
-
-        politika sentiments
-        others sentiments
+#    def absolute_edge_evaluation(self, interactions, sentiments, outside_relations, hashtags): ### potom ked tak pridat INTERVAL
+#        hrana = spolocne sledovane, sentimenty - prejde vsetky sentimenty a vytvori index (sentimentVacsi/(sentimentVacsi - sentimentMensi)), miera interakcii, zdielane hashtagy, profily co sleduju
+#        nodes = list(self.social_bubble.nodes.keys())
+#        edges = {}
+#        for edge in self.social_bubble.edges:
+#            edges[(edge.node1.profile.username, edge.node2.profile.username)] = edge.get_weight_eval()
+#
+#        for topic in ["sport", "club", "athlete", "genre", "artist"]:
+#            for entity, data in self.evolution_stats[f"{topic}_overall_sentiment"].items():
+#                ak sa aspon jeden nenachadza, nechaj neutral
+#                ak su obaja, vzorec
+#            
+#
+#        politika sentiments
+#        others sentiments
+#        pridat common interest edge
           
+    def create_sentiment_edges(self, interval=None):
+        print(self.overall_stats["ideologies_overall"])
+        for username1, node1 in self.social_bubble.nodes.items():
+            for username2, node2 in self.social_bubble.nodes.items():
+                if not interval:
+                    if username1 == username2 or self.social_bubble.exist_sentiment_edge(node1, node2):
+                        continue
 
-'''
-CONSOLE WINDOW
-VIAC TESTOVACICH DAT -> TESTOVAT PODBUBLINY
+                    weight = {"sport":0, "music":0, "politics":0, "other":0}
+                    for topic in ["sport", "club", "artist", "genre", "athlete"]:
+                        for item, profiles in self.evolution_stats[f"{topic}_overall_sentiment"].items():
+                            a, b = profiles.get(username1, 0), profiles.get(username2, 0)
+                            sentiment1 = max(a,b)
+                            sentiment2 = min(a,b)
+                            if sentiment1*sentiment2 == 0:
+                                continue
+                            weight["sport" if topic in ["sport", "club", "athlete"] else "music"] += sentiment1/max(sentiment1-sentiment2, 0.2)
+                
 
-'''    
-        
+                    x1,y1,r1 = self.overall_stats["compass"].get(username1, (None,None,None))
+                    x2,y2,r2 = self.overall_stats["compass"].get(username2, (None,None,None))
+
+                    if r1 == 0 or r2 == 0 or None in [x1,x2,y1,y2,r1,r2]:
+                        continue
+                    
+                    dot_product = x1 * x2 + y1 * y2
+                    magnitude1 = math.sqrt(x1**2 + y1**2)
+                    magnitude2 = math.sqrt(x2**2 + y2**2)
+                    
+                    if magnitude1 == 0 or magnitude2 == 0:
+                        index = 0.0  # Avoid division by zero
+                    else:
+                        index = dot_product / (magnitude1 * magnitude2)
+
+                    distance = math.sqrt((x2/r2 - x1/r1)**2 + (y2/r2 - y1/r1)**2)
+
+                    if distance == 0:
+                        distance += 0.1
+                    
+                    if index > 0 or distance < 5:
+                        distance = 1/distance
+                        
+                    weight["politics"] = max(min(index*distance, 10), -10)
+                    
+                    weight["other"] = 0
+                    for topic, profiles in self.overall_stats["other_topics"].items():
+                        a, b = profiles.get(username1, 0), profiles.get(username2, 0)
+                        if a > 1 and b > 1:
+                            weight["other"] += 1
+                            
+
+                    se = SentimentEdge(weight, node1, node2)
+                    node1.sentiment_edges.append(se)
+                    node2.sentiment_edges.append(se)
+                    self.social_bubble.sentiment_edges.append(se)
+                
+                else:
+                    if username1 == username2 or self.social_bubble.exist_sentiment_edge(node1, node2):
+                        continue
+
+                    weight = {"sport":0, "music":0, "politics":0, "other":0}
+                    for topic in ["sport", "club", "artist", "genre", "athlete"]:
+                        for item, profiles in self.evolution_stats[f"{topic}_tweet_sentiment"][interval].items():
+                            a, b = profiles.get(username1, 0), profiles.get(username2, 0)
+                            sentiment1 = max(a,b)
+                            sentiment2 = min(a,b)
+                            if sentiment1*sentiment2 == 0:
+                                continue
+                            weight["sport" if topic in ["sport", "club", "athlete"] else "music"] += sentiment1/max(sentiment1-sentiment2, 0.2)
+                
+
+                    # x1,y1,r1 = self.overall_stats["compass"].get(username1, (None,None,None))
+                    # x2,y2,r2 = self.overall_stats["compass"].get(username2, (None,None,None))
+
+                    
+                    # dot_product = x1 * x2 + y1 * y2
+                    # magnitude1 = math.sqrt(x1**2 + y1**2)
+                    # magnitude2 = math.sqrt(x2**2 + y2**2)
+                    
+                    # if magnitude1 == 0 or magnitude2 == 0:
+                    #     index = 0.0  # Avoid division by zero
+                    # else:
+                    #     index = dot_product / (magnitude1 * magnitude2)
+
+                    # distance = math.sqrt((x2/r2 - x1/r1)**2 + (y2/r2 - y1/r1)**2)
+
+                    # if index > 0 or distance < 5:
+                    #     distance = 1/distance
+                        
+                    # weight["politics"] = max(min(index*distance, 10), -10)
+                    
+                    # weight["other"] = 0
+                    # for topic, profiles in self.overall_stats["other_topics"].items():
+                    #     a, b = profiles.get(username1, 0), profiles.get(username2, 0)
+                    #     if a > 1 and b > 1:
+                    #         weight["other"] += 1
+                            
+
+                    se = SentimentEdge(weight, node1, node2)
+                    node1.sentiment_edges.append(se)
+                    node2.sentiment_edges.append(se)
+                    self.social_bubble.sentiment_edges.append(se)
+
+                
 
 
-SB = SocialBubble("pushkicknadusu", "decentralised", depth=3, profiles=["tofaaakt", "jarro01", "SKSlovan", "IvanKmotrik", "communistsusa", "statkar_miky"])
+
+SB = SocialBubble("pushkicknadusu", "decentralised", depth=0, profiles=["tofaaakt", "jarro01", "SKSlovan", "IvanKmotrik", "communistsusa", "statkar_miky"])
 
 SB.create_graph()
 
 ##BS = BubbleSummary({}, SB)
-##
+
 ##BS.interactions_subbubbles()
 
 SB.visualize_graph()
 
-SB.visualize_outside_relations()
+##SB.visualize_outside_relations()
 
-SB.visualize_hashtags()
+##SB.visualize_hashtags()
 
 ##opd = SB.get_outside_profiles_data(THRESHOLD)
 
@@ -3637,13 +3735,14 @@ SB.visualize_hashtags()
 
 SB.tweet_analysis()
 
-BS = BubbleSummary(SB.profiles_summary(6), SB)
+BS = BubbleSummary(SB.profiles_summary(), SB)
 
-##BS.test_show()
+BS.test_show()
 
-print(BS.graph_properties())
+##print(BS.graph_properties())
 
-
+for edge in SB.sentiment_edges:
+    print(edge.node1.profile.username, edge.node2.profile.username, edge.weight)
 
 
 '''
@@ -3663,4 +3762,3 @@ mozne funkcie:
 
 
 '''
-
