@@ -193,3 +193,9 @@ class TwitterScrapper:
     def get_mentions_from_tweet(self, tweet):
         return [i["screen_name"] for i in tweet["content"]["itemContent"]["tweet_results"]["result"]["legacy"]["entities"]["user_mentions"]]
     
+    def get_followers_count(self, username):
+        if username not in data:
+            return None
+        return data[username]["bio"]["data"]["user"]["result"]["legacy"]["followers_count"]
+
+    
