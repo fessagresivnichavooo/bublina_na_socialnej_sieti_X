@@ -3179,13 +3179,19 @@ class BubbleSummary:
             file.write(html_content)
         print(f"HTML file has been created.")
 
-    def graph_properties(self, PROFILES=[]):
+    def graph_properties(self, type, PROFILES=[]):
         traffic = {}
         interconnection = {}
         top_conversation = [None, 0]
         one_dir_edges = 0
         both_dir_edges = 0
         
+        #["Relations", "Sentiments", "Outside relations", "Hashtags"]
+        edges = []
+        if type == "Relations":
+            edges = self.social_bubble.edges
+        elif type == "Sentiments":
+            edges = self.social_bubble.sentiment_edges
         
         for name, node in self.social_bubble.nodes.items():
             traffic[name] = node.compute_interaction_strength(PROFILES)
@@ -3204,7 +3210,7 @@ class BubbleSummary:
             if edge.weight["follows"] == 'friends':
                 both_dir_edges += 1
                 
-        print("aaaaaa", traffic, interconnection)
+        
         traffic = dict(sorted(traffic.items(), key=lambda x: x[1], reverse=True))
         interconnection = dict(sorted(interconnection.items(), key=lambda x: x[1], reverse=True))
 
@@ -3212,241 +3218,294 @@ class BubbleSummary:
         density_both_dir = both_dir_edges/(math.factorial(len(self.social_bubble.nodes))/(math.factorial(len(self.social_bubble.nodes)-2)*2))
         
         self.graph_prop = {'traffic':traffic, 'interconnection':interconnection, 'top_conversation':top_conversation, 'density_one_dir':density_one_dir, 'density_both_dir':density_both_dir}
+        if type == "Relations":
+            print(f"Profile with biggest interaction traffic: {traffic.items()[0][0]}")
+            print(f"Most connected profile: {interconnection.items()[0][0]}")
+            if top_conversation[0]:
+                print(f"Most interacting profiles: {top_conversation[0].node1.profile.username}<->{top_conversation[0].node2.profile.username}")
+            print(f"Density: friendships {density_both_dir} | overall interactions {density_one_dir}")
+            
+        elif type == "Sentiments":
+            print(f"Profile with most common interests: {traffic.items()[0][0]}")
+            if top_conversation[0]:
+                print(f"Profiles sharing most interests: {top_conversation[0].node1.profile.username}<->{top_conversation[0].node2.profile.username}")
+            
+            
+
         return self.graph_prop
 
     def create_entity_based_graph(self, topic, entity, intervals=False):
-        if not intervals:
-            net = Network(notebook=True, height="600px", width="100%", bgcolor="#222222", font_color="white")
-            active_nodes = {i:{'sentiment': 0, 'mentions':0} for i in self.social_bubble.nodes.keys()}
-            data = self.evolution_stats.get(f"{topic}_overall_sentiment", False)
-            if data:
-                if entity in data:
-                    for username, sentiment in data[entity].items():
-                        active_nodes[username] = {'sentiment': sentiment, 'mentions':0}
-                else:
-                    print(f"NO SENTIMENT DATA FOUND FOR ENTITY {entity}")
+        def sanitize_filename(date_str):
+            """Convert datetime string to safe filename by replacing special characters."""
+            return str(date_str).replace(":", "_").replace(" ", "_").replace("-", "_")
+        
+        def create_network_graph(date=None):
+            """Create and configure a Pyvis network graph."""
+            net = Network(
+                notebook=True,
+                height="600px",
+                width="100%",
+                bgcolor="#222222",
+                font_color="white"
+            )
             
-            data = self.evolution_stats.get(f"{topic}_overall_mentions", False)
-            if data:
-                if entity in data:
-                    for username, mention in data[entity].items():
-                        if username not in active_nodes:
-                            active_nodes[username] = {'sentiment': 0, 'mentions':0}
-                        active_nodes[username]['mentions'] = mention
+            # Initialize nodes with default values
+            active_nodes = {
+                username: {'sentiment': 0, 'mentions': 0}
+                for username in self.social_bubble.nodes.keys()
+            }
+            
+            # Get appropriate data based on interval mode
+            if date:
+                # Interval mode - get data for specific date
+                if topic == "politics":
+                    sentiment_data = self.evolution_stats.get("ideologies", {}).get(date, {}).get(entity, {})
+                    mentions_data = sentiment_data
                 else:
-                    print(f"NO MENTIONS DATA FOUND FOR ENTITY {entity}")
+                    sentiment_data = self.evolution_stats.get(f"{topic}_tweet_sentiment", {}).get(date, {}).get(entity, {})
+                    mentions_data = self.evolution_stats.get(f"{topic}_tweet_mentions", {}).get(date, {}).get(entity, {})
             else:
-                if entity in self.overall_stats["other_topics"]:
-                    for username, mention in data[entity].items():
-                        if username not in active_nodes:
-                            active_nodes[username] = {'sentiment': 0, 'mentions':0}
-                        active_nodes[username]['mentions'] = mention
+                # Non-interval mode - get overall data
+                if topic == "politics":
+                    sentiment_data = self.overall_stats.get("ideologies_overall", {}).get(entity, {})
+                    mentions_data = sentiment_data
+                    
+                elif topic == "other":
+                    sentiment_data = self.overall_stats.get("other_topics", {}).get(entity, {})
+                    mentions_data = sentiment_data
                 else:
-                    print(f"NO MENTIONS DATA FOUND FOR ENTITY {entity}")
-
+                    sentiment_data = self.evolution_stats.get(f"{topic}_overall_sentiment", {}).get(entity, {})
+                    mentions_data = self.evolution_stats.get(f"{topic}_overall_mentions", {}).get(entity, {})
+                    
+            
+            # Update nodes with sentiment data
+            if sentiment_data:
+                for username, sentiment in sentiment_data.items():
+                    active_nodes[username]['sentiment'] = sentiment
+            else:
+                print(f"No sentiment data found for entity {entity}" + (f" during {date}" if date else ""))
+            
+            # Update nodes with mentions data
+            if mentions_data:
+                for username, mentions in mentions_data.items():
+                    if username not in active_nodes:
+                        active_nodes[username] = {'sentiment': 0, 'mentions': 0}
+                    active_nodes[username]['mentions'] = mentions
+            else:
+                print(f"No mentions data found for entity {entity}" + (f" during {date}" if date else ""))
+            
+            # Add nodes to the graph
             for username, data in active_nodes.items():
                 sentiment = data['sentiment']
                 mentions = data['mentions']
                 
-                # Color logic: Red (< -0.2), Yellow (-0.2 to 0.2), Green (> 0.2)
-                if not mentions:
-                    color = "#c0c0c0"
+                # Determine node color based on sentiment
+                if mentions == 0:
+                    color = "#c0c0c0"  # Gray for no mentions
                 elif sentiment < -0.2:
-                    color = "#ff6666"  # Red
-                elif -0.2 <= sentiment <= 0.2:
-                    color = "#ffcc00"  # Yellow
+                    color = "#ff6666"  # Red for negative sentiment
+                elif sentiment > 0.2:
+                    color = "#66ff66"  # Green for positive sentiment
                 else:
-                    color = "#66ff66"  # Green
+                    color = "#ffcc00"  # Yellow for neutral sentiment
                 
-                # Size logic: Base size = 10, scales with mentions (min size = 10)
+                # Calculate node size based on mentions
                 size = 10 + (1.3 * mentions) if mentions > 0 else 10
+                
+                # Create tooltip with node information
+                tooltip = f"Sentiment: {sentiment:.2f}\nMentions: {mentions}"
+                if date:
+                    tooltip = f"Date: {date}\n" + tooltip
                 
                 net.add_node(
                     username,
-                    title=f"Sentiment: {sentiment:.2f}\nMentions: {mentions}",
+                    title=tooltip,
                     color=color,
                     size=size
                 )
             
-            # --- 4. Add edges from social_bubble with STRICT sentiment coloring ---
+            # Add edges between nodes
             for edge in self.social_bubble.edges:
                 node1 = edge.node1.profile.username
                 node2 = edge.node2.profile.username
+                
                 if node1 in active_nodes and node2 in active_nodes:
-                    # Count reaction sentiments
                     reaction_sentiments = {'Disagreeing': 0, 'Agreeing': 0, 'Neutral': 0}
                     
-                    for tweet in edge.weight['reactions']["1->2"] + edge.weight['reactions']["2->1"]:
-                        if tweet.content:
-                            # Case 1: Direct reaction matches topic
+                    # Count reaction sentiments in both directions
+                    for direction in ["1->2", "2->1"]:
+                        for tweet in edge.weight['reactions'].get(direction, []):
+                            if not tweet.content:
+                                continue
+                                
+                            # Check if tweet directly matches our topic
                             if tweet.content.get('reaction', {}).get('type') == topic:
                                 sentiment = tweet.content.get("reaction_sentiment")
                                 if sentiment in reaction_sentiments:
                                     reaction_sentiments[sentiment] += 1
                             
-                            # Case 2: Source tweet matches topic
-                            elif tweet.source_tweet and ALL_TWEETS.get(tweet.source_tweet, None):
-                                if ALL_TWEETS.get(tweet.source_tweet, None).content:
-                                    source_type = ALL_TWEETS[tweet.source_tweet].content.get('type')
-                                    source_reaction_type = ALL_TWEETS[tweet.source_tweet].content.get('reaction', {}).get('type')
+                            # Check if source tweet matches our topic
+                            elif tweet.source_tweet and ALL_TWEETS.get(tweet.source_tweet):
+                                source_content = ALL_TWEETS[tweet.source_tweet].content
+                                if source_content:
+                                    source_type = source_content.get('type')
+                                    source_reaction_type = source_content.get('reaction', {}).get('type')
                                     if source_type == topic or source_reaction_type == topic:
                                         sentiment = tweet.content.get("reaction_sentiment")
                                         if sentiment in reaction_sentiments:
                                             reaction_sentiments[sentiment] += 1
-
-                    # STRICT dominant sentiment logic (requires 2x majority)
+                    
+                    # Determine edge color based on reaction ratios
                     total = sum(reaction_sentiments.values())
-                    edge_color = "#c0c0c0"
+                    edge_color = "#c0c0c0"  # Default gray color
                     
                     if total > 0:
                         agreeing_ratio = reaction_sentiments['Agreeing'] / total
                         disagreeing_ratio = reaction_sentiments['Disagreeing'] / total
                         
-                        # Only color if one sentiment has 2x more than the other
                         if agreeing_ratio >= 2 * disagreeing_ratio:
-                            edge_color = "#66ff66"  # Green (Clear Agreeing majority)
+                            edge_color = "#66ff66"  # Green for agreeing majority
                         elif disagreeing_ratio >= 2 * agreeing_ratio:
-                            edge_color = "#ff6666"  # Red (Clear Disagreeing majority)
+                            edge_color = "#ff6666"  # Red for disagreeing majority
                         else:
-                            edge_color = "#ffcc00"
+                            edge_color = "#ffcc00"  # Yellow for mixed/neutral
                     
-                    # Add edge with determined color
+                    # Create edge tooltip
+                    tooltip = (
+                        f"Reactions:\n"
+                        f"Agreeing: {reaction_sentiments['Agreeing']}\n"
+                        f"Neutral: {reaction_sentiments['Neutral']}\n"
+                        f"Disagreeing: {reaction_sentiments['Disagreeing']}"
+                    )
+                    if date:
+                        tooltip = f"Date: {date}\n" + tooltip
+                    
                     net.add_edge(
-                        node1, 
-                        node2, 
+                        node1,
+                        node2,
                         width=0.5,
                         color=edge_color,
-                        title=f"Reactions:\n"
-                             f"Agreeing: {reaction_sentiments['Agreeing']}\n"
-                             f"Neutral: {reaction_sentiments['Neutral']}\n"
-                             f"Disagreeing: {reaction_sentiments['Disagreeing']}"
+                        title=tooltip
                     )
             
-            
-            
-            return net 
-            
-        else:
-            graphs = {}
-            for date, data in self.evolution_stats.get(f"{topic}_tweet_sentiment", {}).items():
-                net = Network(notebook=True, height="600px", width="100%", bgcolor="#222222", font_color="white")
-                active_nodes = {i:{'sentiment': 0, 'mentions':0} for i in self.social_bubble.nodes.keys()}
-                if data:
-                    if entity in data:
-                        for username, sentiment in data[entity].items():
-                            active_nodes[username] = {'sentiment': sentiment, 'mentions':0}
-                    else:
-                        print(f"NO SENTIMENT DATA FOUND FOR ENTITY {entity} DURING {date}")
-                
-                data_mentions = self.evolution_stats.get(f"{topic}_tweet_mentions", {}).get(date, False)
-                if data_mentions:
-                    if entity in data_mentions:
-                        for username, mention in data_mentions[entity].items():
-                            if username not in active_nodes:
-                                active_nodes[username] = {'sentiment': 0, 'mentions':0}
-                            active_nodes[username]['mentions'] = mention
-                    else:
-                        print(f"NO MENTIONS DATA FOUND FOR ENTITY {entity} DURING {date}")
-                
-                for username, data in active_nodes.items():
-                    sentiment = data['sentiment']
-                    mentions = data['mentions']
-                    
-                    # Color logic: Red (< -0.2), Yellow (-0.2 to 0.2), Green (> 0.2)
-                    if not mentions:
-                        color = "#c0c0c0"
-                    elif sentiment < -0.2:
-                        color = "#ff6666"  # Red
-                    elif -0.2 <= sentiment <= 0.2:
-                        color = "#ffcc00"  # Yellow
-                    else:
-                        color = "#66ff66"  # Green
-                    
-                    # Size logic: Base size = 10, scales with mentions (min size = 10)
-                    size = 10 + (1.3 * mentions) if mentions > 0 else 10
-                    
-                    net.add_node(
-                        username,
-                        title=f"Sentiment: {sentiment:.2f}\nMentions: {mentions}",
-                        color=color,
-                        size=size
-                    )
-                
-                # --- 4. Add edges from social_bubble with STRICT sentiment coloring ---
-                for edge in self.social_bubble.edges:
-                    node1 = edge.node1.profile.username
-                    node2 = edge.node2.profile.username
-                    if node1 in active_nodes and node2 in active_nodes:
-                        # Count reaction sentiments
-                        reaction_sentiments = {'Disagreeing': 0, 'Agreeing': 0, 'Neutral': 0}
-                        
-                        for tweet in edge.weight['reactions']["1->2"] + edge.weight['reactions']["2->1"]:
-                            if tweet.content:
-                                # Case 1: Direct reaction matches topic
-                                if tweet.content.get('reaction', {}).get('type') == topic:
-                                    sentiment = tweet.content.get("reaction_sentiment")
-                                    if sentiment in reaction_sentiments:
-                                        reaction_sentiments[sentiment] += 1
-                                
-                                # Case 2: Source tweet matches topic
-                                elif tweet.source_tweet and ALL_TWEETS.get(tweet.source_tweet, None):
-                                    if ALL_TWEETS.get(tweet.source_tweet, None).content:
-                                        source_type = ALL_TWEETS[tweet.source_tweet].content.get('type')
-                                        source_reaction_type = ALL_TWEETS[tweet.source_tweet].content.get('reaction', {}).get('type')
-                                        if source_type == topic or source_reaction_type == topic:
-                                            sentiment = tweet.content.get("reaction_sentiment")
-                                            if sentiment in reaction_sentiments:
-                                                reaction_sentiments[sentiment] += 1
+            return net
 
-                        # STRICT dominant sentiment logic (requires 2x majority)
-                        total = sum(reaction_sentiments.values())
-                        edge_color = "#c0c0c0"
-                        
-                        if total > 0:
-                            agreeing_ratio = reaction_sentiments['Agreeing'] / total
-                            disagreeing_ratio = reaction_sentiments['Disagreeing'] / total
-                            
-                            # Only color if one sentiment has 2x more than the other
-                            if agreeing_ratio >= 2 * disagreeing_ratio:
-                                edge_color = "#66ff66"  # Green (Clear Agreeing majority)
-                            elif disagreeing_ratio >= 2 * agreeing_ratio:
-                                edge_color = "#ff6666"  # Red (Clear Disagreeing majority)
-                            else:
-                                edge_color = "#ffcc00"
-                        
-                        # Add edge with determined color
-                        net.add_edge(
-                            node1, 
-                            node2, 
-                            width=0.5,
-                            color=edge_color,
-                            title=f"Reactions:\n"
-                                 f"Agreeing: {reaction_sentiments['Agreeing']}\n"
-                                 f"Neutral: {reaction_sentiments['Neutral']}\n"
-                                 f"Disagreeing: {reaction_sentiments['Disagreeing']}"
-                        )
-                
-                # --- 5. Finalize and save graph ---
-                graphs[date] = net
-                
-            return graphs
-                #net.show(f"{entity}_network.html")
-                
-                
-            
-
-
-        for topic in ["sport", "club", "artist", "genre", "athlete"]:
-            print(topic)
-            print(self.evolution_stats[f"{topic}_tweet_sentiment"])
-            print(self.evolution_stats[f"{topic}_overall_sentiment"])
-            print(self.evolution_stats[f"{topic}_tweet_mentions"])
-            print(self.evolution_stats[f"{topic}_overall_mentions"])
-
-    ##### entity moze byt none iba pri mentions
-
+        # Handle non-interval case
+        if not intervals:
+            net = create_network_graph()
+            output_file = f"{entity}_network.html"
+            net.show(output_file)
+            return output_file
+        
+        # Handle interval case
+        dates = sorted(self.evolution_stats.get(f"{topic}_tweet_sentiment", {}).keys())
+        if not dates:
+            print(f"No interval data found for topic {topic}")
+            return None
+        
+        # Generate individual graphs for each date
+        graph_files = {}
+        for date in dates:
+            net = create_network_graph(date)
+            safe_date = sanitize_filename(date)
+            graph_file = f"temp_{safe_date}.html"
+            net.save_graph(graph_file)
+            graph_files[date] = graph_file
+        
+        # Generate master HTML with navigation
+        html_template = """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>{entity} Network Evolution</title>
+            <style>
+                .tab {{
+                    overflow: hidden;
+                    border: 1px solid #ccc;
+                    background-color: #f1f1f1;
+                }}
+                .tab button {{
+                    background-color: inherit;
+                    float: left;
+                    border: none;
+                    outline: none;
+                    cursor: pointer;
+                    padding: 14px 16px;
+                    transition: 0.3s;
+                    font-size: 14px;
+                }}
+                .tab button:hover {{
+                    background-color: #ddd;
+                }}
+                .tab button.active {{
+                    background-color: #ccc;
+                    font-weight: bold;
+                }}
+                .tabcontent {{
+                    display: none;
+                    padding: 6px 12px;
+                    border: 1px solid #ccc;
+                    border-top: none;
+                    height: 650px;
+                }}
+                iframe {{
+                    width: 100%;
+                    height: 100%;
+                    border: none;
+                }}
+                h2 {{
+                    margin-bottom: 10px;
+                    color: #333;
+                }}
+            </style>
+        </head>
+        <body>
+            <h2>{entity} Network Evolution</h2>
+            <div class="tab">
+                {tabs}
+            </div>
+            {contents}
+            <script>
+                function openDate(evt, dateName) {{
+                    var i, tabcontent, tablinks;
+                    tabcontent = document.getElementsByClassName("tabcontent");
+                    for (i = 0; i < tabcontent.length; i++) {{
+                        tabcontent[i].style.display = "none";
+                    }}
+                    tablinks = document.getElementsByClassName("tablinks");
+                    for (i = 0; i < tablinks.length; i++) {{
+                        tablinks[i].className = tablinks[i].className.replace(" active", "");
+                    }}
+                    document.getElementById(dateName).style.display = "block";
+                    evt.currentTarget.className += " active";
+                }}
+                // Load first tab by default
+                document.getElementsByClassName("tablinks")[0].click();
+            </script>
+        </body>
+        </html>
+        """
+        
+        # Generate tabs and content sections
+        tabs = []
+        contents = []
+        for i, date in enumerate(dates):
+            active_class = "active" if i == 0 else ""
+            tabs.append(f'<button class="tablinks {active_class}" onclick="openDate(event, \'{date}\')">{date}</button>')
+            display = "block" if i == 0 else "none"
+            contents.append(f'<div id="{date}" class="tabcontent" style="display:{display}"><iframe src="{graph_files[date]}"></iframe></div>')
+        
+        # Save the master HTML file
+        output_file = f"{entity}_network_evolution.html"
+        with open(output_file, "w", encoding="utf-8") as f:
+            f.write(html_template.format(
+                entity=entity,
+                tabs="\n".join(tabs),
+                contents="\n".join(contents)
+            ))
+        
+        return output_file
     
-
     def interactions_subbubbles(self):
         # Prepare graph data
         nodes = list(self.social_bubble.nodes.keys())
@@ -3628,7 +3687,7 @@ class BubbleSummary:
 
     def absolute_edge_evaluation(self, node1, node2, interval=None, interactions=False, sentiments=False, outside_relations=False, hashtags=False, follower_magnitude=False): ### potom ked tak pridat INTERVAL
         #hrana = spolocne sledovane, sentimenty - prejde vsetky sentimenty a vytvori index (sentimentVacsi/(sentimentVacsi - sentimentMensi)), miera interakcii, zdielane hashtagy, profily co sleduju
-        pridat_langauge_spoken
+        #######pridat_langauge_spoken
 
         edge = self.social_bubble.exist_edge(node1, node2)
         if edge:
@@ -3660,8 +3719,8 @@ class BubbleSummary:
 
             magnitude_edge_value = 1/(2**abs(magnitude1-magnitude2))
 
-        print(magnitude1, magnitude2, magnitude_edge_value, int(follower_magnitude))
-        print(node1.profile.username, node2.profile.username, interactions_edge_value*int(interactions), sentiments_edge_value*int(sentiments), int(outside_relations)*outside_relations_edge_value, hashtags_edge_value*int(hashtags), magnitude_edge_value**int(follower_magnitude))
+        #print(magnitude1, magnitude2, magnitude_edge_value, int(follower_magnitude))
+        #print(node1.profile.username, node2.profile.username, interactions_edge_value*int(interactions), sentiments_edge_value*int(sentiments), int(outside_relations)*outside_relations_edge_value, hashtags_edge_value*int(hashtags), magnitude_edge_value**int(follower_magnitude))
 
         a = (1.5*interactions_edge_value*int(interactions)+1.5*sentiments_edge_value*int(sentiments)+int(outside_relations)*0.8*outside_relations_edge_value+hashtags_edge_value*int(hashtags))
         if a == 0:
@@ -3857,12 +3916,13 @@ class BubbleSummary:
                     self.social_bubble.sentiment_edges.append(se)
                 
                 else:
-                    if username1 == username2 or self.social_bubble.exist_sentiment_edge(node1, node2):
+                    if username1 == username2 or self.social_bubble.exist_sentiment_edge(node1, node2, interval, step):
                         continue
 
                     weight = {"sport":0, "music":0, "politics":(0,0,0), "other":[]}
                     for topic in ["sport", "club", "artist", "genre", "athlete"]:
-                        for item, profiles in self.evolution_stats[f"{topic}_tweet_sentiment"][interval].items():
+                        #print(self.evolution_stats[f"{topic}_tweet_sentiment"])
+                        for item, profiles in self.evolution_stats[f"{topic}_tweet_sentiment"].get(interval, {}).items():
                             a, b = profiles.get(username1, 0), profiles.get(username2, 0)
                             sentiment1 = max(a,b)
                             sentiment2 = min(a,b)
@@ -3880,9 +3940,9 @@ class BubbleSummary:
 
 
 
-####SB = SocialBubble("pushkicknadusu", "decentralised", depth=0, profiles=["TuckerCarlson", "tofaaakt", "jarro01", "SKSlovan", "IvanKmotrik", "communistsusa", "statkar_miky"])
+#SB = SocialBubble("pushkicknadusu", "decentralised", depth=0, profiles=["TuckerCarlson", "tofaaakt", "jarro01", "SKSlovan", "IvanKmotrik", "communistsusa", "statkar_miky"])
 
-####SB.create_graph()
+#SB.create_graph()
 
 ##BS = BubbleSummary({}, SB)
 
@@ -3900,9 +3960,11 @@ class BubbleSummary:
 
 ##SB.profile_analysis(SB.get_outside_profiles_data(THRESHOLD))
 
-####SB.tweet_analysis()
+#SB.tweet_analysis()
 
-####BS = BubbleSummary(None, SB)
+#BS = BubbleSummary(None, SB)
+
+#BS.create_entity_based_graph('sport', 'football', bool(BS.step))
 
 ##BS.test_show()
 
@@ -3936,13 +3998,15 @@ import os
 from msvcrt import getch  # Windows-only for key input
 
 class ConsoleWindow:
-    # Key codes (Windows)
     KEY_UP = 72
     KEY_DOWN = 80
+    KEY_LEFT = 75
+    KEY_RIGHT = 77
     KEY_ENTER = 13
     KEY_ESC = 27
     KEY_B = 98
     KEY_Q = 113
+    KEY_SPACE = 32
 
     def __init__(self):
         self.path = []
@@ -3950,6 +4014,16 @@ class ConsoleWindow:
         self.current_pos = 0
         self.bubbles = {}  # Stores bubble_name: SocialBubble objects
         self.selected_bubble = None
+
+
+        self.selected_profiles = []
+        self.selected_params = []
+        self.selected_interval = "All time"
+        self.min_threshold = None
+        self.max_threshold = None
+        self.graph_type = "relation"
+        self.analysis_results = None
+        self.subbubbles = []
 
     def clear(self):
         """Clear the console screen"""
@@ -4013,7 +4087,8 @@ class ConsoleWindow:
             menu = {
                 "Bubble": self.get_bubbles_menu,
                 "Profiles": self.get_profiles_menu,
-                "Summary": lambda: print("Bubble summary")
+                "Summary": self.get_summary_menu,
+                "Show": self.get_show_menu
             }
         
         while self.running:
@@ -4056,8 +4131,550 @@ class ConsoleWindow:
         elif choice in self.bubbles:
             self.manage_bubble(choice)
 
+    def get_summary_menu(self):
+        """Show summary options in hierarchical windows with arrow key navigation"""
+        if not self.selected_bubble:
+            print("No bubble selected!")
+            input("Press Enter to continue...")
+            return
+
+        bubble_key, _ = self.selected_bubble
+        bubble_data = self.bubbles[bubble_key]
+        
+        # Main summary menu options
+        options = ["Statistics", "Graph Properties", "Subbubbles", "Back"]
+        self.current_pos = 0
+        
+        while True:
+            self.clear()
+            print(f"Summary Options for {bubble_key}")
+            print("=" * 40)
+            
+            # Display menu options
+            for i, opt in enumerate(options):
+                print(f"{'→' if i == self.current_pos else ' '} {opt}")
+            
+            print("\nControls: ↑/↓ Navigate | Enter: Select | b: Back | q: Quit")
+            
+            # Get user input
+            key = self.get_user_input()
+            
+            # Handle navigation
+            if key == self.KEY_UP:
+                self.current_pos = max(0, self.current_pos-1)
+            elif key == self.KEY_DOWN:
+                self.current_pos = min(len(options)-1, self.current_pos+1)
+            elif key == self.KEY_ENTER:
+                choice = options[self.current_pos]
+                if choice == "Statistics":
+                    self.statistics_menu(bubble_data)
+                elif choice == "Graph Properties":
+                    self.graph_properties_menu(bubble_data)
+                elif choice == "Subbubbles":
+                    self.subbubbles_menu(bubble_data)
+                elif choice == "Back":
+                    return
+            elif key == self.KEY_B:
+                return
+            elif key == self.KEY_Q:
+                self.running = False
+                return
+
+    def statistics_menu(self, bubble_data):
+        """Statistics submenu with separate interval selection window"""
+        bubble_key, interval_key = self.selected_bubble
+        profiles = self.get_profiles_from_bubble(bubble_data)
+        if not profiles:
+            return
+
+        # Initialize menu state
+        self.current_pos = 0
+        self.selected_profiles = profiles.copy()  # Select all profiles by default
+        self.selected_interval = "All time"
+        self.min_threshold = None
+
+        while True:
+            # Build main menu items
+            menu_items = []
+            # Add profiles with checkboxes
+            menu_items.extend([f"  [{'✓' if p in self.selected_profiles else ' '}] {p}" for p in profiles])
+            # Add interval selector
+            menu_items.append(f"Interval: {self.selected_interval}")
+            # Add parameter input
+            menu_items.append(f"Min threshold: {self.min_threshold if self.min_threshold is not None else ''}")
+            # Add action button
+            menu_items.append("Run analysis")
+            menu_items.append("Back")
+
+            self.clear()
+            print("Statistics Analysis")
+            print("=" * 40)
+            print(" Profiles:")
+
+            # Display menu options
+            for i, item in enumerate(menu_items):
+                print(f"{'→' if i == self.current_pos else ' '} {item}")
+
+            print("\nControls: ↑/↓ Navigate | Space: Toggle | Enter: Select | b: Back")
+
+            # Get user input
+            key = self.get_user_input()
+
+            # Handle navigation (skip empty lines)
+            if key == self.KEY_UP:
+                self.current_pos = max(0, self.current_pos - 1)
+                # Skip backward past any empty lines
+                while self.current_pos > 0 and menu_items[self.current_pos].strip() == "":
+                    self.current_pos -= 1
+            elif key == self.KEY_DOWN:
+                self.current_pos = min(len(menu_items) - 1, self.current_pos + 1)
+                # Skip forward past any empty lines
+                while self.current_pos < len(menu_items) - 1 and menu_items[self.current_pos].strip() == "":
+                    self.current_pos += 1
+            elif key == self.KEY_SPACE:
+                # Toggle profile selection
+                if self.current_pos < len(profiles):
+                    profile = profiles[self.current_pos]
+                    if profile in self.selected_profiles:
+                        self.selected_profiles.remove(profile)
+                    else:
+                        self.selected_profiles.append(profile)
+            elif key == self.KEY_ENTER:
+                # Handle interval selection (opens new window)
+                if menu_items[self.current_pos].startswith("Interval:"):
+                    self.select_interval_window(bubble_data)
+                # Handle parameter input
+                elif menu_items[self.current_pos].startswith("Min threshold:"):
+                    self.min_threshold = self.get_integer_input("Enter minimum threshold:")
+                # Handle actions
+                elif menu_items[self.current_pos] == "Run analysis":
+                    self.run_statistics_analysis(bubble_data)
+                elif menu_items[self.current_pos] == "Back":
+                    return
+            elif key == self.KEY_B:
+                return
+
+    def select_interval_window(self, bubble_data):
+        """Show interval selection in a separate window"""
+        bubble_key, interval_key = self.selected_bubble
+        
+        # Get available intervals
+        intervals = []
+        if 'allTime' in self.bubbles[bubble_key]:
+            dates = sorted(self.bubbles[bubble_key]['allTime'].all_sums.keys())
+            intervals = [f"{d.strftime('%Y-%m-%d')}" for d in dates]
+        
+        interval_options = ["All time"] + intervals
+        current_pos = 0 if self.selected_interval == "All time" else \
+                    intervals.index(self.selected_interval) + 1
+
+        while True:
+            self.clear()
+            print("Select Time Interval")
+            print("=" * 40)
+            
+            # Display interval options
+            for i, interval in enumerate(interval_options):
+                print(f"{'→' if i == current_pos else ' '} {interval}")
+            
+            print("\nControls: ↑/↓ Navigate | Enter: Select | b: Back")
+
+            # Get user input
+            key = self.get_user_input()
+
+            # Handle navigation
+            if key == self.KEY_UP:
+                current_pos = max(0, current_pos - 1)
+            elif key == self.KEY_DOWN:
+                current_pos = min(len(interval_options) - 1, current_pos + 1)
+            elif key == self.KEY_ENTER:
+                self.selected_interval = interval_options[current_pos]
+                return
+            elif key == self.KEY_B:
+                return
+
+    def run_statistics_analysis(self, bubble_data):
+        """Execute the statistics analysis with current selections"""
+        if not self.selected_profiles:
+            print("Please select at least one profile!")
+            input("Press Enter to continue...")
+            return
+
+        bubble_key, interval_key = self.selected_bubble
+        
+        # Get the correct summary object
+        if self.selected_interval == "All time":
+            summary = bubble_data['allTime']
+            interval_dates = sorted(summary.all_sums.keys())
+            selected_date = interval_dates[-1] if interval_dates else None
+        else:
+            # Find the matching datetime object
+            selected_date = None
+            for d in sorted(bubble_data['allTime'].all_sums.keys()):
+                if d.strftime('%Y-%m-%d') == self.selected_interval:
+                    selected_date = d
+                    break
+
+        if selected_date:
+            # Execute analysis with selected parameters
+            result = bubble_data['allTime'].analyze_profiles(
+                self.selected_profiles,
+                min_threshold=self.min_threshold,
+                date_filter=selected_date
+            )
+            self.analysis_results = result
+            self.display_analysis_results()
+        else:
+            print("No data available for selected interval!")
+            input("Press Enter to continue...")
+
+    def graph_properties_menu(self, bubble_data):
+        """Graph properties submenu with arrow key navigation"""
+        profiles = self.get_profiles_from_bubble(bubble_data)
+        if not profiles:
+            return
+        
+        # Build menu options
+        menu_items = []
+        # Add profiles with checkboxes
+        menu_items.extend([f"[{'✓' if p in self.selected_profiles else ' '}] {p}" for p in profiles])
+        # Add graph types
+        menu_items.append(f"Graph type: {self.graph_type}")
+        # Add action buttons
+        menu_items.append("Generate graph")
+        menu_items.append("Back")
+        
+        self.current_pos = 0
+        
+        while True:
+            self.clear()
+            print("Graph Properties")
+            print("=" * 40)
+            
+            # Display menu options
+            for i, item in enumerate(menu_items):
+                print(f"{'→' if i == self.current_pos else ' '} {item}")
+            
+            print("\nControls: ↑/↓ Navigate | Space: Toggle | Enter: Select | b: Back")
+            
+            # Get user input
+            key = self.get_user_input()
+            
+            # Handle navigation
+            if key == self.KEY_UP:
+                self.current_pos = max(0, self.current_pos-1)
+            elif key == self.KEY_DOWN:
+                self.current_pos = min(len(menu_items)-1, self.current_pos+1)
+            elif key == self.KEY_SPACE:
+                # Toggle profile selection
+                if self.current_pos < len(profiles):
+                    profile = profiles[self.current_pos]
+                    if profile in self.selected_profiles:
+                        self.selected_profiles.remove(profile)
+                    else:
+                        self.selected_profiles.append(profile)
+                    # Update the menu item
+                    menu_items[self.current_pos] = f"[{'✓' if profile in self.selected_profiles else ' '}] {profile}"
+            elif key == self.KEY_ENTER:
+                # Handle graph type selection
+                if self.current_pos == len(profiles):  # Graph type
+                    graph_types = ["Relations", "Sentiments"]
+                    current_index = graph_types.index(self.graph_type)
+                    self.graph_type = graph_types[(current_index + 1) % len(graph_types)]
+                    menu_items[self.current_pos] = f"Graph type: {self.graph_type}"
+                # Handle actions
+                elif menu_items[self.current_pos] == "Generate graph":
+                    if not self.selected_profiles:
+                        print("Please select at least one profile!")
+                        input("Press Enter to continue...")
+                        continue
+                    
+                    bubble = bubble_data["bubbleObject"]
+                    if self.graph_type == "Relations":
+                        bubble.visualize_graph()
+                        self.bubbles.graph_properties("Relations", self.selected_profiles)
+
+                    elif self.graph_type == "outside":
+                        bubble.visualize_outside_relations(profiles=self.selected_profiles)
+                    elif self.graph_type == "hashtag":
+                        bubble.visualize_hashtags(profiles=self.selected_profiles)
+                    
+                    input("Press Enter to continue...")
+                elif menu_items[self.current_pos] == "Back":
+                    return
+            elif key == self.KEY_B:
+                return
+
+    def subbubbles_menu(self, bubble_data):
+        """Subbubbles creation menu with arrow key navigation"""
+        intervals = list(bubble_data["intervals"].keys())
+        interval_options = ["All time"] + intervals
+        params = ["Relations", "Sentiments", "Outside relations", "Hashtags", "Followers count"]
+        
+        # Build menu options
+        menu_items = []
+        # Add interval options
+        menu_items.append(f"Interval: {self.selected_interval}")
+        # Add parameters with checkboxes
+        menu_items.extend([f"[{'✓' if p in self.selected_params else ' '}] {p}" for p in params])
+        # Add action buttons
+        menu_items.append("Create subbubble")
+        menu_items.append("Back")
+        
+        self.current_pos = 0
+        
+        while True:
+            self.clear()
+            print("Subbubbles Creation")
+            print("=" * 40)
+            
+            # Display menu options
+            for i, item in enumerate(menu_items):
+                print(f"{'→' if i == self.current_pos else ' '} {item}")
+            
+            print("\nControls: ↑/↓ Navigate | Space: Toggle | Enter: Select | b: Back")
+            
+            # Get user input
+            key = self.get_user_input()
+            
+            # Handle navigation
+            if key == self.KEY_UP:
+                self.current_pos = max(0, self.current_pos-1)
+            elif key == self.KEY_DOWN:
+                self.current_pos = min(len(menu_items)-1, self.current_pos+1)
+            elif key == self.KEY_SPACE:
+                # Toggle parameter selection (skip interval selection)
+                if 1 <= self.current_pos <= len(params):
+                    param = params[self.current_pos - 1]
+                    if param in self.selected_params:
+                        self.selected_params.remove(param)
+                    else:
+                        self.selected_params.append(param)
+                    # Update the menu item
+                    menu_items[self.current_pos] = f"[{'✓' if param in self.selected_params else ' '}] {param}"
+            elif key == self.KEY_ENTER:
+                # Handle interval selection
+                if self.current_pos == 0:  # Interval
+                    self.select_interval_window(bubble_data)
+                # Handle actions
+                elif menu_items[self.current_pos] == "Create subbubble":
+                    if not self.selected_params:
+                        print("Please select at least one parameter!")
+                        input("Press Enter to continue...")
+                        continue
+                    
+                    interval = 'allTime' if self.selected_interval == "All time" else self.selected_interval
+                    summary = bubble_data['allTime'] if interval == 'allTime' else bubble_data["intervals"][interval]
+                    
+                    file = summary.subbubbles(
+                        None if interval == 'allTime' else interval, 
+                        "Relations" in self.selected_params, 
+                        "Sentiments" in self.selected_params, 
+                        "Outside relations" in self.selected_params, 
+                        "Hashtags" in self.selected_params, 
+                        "Followers count" in self.selected_params
+                    )
+
+                    print(f'Graph was saved to {file}')
+                    input("Press Enter to continue...")
+                elif menu_items[self.current_pos] == "Back":
+                    return
+            elif key == self.KEY_B:
+                return
+
+    def display_analysis_results(self):
+        """Display analysis results (to be implemented based on your data structure)"""
+        self.clear()
+        print("Analysis Results")
+        print("=" * 40)
+        if self.analysis_results:
+            # Implement your results display here
+            print("Results would be displayed here...")
+        else:
+            print("No results to display")
+        input("\nPress Enter to continue...")
+
+    def get_profiles_from_bubble(self, bubble_data):
+        """Helper to get profiles from bubble data"""
+        if 'allTime' in bubble_data and hasattr(bubble_data['allTime'], 'all_sums'):
+            dates = sorted(bubble_data['allTime'].all_sums.keys())
+            if dates:
+                recent_date = dates[-1]
+                return [x.username for x in bubble_data['allTime'].all_sums[recent_date]] 
+        return []
+
+    def execute_stats_analysis(self, profiles, stats):
+        """Execute statistical analysis on selected profiles and stats"""
+        self.clear()
+        print(f"Running analysis for profiles: {', '.join(profiles)}")
+        print(f"Selected statistics: {', '.join(stats)}")
+        print("\nAnalysis results would appear here...")
+        input("\nPress Enter to continue...")
+
+    def generate_stats_graph(self, profiles, stats):
+        """Generate graph visualization for selected profiles and stats"""
+        self.clear()
+        print(f"Generating graph for profiles: {', '.join(profiles)}")
+        print(f"Selected statistics: {', '.join(stats)}")
+        print("\nGraph would be displayed here...")
+        input("\nPress Enter to continue...")
+
+    def search_subbubbles(self, profiles):
+        """Search for subbubbles containing selected profiles"""
+        self.clear()
+        print(f"Searching for subbubbles containing: {', '.join(profiles)}")
+        print("\nSubbubble results would appear here...")
+        input("\nPress Enter to continue...")
+
+    def get_show_menu(self):
+        """Show visualization options for the selected bubble"""
+        if not self.selected_bubble:
+            print("No bubble selected!")
+            input("Press Enter to continue...")
+            return
+
+        options = [
+            "View relation graph",
+            "View outside relation graph", 
+            "View hashtags analysis",
+            "View topic",
+            "Back"
+        ]
+        
+        while True:
+            choice = self.show_menu("Visualization Options", options)
+            
+            if choice == "Back" or not choice:
+                return
+                
+            bubble_key, interval_key = self.selected_bubble
+            bubble = self.bubbles[bubble_key]["bubbleObject"]
+            
+            if choice == "View relation graph":
+                bubble.visualize_graph()
+                input("\nPress Enter to continue...")
+                
+            elif choice == "View outside relation graph":
+                bubble.visualize_outside_relations()
+                input("\nPress Enter to continue...")
+                
+            elif choice == "View hashtags analysis":
+                # Get date range input
+                self.clear()
+                print("Enter date range for hashtags analysis (format: DD-MM-YYYY)")
+                start_date = input("Start date: ")
+                end_date = input("End date: ")
+                
+                try:
+                    
+                    start_dt = datetime.strptime(start_date, "%d-%m-%Y")
+                    end_dt = datetime.strptime(end_date, "%d-%m-%Y")
+                    
+                    # Get min/max counts
+                    self.clear()
+                    
+                    # Visualize hashtags
+                    bubble.visualize_hashtags(start_dt, end_dt)
+                    input("\nPress Enter to continue...")
+                    
+                except ValueError:
+                    print("Invalid date format! Please use DD-MM-YYYY")
+                    input("Press Enter to try again...")
+
+            elif choice == "View topic":
+                if not self.selected_bubble:
+                    print("Select a bubble first")
+                    input("Press Enter to continue...")
+                    continue
+
+                if self.selected_bubble[1] is None:
+                    print("Select an interval size first")
+                    input("Press Enter to continue...")
+                    continue
+
+                
+                
+                # Get the summary object based on interval selection
+                if self.selected_bubble[1] == 'all time':
+                    summary = self.bubbles[bubble_key]['allTime']
+                    intervals = False
+                else:
+                    summary = self.bubbles[bubble_key]['intervals'][interval_key]
+                    intervals = bool(summary.step)
+                
+                
+                topic_options = [
+                    "sport", 
+                    "club",
+                    "artist",
+                    "genre",
+                    "athlete",
+                    "politics"
+                ]
+                #self.overall_stats["ideologies_overall"][ideology][data['username']] += ideology_data["sentiment"]
+                #    self.evolution_stats["ideologies"][date][ideology][data['username']] += ideology_data["mentions"]["ex/int"]
+                if not intervals:
+                    topic_options += [i for i in summary.overall_stats["other_topics"].keys() if sum(summary.overall_stats["other_topics"][i].values()) > 1]
+                topic_options.append("Back")
+                
+                topic_choice = self.show_menu("Select Topic", list(set(topic_options)))
+                if topic_choice == "Back" or not topic_choice:
+                    continue
+                                   
+                # Get entities for selected topic
+                try:
+                    if intervals:
+                        # For interval mode, get entities from the first available date
+                        dates = sorted(summary.evolution_stats.get(f"{topic_choice}_tweet_sentiment", {}).keys())
+                        if dates:
+                            entities = set()
+                            if topic_choice in ["sport", "club", "artist", "genre", "athlete"]:
+                                for date in dates:
+                                    entities |= set([i for i in summary.evolution_stats[f"{topic_choice}_tweet_sentiment"][date].keys() if sum(summary.evolution_stats[f"{topic_choice}_tweet_mentions"][date][i].values())>1])
+                            elif topic_choice == "politics":
+                                for date in dates:
+                                    entities |= set([i for i in summary.evolution_stats["ideologies"][date].keys() if sum(summary.evolution_stats["ideologies"][date][i].values())>1])
+                            entities = list(entities)
+                        else:
+                            print(f"No data available for topic: {topic_choice}")
+                            input("Press Enter to continue...")
+                            continue
+                    else:
+                        # For non-interval mode
+                        if topic_choice in ["sport", "club", "artist", "genre", "athlete"]:
+                            entities = [i for i in summary.evolution_stats.get(f"{topic_choice}_overall_sentiment", {}).keys() if sum(summary.evolution_stats.get(f"{topic_choice}_overall_mentions", {}).get(i,{}).values())>1]
+                        elif topic_choice == "politics":
+                            entities = [i for i in summary.overall_stats.get(f"ideologies_overall", {}).keys() if sum(summary.overall_stats.get(f"ideologies_overall", {}).get(i,{}).values())>1]
+
+
+                    
+                    if not entities:
+                        if topic_choice not in ["sport", "club", "artist", "genre", "athlete", "politics"]:
+                            bubble.create_entity_based_graph("other", topic_choice, False)
+                            return
+                        print(f"No entities found for topic: {topic_choice}")
+                        input("Press Enter to continue...")
+                        continue
+                        
+                    # Second menu - select entity
+                    entity_options = entities + ["Back"]
+                    entity_choice = self.show_menu(f"Select {topic_choice.capitalize()} Entity", entity_options)
+                    
+                    if entity_choice == "Back" or not entity_choice:
+                        continue
+                        
+                    # Generate and show the graph
+                    summary.create_entity_based_graph(topic_choice, entity_choice, intervals)
+                    input("\nPress Enter to continue...")
+                    
+                except Exception as e:
+                    print(f"Error generating topic visualization: {str(e)}")
+                    input("Press Enter to continue...")
+
+
     def get_profiles_menu(self):
         """Show menu for viewing profile data with sorted date ranges and usernames"""
+        tuto_netreba_intervali_ale_iba_steps
         if not self.selected_bubble:
             print("No bubble selected!")
             input("Press Enter to continue...")
@@ -4145,7 +4762,6 @@ class ConsoleWindow:
                     print("Error: Could not find user data")
                     input("Press Enter to continue...")
 
-
     def create_bubble_type_menu(self):
         """Show centered/decentralized options for bubble creation"""
         options = ["Centered", "Decentralized"]
@@ -4223,8 +4839,7 @@ class ConsoleWindow:
             input("Press Enter to continue...")
         else:
             self.selected_bubble = bubble_name, choice
-
-            
+       
     def add_interval_to_bubble(self, bubble_name):
         """Add an interval to a bubble"""
         interval_value = self.get_integer_input("Enter interval value (integer):")
