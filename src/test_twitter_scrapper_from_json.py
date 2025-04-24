@@ -1,8 +1,11 @@
 import json
 
+data = {}
+for i in range(2):
+    with open(f"test_data_for_graph_{i+1}.json", "r", encoding="utf-8") as file:
+        for profile, profile_data in json.load(file).items():
+            data[profile] = profile_data
 
-with open("test_data_for_graph.json", "r", encoding="utf-8") as file:
-    data = json.load(file)
 
 class TwitterScrapper:
     def __init__(self):
@@ -66,46 +69,46 @@ class TwitterScrapper:
         return "NOT IMPLEMENTED", self.get_followers(username), self.get_following(username), "NOT IMPLEMENTED", "NOT IMPLEMENTED"
 
     def get_tweets(self, username):
-        ### [text, type {repost, comment, tweet, quote}, ]
+        ## [text, type {repost, comment, tweet, quote}, ]
         tweets = []
         if username not in data:
             return []
-        a = data[username]["tweets"]["data"]["user"]["result"].get("timeline_v2", None) or data[username]["tweets"]["data"]["user"]["result"].get("timeline", None)
-        for tweet in a["timeline"]["instructions"][-1]["entries"]:
-            source_tweet = None
-            source_username = None
-            try:
-                text = tweet["content"]["itemContent"]["tweet_results"]["result"]["legacy"]["full_text"]
-                created = tweet["content"]["itemContent"]["tweet_results"]["result"]["legacy"]["created_at"]
-            except Exception as e:
-                continue
-            hashtags = self.get_hashtags_from_tweet(tweet)
-            mentions = self.get_mentions_from_tweet(tweet)
-            try:
-                if tweet["content"]["itemContent"]["tweet_results"]["result"]["legacy"].get("is_quote_status", False):
-                    type = "quote"
-                    temp = tweet["content"]["itemContent"]["tweet_results"]["result"]["quoted_status_result"].get("result", None)
-                    if temp:
-                        source_username = temp["tweet"]["core"]["user_results"]["result"]["legacy"]["screen_name"]
-                        source_tweet = tweet["content"]["itemContent"]["tweet_results"]["result"]["legacy"]["quoted_status_id_str"]
-                    else:
-                        source_username = None
+        # a = data[username]["tweets"]["data"]["user"]["result"].get("timeline_v2", None) or data[username]["tweets"]["data"]["user"]["result"].get("timeline", None)
+        # for tweet in a["timeline"]["instructions"][-1]["entries"]:
+        #     source_tweet = None
+        #     source_username = None
+        #     try:
+        #         text = tweet["content"]["itemContent"]["tweet_results"]["result"]["legacy"]["full_text"]
+        #         created = tweet["content"]["itemContent"]["tweet_results"]["result"]["legacy"]["created_at"]
+        #     except Exception as e:
+        #         continue
+        #     hashtags = self.get_hashtags_from_tweet(tweet)
+        #     mentions = self.get_mentions_from_tweet(tweet)
+        #     try:
+        #         if tweet["content"]["itemContent"]["tweet_results"]["result"]["legacy"].get("is_quote_status", False):
+        #             type = "quote"
+        #             temp = tweet["content"]["itemContent"]["tweet_results"]["result"]["quoted_status_result"].get("result", None)
+        #             if temp:
+        #                 source_username = temp["tweet"]["core"]["user_results"]["result"]["legacy"]["screen_name"]
+        #                 source_tweet = tweet["content"]["itemContent"]["tweet_results"]["result"]["legacy"]["quoted_status_id_str"]
+        #             else:
+        #                 source_username = None
                         
-                elif tweet["content"]["itemContent"]["tweet_results"]["result"]["legacy"].get("in_reply_to_screen_name", False):
-                    type = "comment"
-                    source_username = tweet["content"]["itemContent"]["tweet_results"]["result"]["legacy"]["retweeted_status_result"]["result"]["core"]["user_result"]["result"]["legacy"]["screen_name"]
-                    source_tweet = tweet["content"]["itemContent"]["tweet_results"]["result"]["legacy"]["in_reply_to_status_id_str"]
-                elif tweet["content"]["itemContent"]["tweet_results"]["result"]["legacy"].get("retweeted_status_result", False):
-                    type = "repost"
-                    source_username = tweet["content"]["itemContent"]["tweet_results"]["result"]["legacy"]["retweeted_status_result"]["result"]["core"]["user_results"]["result"]["legacy"]["screen_name"]
-                    source_tweet = tweet["content"]["itemContent"]["tweet_results"]["result"]["legacy"]["retweeted_status_result"]["result"]["legacy"]["id_str"]
-                else:
-                    type = "tweet"
+        #         elif tweet["content"]["itemContent"]["tweet_results"]["result"]["legacy"].get("in_reply_to_screen_name", False):
+        #             type = "comment"
+        #             source_username = tweet["content"]["itemContent"]["tweet_results"]["result"]["legacy"]["retweeted_status_result"]["result"]["core"]["user_result"]["result"]["legacy"]["screen_name"]
+        #             source_tweet = tweet["content"]["itemContent"]["tweet_results"]["result"]["legacy"]["in_reply_to_status_id_str"]
+        #         elif tweet["content"]["itemContent"]["tweet_results"]["result"]["legacy"].get("retweeted_status_result", False):
+        #             type = "repost"
+        #             source_username = tweet["content"]["itemContent"]["tweet_results"]["result"]["legacy"]["retweeted_status_result"]["result"]["core"]["user_results"]["result"]["legacy"]["screen_name"]
+        #             source_tweet = tweet["content"]["itemContent"]["tweet_results"]["result"]["legacy"]["retweeted_status_result"]["result"]["legacy"]["id_str"]
+        #         else:
+        #             type = "tweet"
                     
-                tweets.append((tweet["content"]["itemContent"]["tweet_results"]["result"]["legacy"]["id_str"], username, text, type, source_tweet, source_username, hashtags, mentions, created))
+        #         tweets.append((tweet["content"]["itemContent"]["tweet_results"]["result"]["legacy"]["id_str"], username, text, type, source_tweet, source_username, hashtags, mentions, created))
 
-            except Exception as e:
-                print(e)
+        #     except Exception as e:
+        #         print(e)
                 
         for i in self.get_replies(username):
             if i not in tweets:
@@ -197,5 +200,3 @@ class TwitterScrapper:
         if username not in data:
             return None
         return data[username]["bio"]["data"]["user"]["result"]["legacy"]["followers_count"]
-
-    
