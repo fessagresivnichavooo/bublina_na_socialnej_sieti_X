@@ -52,7 +52,7 @@ class PoliticalPartyMovement(BaseModel):
 
 class JournalistNews(BaseModel):
     country: str = Field(..., description="ISO 3166 code of country where the journalist/news is active")
-    ideology: Optional[str] = Field(None, description="Political ideology of the journalist/news (liberalism, nationalism, conservatism, socialism, communism, environmentalism, social democracy, progressivism, anarchism, centrism, libertarianism, fascism, authoritarianism, religious-based ideology)")
+    field: Optional[str] = Field(None, description="Political ideology if topic is politics, if sport return type of sport, if music return genre etc.")
 
 # === Other Models ===
 
@@ -74,6 +74,16 @@ class Technology(BaseModel):
 class Education(BaseModel):
     specialization: str = Field(..., description="Field of education (e.g., STEM, humanities, business)")
     institution: Optional[str] = Field(None, description="Associated school, university, or institution")
+
+class ArtAndCulture(BaseModel):
+    field: str = Field(..., description="Field of art/culture (movie, painting, ...)")
+    specification: str = Field(..., description="Genre/Type")
+    
+class Nature(BaseModel):
+    specification: str = Field(..., description="Describe in 1 or 2 words")
+    
+class HobbiesFreeTime(BaseModel):
+    field: str = Field(..., description="Type of hobby (travel, ...)")
 
 class Other(BaseModel):
     topic: str = Field(..., description="Choose topic which defines the profile best")
@@ -97,6 +107,9 @@ class TopicData(BaseModel):
         Entertainment,
         Technology,
         Education,
+        ArtAndCulture,
+        Nature,
+        HobbiesFreeTime,
         Other
     ]
 
@@ -136,7 +149,7 @@ class Interests(BaseModel):
     sport: Optional[List[SportEntry]] = Field(..., description="Mapping of sport name to sport-related data")
     music: Optional[List[MusicEntry]] = Field(..., description="Mapping of music genre to genre-related data")
     politics: Optional[Politics] = Field(..., description="Political ideologies and mentioned countries")
-    other_interests: Optional[List[OtherInterest]] = Field(..., description="Other interests and how many times they were mentioned, make it general and merge similar topics together, use ONE word")
+    other_interests: Optional[List[OtherInterest]] = Field(..., description='Other interests and how many times they were mentioned, choose most fitting from these: "Finance", "Entertainment", "Education", "Technology", "Science", "Health", "Art and Culture", "Hobbies", "Nature", "Other"')
 
 class Counter(BaseModel):
     profile_name: str = Field(..., description="Rewrite profile name")
@@ -232,6 +245,11 @@ class GPT4o():
         genres: Optional[list["Genre"]] = Field(..., description="Music genres and sentiments")
         artists: Optional[list["Artist"]] = Field(..., description="Artist names and sentiments")
 
+    class OtherTopic(BaseModel):
+        topic: str = Field(..., description="Choose from following based on present entities: Finance, Entertainment, Education, Technology, Science, Health, Art and Culture, Hobbies, Nature, Other")
+        specification_of_topic: str = Field(..., description="Subdomain of mentioned topic (example: if topic is finance -> real estate/bussiness/crypto/...)")
+        
+        
     class AnalysisTweet(BaseModel):
         type: str = Field(..., description="Type of analysis ('politics'/'sport'/'music'/'other')")
         language: str = Field(..., description="ISO 639 code of detected language")
@@ -239,8 +257,9 @@ class GPT4o():
         politics: str = Field(..., description="Choose ideology of author of the tweet: liberalism, nationalism, conservatism, socialism, communism, environmentalism, social democracy, progressivism, anarchism, centrism, libertarianism, fascism, authoritarianism, religious-based ideology")  # Provide default values
         sport: Optional["SportModel"] = Field(..., description="Describe mentioned sports, players and clubs and analyse sentiment of each; notes: it should consider, that sentiment can change throughout the tweet (ex.: one club mentioned positively and other negatively; sport sentiment=positive, club sentiment=negative; etc), dislike for club doesnt mean dislike for sport") #, try also recognise famous sport chants and symbols
         music: Optional["MusicModel"] = Field(..., description="Describe mentioned music genres and musicians")
-    ##    other_topics: Dict[str, str] = Field(default_factory=dict, description="Other topic sentiments")
-
+        #other_topics: List["OtherTopic"] = Field(default_factory=dict, description="Other topics")
+        other_topics: Optional[List["str"]] = Field(..., description="Choose primary topic of the tweet if possible, choose from (Finance, Entertainment, Education, Technology, Science, Health, Art and Culture, Hobbies, Nature, Other)")
+        
     class AnalysisReaction(BaseModel):
         #original_tweet: "AnalysisTweet" = Field(..., description="Analysis  of original tweet")
         reaction: "AnalysisTweet" = Field(..., description="Analyse reaction if possible")
@@ -365,7 +384,7 @@ class GPT4o():
 
 
 class SerpAPI():
-    API_KEY = ""#""
+    API_KEY = "
 
     def get_entity(self, name):
         params = {
@@ -399,3 +418,30 @@ class SerpAPI():
             formated_return["Entity"] = kg.get("entity_type", "N/A")
         return formated_return
 
+class GSE:
+
+    API_KEY = ""
+    SEARCH_ENGINE_ID = ""
+    
+    def get_entity(self, name):
+        url = "https://www.googleapis.com/customsearch/v1"
+        params = {
+            'key': self.API_KEY,
+            'cx': self.SEARCH_ENGINE_ID,
+            'q': name
+        }
+        
+        response = requests.get(url, params=params)
+        if response.status_code == 200:
+            results = response.json()
+            with open("vysledky.json", "w", encoding="utf-8") as f:
+                json.dump(results, f, ensure_ascii=False, indent=4)
+            rtrn = []
+            for i in range(min(2, len(results["items"]))):
+                rtrn.append(results["items"][i].get("snippet", ""))
+            return rtrn
+        else:
+            print(f"Error: {response.status_code}, {response.text}")
+
+    def process_entity(self, entity_data):
+        return {"potential describtion data": entity_data}
