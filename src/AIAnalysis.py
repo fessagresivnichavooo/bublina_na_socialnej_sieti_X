@@ -170,7 +170,7 @@ class OtherTopics(BaseModel):
 
 
 class GPT4o_mini():
-    client = openai.OpenAI(api_key="")
+    client = openai.OpenAI(api_key="
 
     class AnalysisProfileName(BaseModel):
         type: str = Field(..., description="Choose from following words to describe twitter profile: celebrity/fanpage/company/amusement-education/private profile")
@@ -202,7 +202,7 @@ class GPT4o_mini():
         return analyzed
 
 class GPT4o():
-    client = openai.OpenAI(api_key="")
+    client = openai.OpenAI(api_key="
 
 ############################## TWEET ANALYSIS ####################################
     class Sport(BaseModel):
@@ -378,13 +378,30 @@ class GPT4o():
         output = response.choices[0].message.parsed.json()
         return json.loads(output)
 
+###################### NAME SUBBUBBLES ###############################
+    class SubgroupName(BaseModel):
+        sumarizing_name: str = Field(..., description="Return name of one or multiple topics/entities, which are mentioned in edges the most")
+    
+    def name_subbubble(self, data):
+        response = self.client.beta.chat.completions.parse(
+            model="gpt-4o-2024-08-06",
+            messages=[
+                {"role": "system", "content": "You are an AI that receives set of edges, which contain 4 values: political ideology(True when similar/False when different), sport(set of entities common for both nodes), music(set of entities common for both nodes), other(set of other topics common for both nodes). Your task is to return value of topic/s, which define group of edges the best"},
+                {"role": "user", "content": f'{data}'}
+            ],
+            response_format=self.SubgroupName,
+            temperature=1
+        )
+
+        output = response.choices[0].message.parsed.json()
+        return json.loads(output)
     
 
 
 
 
 class SerpAPI():
-    API_KEY = "
+    API_KEY = ""#""
 
     def get_entity(self, name):
         params = {
@@ -420,7 +437,7 @@ class SerpAPI():
 
 class GSE:
 
-    API_KEY = ""
+    API_KEY = "
     SEARCH_ENGINE_ID = ""
     
     def get_entity(self, name):
@@ -445,3 +462,4 @@ class GSE:
 
     def process_entity(self, entity_data):
         return {"potential describtion data": entity_data}
+
