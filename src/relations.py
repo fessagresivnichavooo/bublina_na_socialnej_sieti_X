@@ -67,7 +67,8 @@ ALL_TWEETS = {}
 OUTSIDE_BUBBLE_PROFILES_ANALYSED = {}
 THRESHOLD = 2000
 MONTH_MAP = {"Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5, "Jun": 6, "Jul": 7, "Aug": 8, "Sep": 9, "Oct": 10, "Nov": 11, "Dec": 12}
-IDEOLOGIES_ANGLES = {"liberalism": 225, "nationalism": 45,"conservatism": 15,"socialism": 135,"communism": 135,"environmentalism": 145,"social democracy": 160,"progressivism": 195,"anarchism": 270,"centrism": None,"libertarianism": 315,"fascism": 70,"authoritarianism": 90,"religious-based ideology": 45}
+IDEOLOGIES_ANGLES = {"liberalism": 225, "nationalism": 45,"conservatism": 15,"socialism": 135,"communism": 135,"environmentalism": 145,"social democracy": 170,"progressivism": 195,"anarchism": 270,"centrism": None,"libertarianism": 315,"fascism": 70,"authoritarianism": 90,"religious-based ideology": 45}
+IDEOLOGIES_POSITIONS = {"liberalism": (-4, -4), "nationalism": (3, 3),"conservatism": (5, 1),"socialism": (-7,7),"communism": (-10, 10),"environmentalism": (-1, -5),"social democracy": (-6, 0),"progressivism": (1, -5),"anarchism": (10, -10),"centrism": (0, 0),"libertarianism": (7, -7),"fascism": (3, 10),"authoritarianism": (0, 8),"religious-based ideology": (5, 6)}
 with open('topic_translations.json', 'r', encoding="utf-8") as file:
     TRANSLATIONS = json.load(file)
 
@@ -88,7 +89,7 @@ class Node:
         return total
 
 class SentimentEdge:
-    def __init__(self, weight, node1, node2, interval=None, step=None):
+    def __init__(self, weight, node1, node2, top_items, interval=None, step=None):
         self.node1 = node1
         self.node2 = node2
         self.directions = {
@@ -98,8 +99,9 @@ class SentimentEdge:
         self.weight = weight
         self.interval = interval
         self.step = step
+        self.top_items = top_items
 
-    def get_weight_eval(self):
+    def get_weight_eval(self, politicsFlag=True, sportFlag=True, musicFlag=True, otherFlag=True):
         politics = self.weight["politics"][0]
         sport = self.weight["sport"]
         music = self.weight["music"]
@@ -111,19 +113,19 @@ class SentimentEdge:
         #politics = 0.4
 
         if politics < -0.5:
-            weight_final -= 2
+            weight_final -= 2*int(politicsFlag)
         elif politics < 0:
-            weight_final -= 1
+            weight_final -= 1*int(politicsFlag)
         elif politics < 0.5:
-            weight_final -= 0
+            weight_final -= 0*int(politicsFlag)
         elif politics < 2:
-            weight_final += 1
+            weight_final += 1*int(politicsFlag)
         else:
-            weight_final += 2
+            weight_final += 2*int(politicsFlag)
 
-        weight_final += sport
-        weight_final += music
-        weight_final += len(self.weight["other"])
+        weight_final += sport*int(sportFlag)
+        weight_final += music*int(musicFlag)
+        weight_final += len(self.weight["other"])*int(otherFlag)
         
         return weight_final
 
@@ -134,6 +136,8 @@ class SentimentEdge:
         others = [x[0] for x in self.weight["other"]]
         return politics, sport, music, others
         
+    def get_topics(self):
+        return self.top_items["politics"], self.top_items["sport"], self.top_items["music"], self.top_items["other"]
         
 
 class Edge:
@@ -867,7 +871,7 @@ class Summary:
                 if name != "centrism"  # Explicitly exclude centrism
             ]
         )
-
+    
         
 
         max_r = sum([data["sentiment"] for name, data in self.overall["politics"].items() if name != "centrism"])
@@ -1543,10 +1547,11 @@ class Profile:
         data = {}
         with open(cache, 'r', encoding="utf-8") as file:
             cached_profiles = json.load(file)
-
+        
         for username, analysis in cached_profiles.items():
             if username in self.following:
                 data[username] = analysis
+
 
         # return PROFILE_AI_ANALYSER.profiles_summary(data) if data else {}
         sports = defaultdict(lambda: {"counter": 0, "countries": defaultdict(lambda: {"clubs": [], "athletes": []})})
@@ -1558,7 +1563,7 @@ class Profile:
         for name, profile in data.items():
             topic = profile.get("topic")
             pdata = profile.get("data", {})
-            print(name)
+            #print(name)
             # Sport
             if topic == "Sport":
                 sport_name = pdata.get("sport") or pdata.get("type_of_sport") or pdata.get("sport_type")
@@ -2658,7 +2663,7 @@ class SocialBubble:
             analysis = PROFILE_AI_ANALYSER.analyze_profile_II(serpapi_formated)
             analysis["full_name"] = profile[0]
             cached_profiles[username] = analysis
-            print(username, analysis)
+            #print(username, analysis)
 
 
             OUTSIDE_BUBBLE_PROFILES_ANALYSED = cached_profiles
@@ -3263,7 +3268,7 @@ class BubbleSummary:
         summary = {}
 ##        print(self.overall_stats["other_topics"])
         for topic, data in self.overall_stats["other_topics"].items():
-            summary[topic] = len([x for x in data.keys() if x > 1])
+            summary[topic] = len([x for x, y in data.items() if y > 1])
 
         summary = dict(sorted(summary.items(), key=lambda x: x[1], reverse=True)[:min(show_number, len(summary))])
 ##        print(summary)
@@ -3717,7 +3722,7 @@ class BubbleSummary:
         return output_file
     
     
-    def absolute_edge_evaluation(self, node1, node2, interval=None, interactions=False, sentiments=False, outside_relations=False, hashtags=False, follower_magnitude=False): ### potom ked tak pridat INTERVAL
+    def absolute_edge_evaluation(self, node1, node2, interval=None, interactions=False, sentiments=False, outside_relations=False, hashtags=False, follower_magnitude=False, sentimentflags=(1,1,1,1)): ### potom ked tak pridat INTERVAL
         #hrana = spolocne sledovane, sentimenty - prejde vsetky sentimenty a vytvori index (sentimentVacsi/(sentimentVacsi - sentimentMensi)), miera interakcii, zdielane hashtagy, profily co sleduju
         #######pridat_langauge_spoken
 
@@ -3729,7 +3734,7 @@ class BubbleSummary:
 
         edge = self.social_bubble.exist_sentiment_edge(node1, node2, interval, self.step)
         if edge:
-            sentiments_edge_value = edge.get_weight_eval()
+            sentiments_edge_value = edge.get_weight_eval(sentimentflags[0],sentimentflags[1],sentimentflags[2],sentimentflags[3])
         else:
             sentiments_edge_value = 0
 
@@ -3763,18 +3768,22 @@ class BubbleSummary:
 
             magnitude_edge_value = 1/(2**abs(magnitude1-magnitude2))
 
+        if magnitude_edge_value < 1/2:
+            magnitude_edge_value = 0
+
         #print(magnitude1, magnitude2, magnitude_edge_value, int(follower_magnitude))
         #print(node1.profile.username, node2.profile.username, interactions_edge_value*int(interactions), sentiments_edge_value*int(sentiments), int(outside_relations)*outside_relations_edge_value, hashtags_edge_value*int(hashtags), magnitude_edge_value**int(follower_magnitude))
 
         a = (1.5*interactions_edge_value*int(interactions)+1.5*sentiments_edge_value*int(sentiments)+int(outside_relations)*0.8*outside_relations_edge_value+hashtags_edge_value*int(hashtags))
         if a == 0:
             return magnitude_edge_value*int(follower_magnitude)
-        if a < 0:
+        elif a < 0 and magnitude_edge_value != 0:
             return a*1/(magnitude_edge_value) if follower_magnitude else a
-        if a > 0:
+        elif a > 0:
             return a*magnitude_edge_value if follower_magnitude else a
+        elif magnitude_edge_value == 0:
+            return 0
 
-        ### problem ak je cislo negativne -> vtedy ho nespravny magnitude znizuje
             
 
         
@@ -3783,8 +3792,8 @@ class BubbleSummary:
 
 
     def subbubbles(self, interval=None, interactions=False, sentiments=False,
-                outside_relations=False, hashtags=False, follower_magnitude=False,
-                algorithm="leiden"):
+                outside_relations=False, hashtags=False, follower_magnitude=False, 
+                sentimentFlags=(1,1,1,1), algorithm="leiden"):
         # Get all nodes from the social bubble
         nodes = list(self.social_bubble.nodes.keys())
         edges = {}
@@ -3796,10 +3805,13 @@ class BubbleSummary:
                     continue
                 edges[(name1, name2)] = self.absolute_edge_evaluation(
                     node1, node2, interval, interactions, sentiments,
-                    outside_relations, hashtags, follower_magnitude
+                    outside_relations, hashtags, follower_magnitude, sentimentFlags
                 )
 
-        
+        # Create NetworkX graph
+        G = nx.Graph()
+        G.add_nodes_from(nodes)
+        G.add_weighted_edges_from(((u, v, w) for (u, v), w in edges.items()))
 
         def signed_partition(G, algorithm):
             if algorithm == "louvain":
@@ -3827,54 +3839,7 @@ class BubbleSummary:
             else:
                 raise ValueError("Unsupported algorithm. Use 'louvain' or 'leiden'.")
 
-        def signed_partition_4D(G, algorithm, alpha=2.0):
-            """
-            Partition a graph with 4D edge vectors using Louvain or Leiden.
-            Similarity is based on the vector's Euclidean norm (or custom metric).
-
-            Args:
-                G: NetworkX graph where edges have 'vector' attributes (4D numpy arrays)
-                algorithm: 'louvain' or 'leiden'
-                alpha: Controls sharpness of similarity decay (higher = stricter)
-
-            Returns:
-                dict: {node: community_id}
-            """
-
-            # Step 1: Prepare absolute similarity weights based on vector
-            G_abs = G.copy()
-            for u, v, data in G_abs.edges(data=True):
-                vec = data['vector']
-                similarity = np.exp(-alpha * np.linalg.norm(vec))
-                data['weight'] = similarity
-
-            if algorithm == "louvain":
-                partition = community_louvain.best_partition(G_abs, weight='weight')
-                return partition
-
-            elif algorithm == "leiden":
-                # Convert to iGraph
-                mapping = {name: i for i, name in enumerate(G_abs.nodes())}
-                reverse_mapping = {i: name for name, i in mapping.items()}
-
-                g = ig.Graph()
-                g.add_vertices(len(G_abs.nodes()))
-                
-                edges = []
-                weights = []
-                for u, v, data in G_abs.edges(data=True):
-                    edges.append((mapping[u], mapping[v]))
-                    weights.append(data['weight'])
-                
-                g.add_edges(edges)
-                g.es['weight'] = weights
-
-                partition = leidenalg.find_partition(g, leidenalg.ModularityVertexPartition, weights='weight')
-
-                return {reverse_mapping[v]: i for i, community in enumerate(partition) for v in community}
-
-            else:
-                raise ValueError("Unsupported algorithm. Use 'louvain' or 'leiden'.")
+        
         
         custom_threshold_i = (
             interactions and not (sentiments or outside_relations or hashtags or follower_magnitude)
@@ -3885,14 +3850,6 @@ class BubbleSummary:
         custom_threshold_fm = (
             follower_magnitude and not (sentiments or interactions or hashtags or outside_relations)
         )
-        custom_threshold_s = (
-            sentiments and not (follower_magnitude or interactions or hashtags or outside_relations)
-        )
-
-        # Create NetworkX graph
-        G = nx.Graph()
-        G.add_nodes_from(nodes)
-        G.add_weighted_edges_from(((u, v, w) for (u, v), w in edges.items()))
         
 
         if custom_threshold_i:
@@ -3910,14 +3867,10 @@ class BubbleSummary:
             for i, component in enumerate(nx.connected_components(G_filtered)):
                 for node in component:
                     partition[node] = i
-
-        elif custom_threshold_s:
-            partition = signed_partition_4D(G, algorithm)
-
         else:
             partition = signed_partition(G, algorithm)
 
-        edges_to_remove = [(u, v) for u, v, data in G.edges(data=True) if data['weight'] == 0]
+        edges_to_remove = [(u, v) for u, v, data in G.edges(data=True) if data['weight'] <= 0]
         G.remove_edges_from(edges_to_remove)
         if not sentiments and not hashtags and not custom_threshold_fm:
             edges_to_remove = [(u, v) for u, v, data in G.edges(data=True) if data['weight'] < 1.5]
@@ -3929,6 +3882,12 @@ class BubbleSummary:
             edges_to_remove = [(u, v) for u, v, data in G.edges(data=True) if data['weight'] <= 1]
             G.remove_edges_from(edges_to_remove)
 
+        if sentiments:
+            for u, v , data in G.edges(data=True):
+                edge = self.social_bubble.exist_sentiment_edge(self.social_bubble.nodes[u], self.social_bubble.nodes[v], interval, self.step)
+                if edge and edge.get_weight_values() == (0, 0, 0, []):
+                    edges_to_remove.append((u,v))
+            G.remove_edges_from(edges_to_remove)
 
         # --- Handle isolated nodes (all edges weak) ---
         if custom_threshold_i:
@@ -3977,30 +3936,47 @@ class BubbleSummary:
                 title=f"Node: {node}  Group: {G.nodes[node]['group']}"
             )
 
+        if sentiments:
+            partition_to_name={}
+            for p in range(max(partition.values())+1):
+                subbubble = []
+                for name1, num1 in partition.items():
+                    if num1 != p:
+                        continue
+                    for name2, num2 in partition.items():
+                        if num1 != num2 or name1 == name2:
+                            continue
+                        edge = self.social_bubble.exist_sentiment_edge(self.social_bubble.nodes[name1], self.social_bubble.nodes[name2], interval, self.step)
+                        if edge:
+                            subbubble.append(edge.get_topics())
+
+                partition_to_name[p] = AI_GENERALISATION_PARSER.name_subbubble(subbubble)['sumarizing_name']
+        print(partition_to_name)
+
         for u, v, data in G.edges(data=True):
             weight = data['weight']
             # if weight < 0:
             #     continue
             abs_weight = abs(weight)
             edge_color = G.nodes[u]['color'] if partition[u] == partition[v] else "#A0A0A0"
+            temp = self.social_bubble.exist_sentiment_edge(self.social_bubble.nodes[u], self.social_bubble.nodes[v], interval, self.step)
             net.add_edge(
                 u, v,
                 value=abs_weight,
                 width=abs_weight * 0.5,
                 color=edge_color,
-                title=f"Edge Weight: {weight:.2f}\n {self.social_bubble.exist_sentiment_edge(self.social_bubble.nodes[u], self.social_bubble.nodes[v], interval, self.step).get_weight_values()}",
+                title=f"Edge Weight: {weight:.2f}\n {temp.get_weight_values()} \n {temp.get_topics()} \n {partition_to_name[partition[u]] if partition[u] == partition[v] else ''}",
                 dashes=weight < 0
             )
 
         net.toggle_physics(True)
         net.show_buttons(filter_=['physics'])
-
+        #print(partition)
         output_file = "social_bubble.html"
         net.show(output_file)
         return output_file
 
 
-########        pridat musk a tesla
           
     def create_sentiment_edges(self, interval=None, step=None):
         for username1, node1 in self.social_bubble.nodes.items():
@@ -4010,14 +3986,17 @@ class BubbleSummary:
                         continue
 
                     weight = {"sport":0, "music":0, "politics":(0,0,0), "other":[]}
+                    top_items = {"sport":set(), "music":set(), "politics": False, "other":[]}
                     for topic in ["sport", "club", "artist", "genre", "athlete"]:
                         for item, profiles in self.evolution_stats[f"{topic}_overall_sentiment"].items():
                             a, b = profiles.get(username1, 0), profiles.get(username2, 0)
                             sentiment1 = max(a,b)
                             sentiment2 = min(a,b)
                             if sentiment1*sentiment2 != 0:
-                                weight["sport" if topic in ["sport", "club", "athlete"] else "music"] += sentiment1/max(sentiment1-sentiment2, 0.2)
-                
+                                weight["sport" if topic in ["sport", "club", "athlete"] else "music"] += sentiment1/max(sentiment1-sentiment2, 0.2)*(1 if sentiment1-sentiment2>0 else -2)
+                            
+                            if sentiment1>0 and sentiment2>0 or sentiment1<0 and sentiment2<0:
+                                top_items["sport" if topic in ["sport", "club", "athlete"] else "music"].add(("entity" if topic in ["sport", "genre"] else "sub-entity", item))
 
                     x1,y1,r1 = self.overall_stats["compass"].get(username1, (None,None,None))
                     x2,y2,r2 = self.overall_stats["compass"].get(username2, (None,None,None))
@@ -4044,15 +4023,23 @@ class BubbleSummary:
                             
                         weight["politics"] = max(min(index*distance, 10), -10), math.floor(r1), math.floor(r2)
                     
+                    if weight["politics"][0] >= 2:
+                        top_items["politics"] = True
+                    
                     weight["other"] = []
                     for topic, profiles in self.overall_stats["other_topics"].items():
                         a, b = profiles.get(username1, 0), profiles.get(username2, 0)
                         if a > 2 and b > 2:
                             if topic.lower() not in ["politics", "sport", "music", "other"]:
                                 weight["other"].append((topic,a,b))
+                                top_items["other"].append(topic)
+                        if a >= 7 and b >= 7:
+                            if topic.lower() not in ["politics", "sport", "music", "other"]:
+                                weight["other"].append((topic,a,b))   
+                                top_items["other"].append(topic)
                             
 
-                    se = SentimentEdge(weight, node1, node2)
+                    se = SentimentEdge(weight, node1, node2, top_items)
                     node1.sentiment_edges.append(se)
                     node2.sentiment_edges.append(se)
                     self.social_bubble.sentiment_edges.append(se)
@@ -4062,6 +4049,7 @@ class BubbleSummary:
                         continue
 
                     weight = {"sport":0, "music":0, "politics":(0,0,0), "other":[]}
+                    top_items = {"sport":set(), "music":set(), "politics": False, "other":[]}
                     for topic in ["sport", "club", "artist", "genre", "athlete"]:
                         #print(self.evolution_stats[f"{topic}_tweet_sentiment"])
                         for item, profiles in self.evolution_stats[f"{topic}_tweet_sentiment"].get(interval, {}).items():
@@ -4070,6 +4058,8 @@ class BubbleSummary:
                             sentiment2 = min(a,b)
                             if sentiment1*sentiment2 != 0:
                                 weight["sport" if topic in ["sport", "club", "athlete"] else "music"] += sentiment1/max(sentiment1-sentiment2, 0.2)
+                            if sentiment1>0 and sentiment2>0 or sentiment1<0 and sentiment2<0:
+                                top_items["sport" if topic in ["sport", "club", "athlete"] else "music"].add(("entity" if topic in ["sport", "genre"] else "sub-entity", item))
                     
                     weight["other"] = []
                     for topic, profiles in self.evolution_stats["other_topics"].get(interval, {}).items():
@@ -4077,10 +4067,16 @@ class BubbleSummary:
                         if a > 2 and b > 2:
                             if topic.lower() not in ["politics", "sport", "music", "other"]:
                                 weight["other"].append((topic,a,b))
+                                top_items["other"].append(topic)
+
+                        if a >= 7 and b >= 7:
+                            if topic.lower() not in ["politics", "sport", "music", "other"]:
+                                weight["other"].append((topic,a,b))   
+                                top_items["other"].append(topic)
 
 
 
-                    se = SentimentEdge(weight, node1, node2, interval, step)
+                    se = SentimentEdge(weight, node1, node2, top_items, interval, step)
                     node1.sentiment_edges.append(se)
                     node2.sentiment_edges.append(se)
                     self.social_bubble.sentiment_edges.append(se)
@@ -4139,9 +4135,9 @@ SB.tweet_analysis()
 
 BS = BubbleSummary(None, SB)
 
-BS.create_entity_based_graph('politics', 'conservatism', bool(BS.step))
+# BS.create_entity_based_graph('politics', 'conservatism', bool(BS.step))
 
-# BS.test_show()
+BS.test_show()
 
 # print(BS.graph_properties())
 
@@ -4149,8 +4145,8 @@ BS.create_entity_based_graph('politics', 'conservatism', bool(BS.step))
 ####    print(edge.node1.profile.username, edge.node2.profile.username, edge.weight)
 
 #interactions  sentiments  outside_relations  hashtags  follower_magnitude
-BS.subbubbles(None, False, True, False, False, False, algorithm="leiden")
-
+BS.subbubbles(None, False, True, False, False, True, sentimentFlags=(1,1,1,1), algorithm="leiden")
+                                                                    #p,s,m,o
 ############                                  TFTFF by mohlo mat tiez nejaku threshold mieru miesto leidena
 
 '''
