@@ -247,6 +247,7 @@ class Summary:
 
     def show(self, html=False):
         self.generate_html(html)
+        
 
     def get_summary(self):
         return {
@@ -1080,7 +1081,7 @@ BUBBLE
 class Profile:
     def __init__(self, username):
         self.username = username
-        self.bio, self.followers, self.following, self.profession, self.location = SCRAPPER.scrape_profile(username)
+        self.bio, self.followers, self.following, self.profession, self.location, self.full_name = SCRAPPER.scrape_profile(username)
         self.friends = list(set(copy.deepcopy(self.following)) & set(copy.deepcopy(self.followers)))
 
         self.tweets = []
@@ -1094,6 +1095,8 @@ class Profile:
         self.summaries = {}
         print(username)
         self.followers_count = SCRAPPER.get_followers_count(username)
+        
+        
         
 
         
@@ -1660,6 +1663,26 @@ class Profile:
 
         return interests
         
+    def profession_analysis(self, cache="profile_analysis.json"):
+        serpapi = AIAnalysis.GSE()
+        with open(cache, 'r', encoding="utf-8") as file:
+            cached_profiles = json.load(file)
+        if self.username in cached_profiles.keys():
+            return cached_profiles[self.username]
+        entity_data = serpapi.get_entity(self.full_name)
+        serpapi_formated = serpapi.process_entity(entity_data)
+        serpapi_formated["Twitter username"] = self.username
+        serpapi_formated["Twitter bio"] = self.bio
+        serpapi_formated["name"] = self.full_name
+        analysis = PROFILE_AI_ANALYSER.analyze_profile_II(serpapi_formated)
+        analysis["full_name"] = self.full_name
+        cached_profiles[self.username] = analysis
+        return analysis
+
+
+        OUTSIDE_BUBBLE_PROFILES_ANALYSED = cached_profiles
+        with open(cache, "w", encoding="utf-8") as f:
+            json.dump(cached_profiles, f, indent=4, ensure_ascii=False)
         
 
 '''
@@ -2096,7 +2119,38 @@ class SocialBubble:
 
 
             ### ak je repost/comment/quote a og tweet autor sleduje niekoho v bubline tak je pridany
+            queue = [self.username]
+            queue_next = []
+            profiles = [self.username]
+            edges = []
 
+            # BFS to depth `self.depth`
+            for _ in range(self.depth):
+                for username in queue:
+                    node = self.nodes[username]
+                    for edge in node.edges:
+                        neighbor = edge.get_second_node(node)
+                        neighbor_username = neighbor.profile.username
+                        if neighbor_username in profiles or neighbor_username in queue_next:
+                            continue
+                        queue_next.append(neighbor_username)
+                        profiles.append(neighbor_username)
+                        edges.append(edge)
+                queue = queue_next
+                queue_next = []
+
+            # Keep only the traversed nodes
+            self.nodes = {username: node for username, node in self.nodes.items() if username in profiles}
+
+            # Remove edges that involve removed nodes — all in-place
+            for i in range(len(self.edges) - 1, -1, -1):
+                edge = self.edges[i]
+                if edge.node1.profile.username not in self.nodes or edge.node2.profile.username not in self.nodes:
+                    if edge.node1.profile.username in self.nodes:
+                        edge.node1.edges.remove(edge)
+                    if edge.node2.profile.username in self.nodes:
+                        edge.node2.edges.remove(edge)
+                    self.edges.pop(i)
 
         
         elif self.type == "decentralised":
@@ -2663,7 +2717,7 @@ class SocialBubble:
             analysis = PROFILE_AI_ANALYSER.analyze_profile_II(serpapi_formated)
             analysis["full_name"] = profile[0]
             cached_profiles[username] = analysis
-            #print(username, analysis)
+            print(username, analysis)
 
 
             OUTSIDE_BUBBLE_PROFILES_ANALYSED = cached_profiles
@@ -3458,7 +3512,7 @@ class BubbleSummary:
             """Create and configure a Pyvis network graph."""
             net = Network(
                 notebook=True,
-                height="600px",
+                height="650px",
                 width="100%",
                 bgcolor="#222222",
                 font_color="white"
@@ -3475,6 +3529,9 @@ class BubbleSummary:
                 # Interval mode - get data for specific date
                 if topic == "politics":
                     sentiment_data = self.evolution_stats.get("ideologies", {}).get(date, {}).get(entity, {})
+                    mentions_data = sentiment_data
+                elif topic == "other":
+                    sentiment_data = self.evolution_stats.get("other_topics", {}).get(date, {}).get(entity, {})
                     mentions_data = sentiment_data
                 else:
                     sentiment_data = self.evolution_stats.get(f"{topic}_tweet_sentiment", {}).get(date, {}).get(entity, {})
@@ -3613,20 +3670,31 @@ class BubbleSummary:
             return output_file
         
         # Handle interval case
-        dates = sorted(self.evolution_stats.get(f"{topic}_tweet_sentiment", {}).keys())
+        if topic == "other":
+            dates = sorted(self.evolution_stats.get("other_topics", {}).keys())
+        elif topic == "politics":
+            dates = sorted(self.evolution_stats.get("ideologies", {}).keys())
+        else:
+            dates = sorted(self.evolution_stats.get(f"{topic}_tweet_sentiment", {}).keys())
         if not dates:
             print(f"No interval data found for topic {topic}")
             return None
         
         # Generate individual graphs for each date
         graph_files = {}
+        all_time_net = create_network_graph()
+        all_time_file = f"{entity}_all_time_network.html"
+        all_time_net.save_graph(all_time_file)
+        graph_files["All time"] = all_time_file
+
+        # Add per-date graphs
         for date in dates:
             net = create_network_graph(date)
             safe_date = sanitize_filename(date)
             graph_file = f"temp_{safe_date}.html"
             net.save_graph(graph_file)
             graph_files[date] = graph_file
-        
+
         # Generate master HTML with navigation
         html_template = """
         <!DOCTYPE html>
@@ -3700,16 +3768,27 @@ class BubbleSummary:
         </body>
         </html>
         """
-        
+
         # Generate tabs and content sections
         tabs = []
         contents = []
-        for i, date in enumerate(dates):
-            active_class = "active" if i == 0 else ""
-            tabs.append(f'<button class="tablinks {active_class}" onclick="openDate(event, \'{date}\')">{date}</button>')
-            display = "block" if i == 0 else "none"
-            contents.append(f'<div id="{date}" class="tabcontent" style="display:{display}"><iframe src="{graph_files[date]}"></iframe></div>')
-        
+
+        # First tab is "All time"
+        tabs.append('<button class="tablinks active" onclick="openDate(event, \'All_time\')">All time</button>')
+        contents.append(
+            f'<div id="All_time" class="tabcontent" style="display:block">'
+            f'<iframe src="{graph_files["All time"]}"></iframe></div>'
+        )
+
+        # Then the rest of the dates
+        for date in dates:
+            safe_id = sanitize_filename(date)
+            tabs.append(f'<button class="tablinks" onclick="openDate(event, \'{safe_id}\')">{date}</button>')
+            contents.append(
+                f'<div id="{safe_id}" class="tabcontent" style="display:none">'
+                f'<iframe src="{graph_files[date]}"></iframe></div>'
+            )
+
         # Save the master HTML file
         output_file = f"{entity}_network_evolution.html"
         with open(output_file, "w", encoding="utf-8") as f:
@@ -3718,9 +3797,20 @@ class BubbleSummary:
                 tabs="\n".join(tabs),
                 contents="\n".join(contents)
             ))
-        
+
         return output_file
     
+    def suggestions_entity_graph(self):
+        for topic, i in [("sport" if j in ["sport","club","athlete"] else "music",f"{j}_tweet_sentiment") for j in ["sport", "club", "artist", "genre", "athlete"]]:
+            entities = set()
+            for date, data in self.evolution_stats.get(i, {}).items():
+                entities |= set(data.keys())
+            print(topic, entities)
+
+        for topic, i in [("politics","ideologies_overall"), ("other", "other_topics")]:
+            entities = set(self.overall_stats.get(i, {}).keys())
+            print(topic, entities)        
+         
     
     def absolute_edge_evaluation(self, node1, node2, interval=None, interactions=False, sentiments=False, outside_relations=False, hashtags=False, follower_magnitude=False, sentimentflags=(1,1,1,1)): ### potom ked tak pridat INTERVAL
         #hrana = spolocne sledovane, sentimenty - prejde vsetky sentimenty a vytvori index (sentimentVacsi/(sentimentVacsi - sentimentMensi)), miera interakcii, zdielane hashtagy, profily co sleduju
@@ -3792,7 +3882,7 @@ class BubbleSummary:
 
 
     def subbubbles(self, interval=None, interactions=False, sentiments=False,
-                outside_relations=False, hashtags=False, follower_magnitude=False, 
+                outside_relations=False, hashtags=False, follower_magnitude=False, profession=False, 
                 sentimentFlags=(1,1,1,1), algorithm="leiden"):
         # Get all nodes from the social bubble
         nodes = list(self.social_bubble.nodes.keys())
@@ -3951,7 +4041,7 @@ class BubbleSummary:
                             subbubble.append(edge.get_topics())
 
                 partition_to_name[p] = AI_GENERALISATION_PARSER.name_subbubble(subbubble)['sumarizing_name']
-        print(partition_to_name)
+            print(partition_to_name)
 
         for u, v, data in G.edges(data=True):
             weight = data['weight']
@@ -3959,13 +4049,14 @@ class BubbleSummary:
             #     continue
             abs_weight = abs(weight)
             edge_color = G.nodes[u]['color'] if partition[u] == partition[v] else "#A0A0A0"
-            temp = self.social_bubble.exist_sentiment_edge(self.social_bubble.nodes[u], self.social_bubble.nodes[v], interval, self.step)
+            temp = self.social_bubble.exist_sentiment_edge(self.social_bubble.nodes[u], self.social_bubble.nodes[v], interval, self.step if interval else None)
+            
             net.add_edge(
                 u, v,
                 value=abs_weight,
                 width=abs_weight * 0.5,
                 color=edge_color,
-                title=f"Edge Weight: {weight:.2f}\n {temp.get_weight_values()} \n {temp.get_topics()} \n {partition_to_name[partition[u]] if partition[u] == partition[v] else ''}",
+                title=f"Edge Weight: {weight:.2f}\n {temp.get_weight_values()} \n {temp.get_topics()}",# \n {partition_to_name[partition[u]] if partition[u] == partition[v] else ''}",
                 dashes=weight < 0
             )
 
@@ -4088,7 +4179,7 @@ class BubbleSummary:
 SB = SocialBubble(
     "pushkicknadusu", 
     "decentralised", 
-    depth=0, 
+    depth=2, 
     profiles=[
         "TuckerCarlson", 
         "tofaaakt", 
@@ -4119,25 +4210,26 @@ SB.create_graph()
 
 ##BS.interactions_subbubbles()
 
-#SB.visualize_graph()
+SB.visualize_graph()
 
 #SB.visualize_outside_relations(False)
 
 #SB.visualize_hashtags()
 
-#opd = SB.get_outside_profiles_data(THRESHOLD)
+# # opd = SB.get_outside_profiles_data(THRESHOLD)
 
-##print(len(opd))
+# # print(opd)
 
 #SB.profile_analysis(SB.get_outside_profiles_data(THRESHOLD))
 
 SB.tweet_analysis()
 
-BS = BubbleSummary(None, SB)
+BS = BubbleSummary(6, SB)
 
-# BS.create_entity_based_graph('politics', 'conservatism', bool(BS.step))
+#BS.suggestions_entity_graph()
+#BS.create_entity_based_graph(input("topic group: "), input("topic: "), bool(BS.step))
 
-BS.test_show()
+#BS.test_show()
 
 # print(BS.graph_properties())
 
@@ -4145,7 +4237,7 @@ BS.test_show()
 ####    print(edge.node1.profile.username, edge.node2.profile.username, edge.weight)
 
 #interactions  sentiments  outside_relations  hashtags  follower_magnitude
-BS.subbubbles(None, False, True, False, False, True, sentimentFlags=(1,1,1,1), algorithm="leiden")
+BS.subbubbles(None, True, False, False, False, False, sentimentFlags=(1,1,1,1), algorithm="leiden")
                                                                     #p,s,m,o
 ############                                  TFTFF by mohlo mat tiez nejaku threshold mieru miesto leidena
 
