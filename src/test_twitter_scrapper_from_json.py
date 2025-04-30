@@ -66,7 +66,7 @@ class TwitterScrapper:
 ##    def get_location(self, username):
 ##
     def scrape_profile(self, username):
-        return "NOT IMPLEMENTED", self.get_followers(username), self.get_following(username), "NOT IMPLEMENTED", "NOT IMPLEMENTED"
+        return "NOT IMPLEMENTED", self.get_followers(username), self.get_following(username), "NOT IMPLEMENTED", "NOT IMPLEMENTED", self.get_fullName(username)
 
     def get_tweets(self, username):
         ## [text, type {repost, comment, tweet, quote}, ]
@@ -200,3 +200,8 @@ class TwitterScrapper:
         if username not in data:
             return None
         return data[username]["bio"]["data"]["user"]["result"]["legacy"]["followers_count"]
+
+    def get_fullName(self, username):
+        if username not in data:
+            return None
+        return data[username]["bio"]["data"]["user"]["result"]["legacy"]["name"]
