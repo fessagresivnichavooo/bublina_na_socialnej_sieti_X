@@ -72,6 +72,8 @@ IDEOLOGIES_POSITIONS = {"liberalism": (-4, -4), "nationalism": (3, 3),"conservat
 with open('topic_translations.json', 'r', encoding="utf-8") as file:
     TRANSLATIONS = json.load(file)
 
+LANGUAGES = {"": "undefined", "und": "undefined", "aa": "Afar", "ab": "Abkhazian", "af": "Afrikaans", "ak": "Akan", "am": "Amharic", "ar": "Arabic", "an": "Aragonese", "as": "Assamese", "av": "Avaric", "ae": "Avestan", "ay": "Aymara", "az": "Azerbaijani", "ba": "Bashkir", "bm": "Bambara", "be": "Belarusian", "bn": "Bengali", "bi": "Bislama", "bo": "Tibetan", "bs": "Bosnian", "br": "Breton", "bg": "Bulgarian", "ca": "Catalan", "cs": "Czech", "ch": "Chamorro", "ce": "Chechen", "cu": "Church Slavic", "cv": "Chuvash", "kw": "Cornish", "co": "Corsican", "cr": "Cree", "cy": "Welsh", "da": "Danish", "de": "German", "dv": "Dhivehi", "dz": "Dzongkha", "el": "Greek", "en": "English", "eo": "Esperanto", "et": "Estonian", "eu": "Basque", "ee": "Ewe", "fo": "Faroese", "fa": "Persian", "fj": "Fijian", "fi": "Finnish", "fr": "French", "fy": "Western Frisian", "ff": "Fulah", "gd": "Scottish Gaelic", "ga": "Irish", "gl": "Galician", "gv": "Manx", "gn": "Guarani", "gu": "Gujarati", "ht": "Haitian", "ha": "Hausa", "he": "Hebrew", "hz": "Herero", "hi": "Hindi", "ho": "Hiri Motu", "hr": "Croatian", "hu": "Hungarian", "hy": "Armenian", "ig": "Igbo", "io": "Ido", "ii": "Sichuan Yi", "iu": "Inuktitut", "ie": "Interlingue", "ia": "Interlingua (International Auxiliary Language Association)", "id": "Indonesian", "ik": "Inupiaq", "is": "Icelandic", "it": "Italian", "jv": "Javanese", "ja": "Japanese", "kl": "Kalaallisut", "kn": "Kannada", "ks": "Kashmiri", "ka": "Georgian", "kr": "Kanuri", "kk": "Kazakh", "km": "Central Khmer", "ki": "Kikuyu", "rw": "Kinyarwanda", "ky": "Kirghiz", "kv": "Komi", "kg": "Kongo", "ko": "Korean", "kj": "Kuanyama", "ku": "Kurdish", "lo": "Lao", "la": "Latin", "lv": "Latvian", "li": "Limburgan", "ln": "Lingala", "lt": "Lithuanian", "lb": "Luxembourgish", "lu": "Luba-Katanga", "lg": "Ganda", "mh": "Marshallese", "ml": "Malayalam", "mr": "Marathi", "mk": "Macedonian", "mg": "Malagasy", "mt": "Maltese", "mn": "Mongolian", "mi": "Maori", "ms": "Malay (macrolanguage)", "my": "Burmese", "na": "Nauru", "nv": "Navajo", "nr": "South Ndebele", "nd": "North Ndebele", "ng": "Ndonga", "ne": "Nepali (macrolanguage)", "nl": "Dutch", "nn": "Norwegian Nynorsk", "nb": "Norwegian Bokm\u00e5l", "no": "Norwegian", "ny": "Nyanja", "oc": "Occitan (post 1500)", "oj": "Ojibwa", "or": "Oriya (macrolanguage)", "om": "Oromo", "os": "Ossetian", "pa": "Panjabi", "pi": "Pali", "pl": "Polish", "pt": "Portuguese", "ps": "Pushto", "qu": "Quechua", "rm": "Romansh", "ro": "Romanian", "rn": "Rundi", "ru": "Russian", "sg": "Sango", "sa": "Sanskrit", "si": "Sinhala", "sk": "Slovak", "sl": "Slovenian", "se": "Northern Sami", "sm": "Samoan", "sn": "Shona", "sd": "Sindhi", "so": "Somali", "st": "Southern Sotho", "es": "Spanish", "sq": "Albanian", "sc": "Sardinian", "sr": "Serbian", "ss": "Swati", "su": "Sundanese", "sw": "Swahili (macrolanguage)", "sv": "Swedish", "ty": "Tahitian", "ta": "Tamil", "tt": "Tatar", "te": "Telugu", "tg": "Tajik", "tl": "Tagalog", "th": "Thai", "ti": "Tigrinya", "to": "Tonga (Tonga Islands)", "tn": "Tswana", "ts": "Tsonga", "tk": "Turkmen", "tr": "Turkish", "tw": "Twi", "ug": "Uighur", "uk": "Ukrainian", "ur": "Urdu", "uz": "Uzbek", "ve": "Venda", "vi": "Vietnamese", "vo": "Volap\u00fck", "wa": "Walloon", "wo": "Wolof", "xh": "Xhosa", "yi": "Yiddish", "yo": "Yoruba", "za": "Zhuang", "zh": "Chinese", "zu": "Zulu", "bh": "Bihari languages", "in": "Indonesian", "iw": "Hebrew", "ckb": "Sorani Kurdish", "zxx": "No Linguistic Content", "qme": "No Linguistic Content", "qht": "No Linguistic Content","qam": "No Linguistic Content","art":"Artificial Languages","qst":"No Linguistic Content"}
+
 
 
 class Node:
@@ -1445,7 +1447,10 @@ class Profile:
                             interaction_summary["other"][topic] = 0
                         interaction_summary["other"][topic] += 1
                 else:
-                    interaction_summary["other"][topic] += 1
+                    for topic in source_tweet_content['other_topics']:
+                        if topic not in interaction_summary["other"]:
+                            interaction_summary["other"][topic] = 0
+                        interaction_summary["other"][topic] += 1
             else:
                 for topic in reaction.content['reaction']['other_topics']:
                     if topic not in interaction_summary["other"]:
@@ -2371,6 +2376,33 @@ class SocialBubble:
         ### prejde follows ludi v bubline, hlada bublina & (follows - friends), spocita co je kym followovane pri profiloch mimo bubliny
         ### prejde tweety, pozrie ci su nejake retweety
 
+    def get_nx(self):
+        G = nx.DiGraph()
+        for node in self.nodes.values():
+            G.add_node(node.profile.username)
+
+     
+        for edge in self.edges:
+            node1 = list(edge.directions.keys())[0]
+            node2 = edge.get_second_node(node1)
+            follow_type = edge.weight.get("follows", "friends")
+            weight = edge.get_weight_eval() if hasattr(edge, "get_weight_eval") else 1
+
+            u = node1.profile.username
+            v = node2.profile.username
+
+            if follow_type == "->":
+                G.add_edge(u, v, weight=weight, follows="->", color="red")
+            elif follow_type == "<-":
+                G.add_edge(v, u, weight=weight, follows="<-", color="red")
+            elif follow_type == "friends":
+                G.add_edge(u, v, weight=weight, follows="friends", color="green")
+                G.add_edge(v, u, weight=weight, follows="friends", color="green")
+            elif follow_type == "X":
+                G.add_edge(u, v, weight=weight, follows="X", color="blue")
+            
+
+        return G
 
     def visualize_graph(self):        
         # Create a directed network
@@ -2740,6 +2772,97 @@ class SocialBubble:
                 
         return all_sums
 
+def analyze_graph(G: nx.Graph) -> dict:
+    is_directed = G.is_directed()
+    num_nodes = G.number_of_nodes()
+    num_edges = G.number_of_edges()
+    degrees = dict(G.degree())
+    avg_degree = sum(degrees.values()) / num_nodes if num_nodes > 0 else 0
+
+    # Traffic: sum of edge weights
+    traffic = {}
+    for node in G.nodes:
+        traffic[node] = sum(G[node][nbr].get('weight', 1) for nbr in G.neighbors(node))
+
+    # Top conversation (most weighted edge)
+    top_conversation = None
+    max_weight = -float('inf')
+    for u, v, data in G.edges(data=True):
+        weight = data.get('weight', 1)
+        if weight > max_weight:
+            max_weight = weight
+            top_conversation = (u, v, weight)
+
+    # Centrality measures
+    try:
+        degree_centrality = nx.degree_centrality(G)
+    except:
+        degree_centrality = {}
+
+    try:
+        eigenvector_centrality = nx.eigenvector_centrality(G, max_iter=500)
+    except:
+        eigenvector_centrality = {}
+
+    try:
+        pagerank = nx.pagerank(G)
+    except:
+        pagerank = {}
+
+    try:
+        clustering = nx.clustering(G.to_undirected()) if is_directed else nx.clustering(G)
+        average_clustering = sum(clustering.values()) / len(clustering)
+    except:
+        clustering = {}
+        average_clustering = None
+
+    try:
+        components = list(nx.connected_components(G)) if not is_directed else list(nx.strongly_connected_components(G))
+        num_components = len(components)
+        largest_component_size = max(len(c) for c in components)
+    except:
+        num_components = largest_component_size = None
+
+    try:
+        diameter = nx.diameter(G) if not is_directed and nx.is_connected(G) else None
+    except:
+        diameter = None
+
+    try:
+        avg_shortest_path_length = nx.average_shortest_path_length(G) if not is_directed and nx.is_connected(G) else None
+    except:
+        avg_shortest_path_length = None
+
+    degrees_sorted = dict(sorted(degrees.items(), key=lambda x: x[1], reverse=True))
+    traffic_sorted = dict(sorted(traffic.items(), key=lambda x: x[1], reverse=True))
+
+    results = {
+        "is_directed": is_directed,
+        "num_nodes": num_nodes,
+        "num_edges": num_edges,
+        "average_degree": avg_degree,
+        "density": nx.density(G),
+        "average_clustering": average_clustering,
+        "num_components": num_components,
+        "largest_component_size": largest_component_size,
+        "diameter": diameter,
+        "average_shortest_path_length": avg_shortest_path_length,
+        "degree_distribution": degrees_sorted,
+        "most_connected_node": next(iter(degrees_sorted)) if degrees_sorted else None,
+        "degree_centrality": degree_centrality,
+        "eigenvector_centrality": eigenvector_centrality,
+        "pagerank": pagerank,
+        "clustering_coefficients": clustering,
+        "traffic": traffic_sorted,
+        "most_active_node": next(iter(traffic_sorted)) if traffic_sorted else None,
+        "best_connection": {
+            "node1": top_conversation[0] if top_conversation else None,
+            "node2": top_conversation[1] if top_conversation else None,
+            "weight": top_conversation[2] if top_conversation else None
+        }
+    }
+
+    return results
 
 class BubbleSummary:
     def __init__(self, step, social_bubble):
@@ -2749,10 +2872,7 @@ class BubbleSummary:
         self.evolution_stats = {
             "languages": {},
             "daily_activity": {},
-            "top_hashtags": {}, # vezme top hashtagy z kazdeho profilu pre kazdy mesiac
-            "top_mentions": {},
             "avg_activity": {},
-            "daily_activity": {},
             
             "hashtags": {},
             "mentions": {},
@@ -2788,6 +2908,7 @@ class BubbleSummary:
                 self.create_sentiment_edges(interval, step)
 
     def create_pie_chart(self, labels, values, title):
+        #print(labels, values)
         if labels and values:
             pie_chart = go.Figure(go.Pie(labels=labels, values=values, title=title))
             pie_chart.update_layout(width=550, height=550)
@@ -2807,6 +2928,7 @@ class BubbleSummary:
             return bar_chart.to_html(full_html=False)
 
     def create_line_graph(self, x_values, y_values_list, line_names, title):
+        # print(x_values, y_values_list, line_names)
         if not x_values or not y_values_list or not line_names:
             return None
             
@@ -2825,8 +2947,6 @@ class BubbleSummary:
         
         line_graph.update_layout(
             title=title,
-            xaxis_title='X Axis',
-            yaxis_title='Y Axis',
             width=550,
             height=550,
             legend=dict(
@@ -2919,11 +3039,11 @@ class BubbleSummary:
                 for daily_activity, count in data["daily_activity"].items():
                     if date not in self.evolution_stats["daily_activity"]:
                         self.evolution_stats["daily_activity"][date] = {}
-                    if daily_activity not in self.evolution_stats["daily_activity"][date]:
-                        self.evolution_stats["daily_activity"][date][daily_activity] = {}
-                    if data['username'] not in self.evolution_stats["daily_activity"][date][daily_activity]:
-                        self.evolution_stats["daily_activity"][date][daily_activity][data['username']] = 0          
-                    self.evolution_stats["daily_activity"][date][daily_activity][data['username']] += count
+                    if f'{daily_activity}:00-{daily_activity+1}:00' not in self.evolution_stats["daily_activity"][date]:
+                        self.evolution_stats["daily_activity"][date][f'{daily_activity}:00-{daily_activity+1}:00'] = {}
+                    if data['username'] not in self.evolution_stats["daily_activity"][date][f'{daily_activity}:00-{daily_activity+1}:00']:
+                        self.evolution_stats["daily_activity"][date][f'{daily_activity}:00-{daily_activity+1}:00'][data['username']] = 0          
+                    self.evolution_stats["daily_activity"][date][f'{daily_activity}:00-{daily_activity+1}:00'][data['username']] += count
 
                 
                 if date not in self.evolution_stats["avg_activity"]:
@@ -3146,14 +3266,13 @@ class BubbleSummary:
             
         
         return f'''
-            <div class="row">
+        
                 <div class="chart">{self.create_line_graph(
                     list(summary['dates']), 
                     [j for i,j in summary['avg_activity'].items()],
                     list(summary['avg_activity'].keys()),
                     f"Average activity evolution for {', '.join(PROFILES) if PROFILES else 'all profiles'}"
                 )}</div>
-            </div>  
         '''  
 
     def avg_activity_sum(self, PROFILES=[]):
@@ -3168,12 +3287,10 @@ class BubbleSummary:
                     summary[profile] += count
 
         return f'''
-            <div class="row">
                 <div class="chart">
                     <p>Average tweet rate of bubble: {sum(summary.values())} per month   </p>
                     <p>Average tweet rate per profile: {sum(summary.values())/len(set(PROFILES)&set(summary.keys()) if PROFILES else set(summary.keys()))} per month</p>
-                </div>
-            </div>  
+                </div> 
         '''
 
     def locations_sum(self, PROFILES=[]):
@@ -3208,6 +3325,15 @@ class BubbleSummary:
         summary = {}
         for date, items in self.evolution_stats[ITEM].items():
             for item, data in items.items():
+                if type(data) is float or type(data) is int:
+                    if date not in summary:
+                        summary[date] = 0
+                    if not PROFILES:
+                        summary[date] += data
+                    elif item in PROFILES:
+                        summary[date] += data
+                    continue
+
                 if item not in summary:
                     summary[item] = 0
                 for profile, count in data.items():
@@ -3216,28 +3342,65 @@ class BubbleSummary:
                     elif profile in PROFILES:
                         summary[item] += count
 
-        summary = dict(sorted(summary.items(), key=lambda x: x[1], reverse=True)[:min(show_number, len(summary))])
+        sorted_items = sorted(summary.items(), key=lambda x: x[1], reverse=True)
+        top_items = sorted_items[:min(show_number, len(sorted_items))]
+        rest_items = sorted_items[min(show_number, len(sorted_items)):]
+
+        # Build the final summary dict
+        summary = dict(top_items)
+
+        if 'sentiment' in ITEM:
+            shown = show_number // 2 + 2  # ensures it's an integer
+
+            sorted_items = sorted(summary.items(), key=lambda x: x[1], reverse=True)
+
+            top_items = sorted_items[:min(shown, len(sorted_items))]
+
+            # Collect bottom items, avoiding duplicates
+            bottom_items = []
+            for item in reversed(sorted_items):
+                if item not in top_items:
+                    bottom_items.append(item)
+                if len(bottom_items) >= shown:
+                    break
+
+            # Combine, preserving order
+            final_items = top_items + list(reversed(bottom_items))
+            summary = dict(final_items)
+
+        # Add "others" if any were excluded
+        if rest_items and 'sentiment' not in ITEM:
+            summary["others"] = sum(value for _, value in rest_items)
 
         return f'''
-            <div class="row">
                 <div class="chart">
                     {self.create_pie_chart(
-                        list(summary.keys()), 
+                        list(summary.keys() if "languages" != ITEM else map(lambda x: LANGUAGES.get(x, "unrecognised") if x != "others" else x,summary.keys())), 
                         list(summary.values()), 
-                        f"{' '.join(ITEM.capitalize().split('_'))} usage of {', '.join(PROFILES) if PROFILES else 'all profiles'}"
+                        f"Usage for {', '.join(PROFILES) if PROFILES else 'all profiles'}"
                     ) if 'sentiment' not in ITEM else self.create_bar_chart(
                         list(summary.keys()), 
                         [10*i for i in summary.values()], 
                         f"{' '.join(ITEM.capitalize().split('_'))} in {', '.join(PROFILES) if PROFILES else 'all profiles'}"
                     )}
                 </div>
-            </div>  
         '''
 
     def item_spread(self, ITEM, PROFILES=[], show_number=float('inf')):
         summary = {}
         for date, items in self.evolution_stats[ITEM].items():
             for item, data in items.items():
+                if type(data) is float or type(data) is int:
+                    if date not in summary:
+                        summary[date] = set()
+                    if not PROFILES:
+                        if data > 0:
+                            summary[date] |= set(item)
+                    elif item in PROFILES:
+                        if data > 0:
+                            summary[date] |= set(item) & set(PROFILES)
+                    continue
+
                 if item not in summary:
                     summary[item] = set()
                 if not PROFILES:
@@ -3247,18 +3410,25 @@ class BubbleSummary:
         for key in summary.keys():
             summary[key] = len(summary[key])
 
-        summary = dict(sorted(summary.items(), key=lambda x: x[1], reverse=True)[:min(show_number, len(summary))])
+        sorted_items = sorted(summary.items(), key=lambda x: x[1], reverse=True)
+        top_items = sorted_items[:min(show_number, len(sorted_items))]
+        rest_items = sorted_items[min(show_number, len(sorted_items)):]
+
+        # Build the final summary dict
+        summary = dict(top_items)
+
+        # Add "others" if any were excluded
+        if rest_items:
+            summary["others"] = sum(value for _, value in rest_items)
 
         return f'''
-            <div class="row">
                 <div class="chart">
-                    {self.create_pie_chart(
-                        list(summary.keys()), 
+                    {self.create_radar_chart(
+                        list(summary.keys() if "languages" != ITEM else map(lambda x: LANGUAGES.get(x, "unrecognised") if x != "others" else x,summary.keys())), 
                         list(summary.values()), 
-                        f"{' '.join(ITEM.capitalize().split('_'))} spread of {', '.join(PROFILES) if PROFILES else 'all profiles'}"
+                        f"Spread for {', '.join(PROFILES) if PROFILES else 'all profiles'}"
                     )}
                 </div>
-            </div>  
         '''
 
     def item_evolution(self, ITEM, PROFILES=None):
@@ -3269,6 +3439,15 @@ class BubbleSummary:
             summary["dates"].append(date)
             
             for item, profiles in item.items():
+                if type(profiles) is float or type(profiles) is int:
+                    if date not in summary:
+                        summary[date] = 0
+                    if not PROFILES:
+                        summary[date] += profiles
+                    elif item in PROFILES:
+                        summary[date] += profiles
+                    continue
+
                 if item not in summary[ITEM]:
                     summary[ITEM][item] = []
                 if PROFILES:
@@ -3276,24 +3455,23 @@ class BubbleSummary:
                 else:
                     summary[ITEM][item].append(sum(profiles.values()))
                 
-        max_len = max(len(lst) for lst in summary[ITEM].values())
+        max_len = max(list(len(lst) for lst in summary[ITEM].values()) + [0])
     
         summary[ITEM] = {
             key: [0] * (max_len - len(lst)) + lst
             for key, lst in summary[ITEM].items()
         }
                 
-            
         
         return f'''
-            <div class="row">
+            
                 <div class="chart">{self.create_line_graph(
                     list(summary['dates']), 
                     [j for i,j in summary[ITEM].items()],
-                    list(summary[ITEM].keys()),
-                    f"{' '.join(ITEM.capitalize().split('_'))} evolution for {', '.join(PROFILES) if PROFILES else 'all profiles'}"
+                    list(summary[ITEM].keys() if "languages" != ITEM else map(lambda x: LANGUAGES.get(x, "unrecognised") if x != "others" else x,summary[ITEM].keys())),
+                    f"Evolution for {', '.join(PROFILES) if PROFILES else 'all profiles'}"
                 )}</div>
-            </div>  
+             
         '''
 
     def other_topics(self, PROFILES=[], show_number=float('inf')):
@@ -3351,11 +3529,9 @@ class BubbleSummary:
         summary.append((avg_x, avg_y, 'Average', 'yellow'))
         
         return f'''
-            <div class="row">
                 <div class="chart">
                     {self.create_grid_chart(summary)}
                 </div>
-            </div>  
         '''
 
     def ideology_usage(self, PROFILES=[], show_number=float('inf')):
@@ -3369,10 +3545,16 @@ class BubbleSummary:
                 elif profile in PROFILES:
                     summary[item] += count
 
-        summary = dict(sorted(summary.items(), key=lambda x: x[1], reverse=True)[:min(show_number, len(summary))])
+        sorted_items = sorted(summary.items(), key=lambda x: x[1], reverse=True)
+        top_items = sorted_items[:min(show_number, len(sorted_items))]
+        rest_items = sorted_items[min(show_number, len(sorted_items)):]
+
+        # Build the final summary dict
+        summary = dict(top_items)
+        if rest_items:
+            summary["others"] = sum(value for _, value in rest_items)
 
         return f'''
-            <div class="row">
                 <div class="chart">
                     {self.create_pie_chart(
                         list(summary.keys()), 
@@ -3380,9 +3562,40 @@ class BubbleSummary:
                         f"Prefered ideologies of {', '.join(PROFILES) if PROFILES else 'all profiles'}"
                     )}
                 </div>
-            </div>  
         '''
     
+    def languages(self, PROFILES=[], show_number=float('inf')):
+        return f'''
+            <p>LANGUAGES</p>
+            <div class="row">
+                    {self.item_usage("languages", PROFILES, show_number)}
+                    {self.item_spread("languages", PROFILES, show_number)}
+                    {self.item_evolution("languages", PROFILES)}
+            </div>  
+        '''
+    def sport(self, PROFILES=[], show_number=float('inf')):
+        return "\n".join([f'''
+            <p>{i.capitalize()}</p>
+            <div class="row">
+                {self.item_usage(f"{i}_overall_sentiment", PROFILES, show_number)}
+                {self.item_evolution(f"{i}_tweet_sentiment", PROFILES)}
+                {self.item_usage(f"{i}_overall_mentions", PROFILES, show_number)}
+                {self.item_spread(f"{i}_overall_mentions", PROFILES, show_number)}
+                {self.item_evolution(f"{i}_tweet_mentions", PROFILES)}
+            </div>  
+        ''' for i in ["sport", "club", "athlete"]])
+    def music(self, PROFILES=[], show_number=float('inf')):
+        return "\n".join([f'''
+            <p>{i.capitalize()}</p>
+            <div class="row">
+                {self.item_usage(f"{i}_overall_sentiment", PROFILES, show_number)}
+                {self.item_evolution(f"{i}_tweet_sentiment", PROFILES)}
+                {self.item_usage(f"{i}_overall_mentions", PROFILES, show_number)}
+                {self.item_spread(f"{i}_overall_mentions", PROFILES, show_number)}
+                {self.item_evolution(f"{i}_tweet_mentions", PROFILES)}
+            </div>  
+        ''' for i in ["artist", "genre"]])
+
     def test_show(self):
         html_content = f'''
         <!DOCTYPE html>
@@ -3413,24 +3626,55 @@ class BubbleSummary:
         </head>
         <body>
             <div class="container">
-                {self.compass()}
-
-                {self.ideology_usage()}
-                {self.other_topics([], 20)}
-
-                {self.other_topics_spread([], 20)}
-                
-                {self.avg_activity_sum()}{self.avg_activity_sum(['pushkicknadusu'])}{self.avg_activity_evolution()}
-                {self.locations_sum()}{self.locations_sum(['pushkicknadusu'])}
-                {self.most_followed_profiles([], 100, 5)}
-                
-                
             
+                {self.languages([],5)}
+                <p>DAILY ACTIVITY</p>
+                <div class="row">
+                    {self.item_usage("daily_activity", [])}
+                    {self.item_evolution("daily_activity", [])}
+                </div>  
+                <p>AVERAGE ACTIVITY</p>
+                <div class="row">
+                    {self.avg_activity_evolution()}
+                    {self.avg_activity_sum()}
+                </div>
+                <p>HASHTAGS</p>
+                <div class="row">
+                    {self.item_usage("hashtags", [], 10)}
+                    {self.item_spread("hashtags", [], 10)}
+                    {self.item_evolution("hashtags", [])}
+                </div>
+                <p>MENTIONS</p>
+                <div class="row">
+                    {self.item_usage("mentions", [], 10)}
+                    {self.item_spread("mentions", [], 10)}
+                    {self.item_evolution("mentions", [])}
+                </div>
+
+                <p>POLITICS</p>
+                <div class="row">
+                    {self.compass()}
+                    {self.ideology_usage([], 5)}
+                    {self.item_evolution("ideologies")}
+                </div>
+
+                <p>SPORT</p>
+                {self.sport([], 5)}
+                <p>MUSIC</p>
+                {self.music([], 5)}
+
+                <p>OTHER TOPICS</p>
+                <div class="row">
+                    {self.item_usage("other_topics", [], 5)}
+                    {self.item_spread("other_topics", [], 5)}
+                    {self.item_evolution("other_topics", [])}
+                </div>
                 
             </div>
         </body>
         </html>
         '''
+
 ##                {self.other_topics([], 20)}
 ##
 ##                {self.other_topics_spread([], 20)}
@@ -3448,60 +3692,13 @@ class BubbleSummary:
             file.write(html_content)
         print(f"HTML file has been created.")
 
-    def graph_properties(self, type, PROFILES=[]):
-        traffic = {}
-        interconnection = {}
-        top_conversation = [None, 0]
-        one_dir_edges = 0
-        both_dir_edges = 0
-        
-        #["Relations", "Sentiments", "Outside relations", "Hashtags"]
-        edges = []
-        if type == "Relations":
-            edges = self.social_bubble.edges
-        elif type == "Sentiments":
-            edges = self.social_bubble.sentiment_edges
-        
-        for name, node in self.social_bubble.nodes.items():
-            traffic[name] = node.compute_interaction_strength(PROFILES)
-            interconnection[name] = len(node.edges)
-            print(name, traffic[name], interconnection[name])
 
-        for edge in self.social_bubble.edges:
-            weight = edge.get_weight_eval()
-            if top_conversation[1] <= weight:
-                if PROFILES and (edge.node1 not in PROFILES or edge.node2 not in PROFILES):
-                    continue
-                top_conversation = [edge, weight]
-                
-            if edge.weight["follows"] in ["->", "<-"]:
-                one_dir_edges += 1
-            if edge.weight["follows"] == 'friends':
-                both_dir_edges += 1
-                
-        
-        traffic = dict(sorted(traffic.items(), key=lambda x: x[1], reverse=True))
-        interconnection = dict(sorted(interconnection.items(), key=lambda x: x[1], reverse=True))
 
-        density_one_dir = (one_dir_edges+2*both_dir_edges)/(math.factorial(len(self.social_bubble.nodes))/math.factorial(len(self.social_bubble.nodes)-2))
-        density_both_dir = both_dir_edges/(math.factorial(len(self.social_bubble.nodes))/(math.factorial(len(self.social_bubble.nodes)-2)*2))
-        
-        self.graph_prop = {'traffic':traffic, 'interconnection':interconnection, 'top_conversation':top_conversation, 'density_one_dir':density_one_dir, 'density_both_dir':density_both_dir}
-        if type == "Relations":
-            print(f"Profile with biggest interaction traffic: {traffic.items()[0][0]}")
-            print(f"Most connected profile: {interconnection.items()[0][0]}")
-            if top_conversation[0]:
-                print(f"Most interacting profiles: {top_conversation[0].node1.profile.username}<->{top_conversation[0].node2.profile.username}")
-            print(f"Density: friendships {density_both_dir} | overall interactions {density_one_dir}")
-            
-        elif type == "Sentiments":
-            print(f"Profile with most common interests: {traffic.items()[0][0]}")
-            if top_conversation[0]:
-                print(f"Profiles sharing most interests: {top_conversation[0].node1.profile.username}<->{top_conversation[0].node2.profile.username}")
-            
-            
 
-        return self.graph_prop
+
+    
+
+
 
     def create_entity_based_graph(self, topic, entity, intervals=False):
         def sanitize_filename(date_str):
@@ -4065,7 +4262,7 @@ class BubbleSummary:
         #print(partition)
         output_file = "social_bubble.html"
         net.show(output_file)
-        return output_file
+        return G
 
 
           
@@ -4210,7 +4407,7 @@ SB.create_graph()
 
 ##BS.interactions_subbubbles()
 
-SB.visualize_graph()
+#SB.visualize_graph()
 
 #SB.visualize_outside_relations(False)
 
@@ -4224,12 +4421,12 @@ SB.visualize_graph()
 
 SB.tweet_analysis()
 
-BS = BubbleSummary(6, SB)
+BS = BubbleSummary(2, SB)
 
 #BS.suggestions_entity_graph()
 #BS.create_entity_based_graph(input("topic group: "), input("topic: "), bool(BS.step))
 
-#BS.test_show()
+BS.test_show()
 
 # print(BS.graph_properties())
 
@@ -4237,7 +4434,14 @@ BS = BubbleSummary(6, SB)
 ####    print(edge.node1.profile.username, edge.node2.profile.username, edge.weight)
 
 #interactions  sentiments  outside_relations  hashtags  follower_magnitude
-BS.subbubbles(None, True, False, False, False, False, sentimentFlags=(1,1,1,1), algorithm="leiden")
+g = BS.subbubbles(None, True, False, False, False, False, sentimentFlags=(1,1,1,1), algorithm="leiden")
+
+with open("nx_bs.json", 'w', encoding="utf-8") as file:
+    json.dump(analyze_graph(g), file, indent=4)
+
+with open("nx_sb.json", 'w', encoding="utf-8") as file:
+    json.dump(analyze_graph(SB.get_nx()), file, indent=4)
+
                                                                     #p,s,m,o
 ############                                  TFTFF by mohlo mat tiez nejaku threshold mieru miesto leidena
 
