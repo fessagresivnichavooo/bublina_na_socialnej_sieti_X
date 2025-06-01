@@ -170,7 +170,7 @@ class OtherTopics(BaseModel):
 
 
 class GPT4o_mini():
-    client = openai.OpenAI(api_key="
+    client = openai.OpenAI(api_key="")
 
     class AnalysisProfileName(BaseModel):
         type: str = Field(..., description="Choose from following words to describe twitter profile: celebrity/fanpage/company/amusement-education/private profile")
@@ -202,7 +202,7 @@ class GPT4o_mini():
         return analyzed
 
 class GPT4o():
-    client = openai.OpenAI(api_key="
+    client = openai.OpenAI(api_key="")
 
 ############################## TWEET ANALYSIS ####################################
     class Sport(BaseModel):
@@ -401,7 +401,7 @@ class GPT4o():
 
 
 class SerpAPI():
-    API_KEY = ""#""
+    API_KEY = ""
 
     def get_entity(self, name):
         params = {
@@ -437,7 +437,7 @@ class SerpAPI():
 
 class GSE:
 
-    API_KEY = "
+    API_KEY = ""
     SEARCH_ENGINE_ID = ""
     
     def get_entity(self, name):
@@ -462,4 +462,3 @@ class GSE:
 
     def process_entity(self, entity_data):
         return {"potential describtion data": entity_data}
-
