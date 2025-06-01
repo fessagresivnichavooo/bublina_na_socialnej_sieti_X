@@ -1,10 +1,34 @@
-main.py - hlavná časť zdrojového kódu
-AIAnalysis - obsahuje nástroje na obsahovú analýzu
-TwitterScrapper.py - šablóna pre rozhranie na zber dát
+## 📁 Štruktúra projektu
 
-profile_analysis.json - data získané z analýzy profilov
-tweet_analysis_test.json - data získané z analýzy tweetov a interakcií
-test_data_for_graph_... - súbory s testovacími datami, nespracovaný obsah odpovedí z X backendu
-test_twitter_scrapper_from_json - TwitterScrapper prispôsobený na zíkavanie dát a spracovanie dát zo súborov vo formáte ako v test_data_for_graph
-topic_translations.json - doterajšia cache pre zero-shot klasifikáciu
+### 🔧 Zdrojový kód
+
+- **`main.py`**  
+  Hlavná časť programu. Koordinuje načítanie dát, spracovanie, analýzu a výstup výsledkov.
+
+- **`AIAnalysis.py`**  
+  Obsahuje nástroje na **obsahovú analýzu** tweetov a profilov (klasifikácia tém, analýza sentimentu, práca so sieťami).
+
+- **`TwitterScrapper.py`**  
+  Šablóna pre rozhranie na **zber dát z Twitteru**, buď pomocou API alebo web scrapingu.
+
+- **`test_twitter_scrapper_from_json.py`**  
+  Verzia scrappera, ktorá spracováva údaje zo súborov (napr. `test_data_for_graph_*.json`). Umožňuje testovanie bez online pripojenia.
+
+---
+
+### 📂 Dátové súbory
+
+- **`profile_analysis.json`**  
+  Výsledky analýzy profilov – napr. bio, lokalita, sledovatelia/sledovaní.
+
+- **`tweet_analysis_test.json`**  
+  Výstupy z analýzy tweetov – obsah, typ interakcie (odpoveď, retweet), sentiment, témy, zmienky atď.
+
+- **`test_data_for_graph_*.json`**  
+  Testovacie súbory so **surovými odpoveďami z backendu Twitteru (X)**. Slúžia na simuláciu API vstupu.
+
+- **`topic_translations.json`**  
+  Cache pre **zero-shot klasifikáciu tém** – zabraňuje opakovaniu rovnakých výpočtov.
+
+---
 
