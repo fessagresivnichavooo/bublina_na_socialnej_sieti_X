@@ -1,0 +1,6167 @@
+{
+    "AlexBarnicoat_": {
+        "topic": "Journalism",
+        "type": "Journalist/News",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "UK"
+        }
+    },
+    "balajis": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "Cryptocurrency",
+            "notable_company": null
+        }
+    },
+    "jordanbpeterson": {
+        "topic": "Other",
+        "type": "Education",
+        "data": {
+            "specialization": "psychology",
+            "institution": null
+        }
+    },
+    "cctvidiots": {
+        "topic": "Other",
+        "type": "Entertainment",
+        "data": {
+            "industry": "video",
+            "notable_work": null
+        }
+    },
+    "FreeMattKim": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "political_party": null,
+            "ideology": "Libertarian",
+            "country": "United States"
+        }
+    },
+    "catturd2": {
+        "topic": "SocialMedia",
+        "type": "Personality",
+        "data": {
+            "field": "Internet",
+            "notable_company": null
+        }
+    },
+    "Cyber_Watch": {
+        "topic": "Other",
+        "type": "Journalist/News",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "N/A"
+        }
+    },
+    "MattWalshBlog": {
+        "topic": "Politics",
+        "type": "JournalistNews",
+        "data": {
+            "political_party": null,
+            "ideology": "Conservative",
+            "country": "United States"
+        }
+    },
+    "FAFO_TV": {
+        "topic": "Entertainment",
+        "type": "Entertainment",
+        "data": {
+            "industry": "television",
+            "notable_work": null
+        }
+    },
+    "unusual_whales": {
+        "topic": "Finance",
+        "type": "Finance",
+        "data": {
+            "sector": "Stocks/Options/Crypto/Market News",
+            "country": null
+        }
+    },
+    "patrickbetdavid": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "Business and Media",
+            "notable_company": "Valuetainment"
+        }
+    },
+    "Rightanglenews": {
+        "topic": "Politics",
+        "type": "Journalist/News",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": ""
+        }
+    },
+    "SStricklandMMA": {
+        "topic": "Sport",
+        "type": "Athlete",
+        "data": {
+            "type_of_sport": "Mixed Martial Arts",
+            "club": null,
+            "nationality": "American"
+        }
+    },
+    "elonmusk": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "Technology",
+            "notable_company": "SpaceX, Tesla"
+        }
+    },
+    "EndWokeness": {
+        "topic": "Politics",
+        "type": "PoliticalPartyMovement",
+        "data": {
+            "political_party": null,
+            "ideology": "Conservative",
+            "country": "Unknown"
+        }
+    },
+    "RealAlexJones": {
+        "topic": "Politics",
+        "type": "Journalist/News",
+        "data": {
+            "political_party": null,
+            "ideology": "Conspiracy theory",
+            "country": "United States"
+        }
+    },
+    "TuckerCarlson": {
+        "topic": "Politics",
+        "type": "JournalistNews",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "USA"
+        }
+    },
+    "KarolDzonson": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Twitter User"
+        },
+        "full_name": "Karol Dżonson"
+    },
+    "observinglala": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Lifestyle"
+        },
+        "full_name": "lala avi♡"
+    },
+    "solisolsoli": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "N/A"
+        },
+        "full_name": "soli"
+    },
+    "TinTechno": {
+        "topic": "Music",
+        "type": "Music Fan",
+        "data": {
+            "genre_of_music": "Techno"
+        },
+        "full_name": "T In Techno"
+    },
+    "callittechno": {
+        "topic": "Music",
+        "type": "Band/Label",
+        "data": {
+            "music_genre": "Techno",
+            "authors": null,
+            "country": null
+        },
+        "full_name": "We Call It Techno !"
+    },
+    "freezecorleone": {
+        "topic": "Music",
+        "type": "Author",
+        "data": {
+            "genre": "Rap",
+            "country": "FR"
+        },
+        "full_name": "FREEZE D. CORLEONE"
+    },
+    "klangkuenstler": {
+        "topic": "Music",
+        "type": "Author",
+        "data": {
+            "genre": "Electronic",
+            "country": null
+        },
+        "full_name": "klangkuenstler"
+    },
+    "FobiaKid": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "books"
+        },
+        "full_name": "Malý Princ"
+    },
+    "asvpxrocky": {
+        "topic": "Music",
+        "type": "Other",
+        "data": {
+            "topic": "Music"
+        },
+        "full_name": "LORD FLACKO JODYE II"
+    },
+    "101ULTRAS": {
+        "topic": "Sport",
+        "type": "SportFanpage",
+        "data": {
+            "sport": "Football"
+        },
+        "full_name": "101% ULTRAS"
+    },
+    "MinesMinIndia": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Government"
+        },
+        "full_name": "Ministry of Mines"
+    },
+    "joerogan": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Podcasting"
+        },
+        "full_name": "Joe Rogan"
+    },
+    "EsTendenciaEnX": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Parody Account"
+        },
+        "full_name": "Es tendencia en 𝕏"
+    },
+    "VidsBanned": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Viral Videos"
+        },
+        "full_name": "Banned Vids"
+    },
+    "Wallpaper_Only_": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Wallpapers"
+        },
+        "full_name": "Crazy Smartphone Wallpapers"
+    },
+    "jacksonhinklle": {
+        "topic": "Politics",
+        "type": "Journalist/News",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "US"
+        },
+        "full_name": "Jackson Hinkle 🇺🇸"
+    },
+    "BarekSvata": {
+        "topic": "Technology",
+        "type": "Other",
+        "data": {
+            "topic": "AI, politics and world events influencer with a focus on digital content creation."
+        },
+        "full_name": "Sváťa Barek 🇺🇦"
+    },
+    "TheTriceRozay": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "The content provided does not clearly belong to a specific category such as Sport, Music, Politics, etc."
+        },
+        "full_name": "TheTriceRozay"
+    },
+    "davidgoggins": {
+        "topic": "Sport",
+        "type": "Athlete",
+        "data": {
+            "type_of_sport": "Endurance Sports",
+            "club": null,
+            "nationality": "US"
+        },
+        "full_name": "David Goggins"
+    },
+    "TheNotoriousMMA": {
+        "topic": "Sport",
+        "type": "Athlete",
+        "data": {
+            "type_of_sport": "Mixed Martial Arts",
+            "club": null,
+            "nationality": "IE"
+        },
+        "full_name": "Conor McGregor"
+    },
+    "bestwildclips": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Wildlife videos and entertainment"
+        },
+        "full_name": "Wild Clips"
+    },
+    "Salwan_Momika1": {
+        "topic": "Politics",
+        "type": "Other",
+        "data": {
+            "topic": "Protester"
+        },
+        "full_name": "Salwan Momika"
+    },
+    "NewsNotBs": {
+        "topic": "Politics",
+        "type": "JournalistNews",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "US"
+        },
+        "full_name": "Real News No Bullshit"
+    },
+    "RestrictedVids": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Entertainment"
+        },
+        "full_name": "Restricted Vids"
+    },
+    "streetfighthard": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Street Fights"
+        },
+        "full_name": "STREET FIGHT HARD 🥊🔞"
+    },
+    "TRIGGERHAPPYV1": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Crime and viewer-discretion content"
+        },
+        "full_name": "Crime Net"
+    },
+    "FadeHubb": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Comedy and Memes"
+        },
+        "full_name": "FadeHubb"
+    },
+    "NoFapSamurai": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Life Coaching"
+        },
+        "full_name": "Nofap Samurai / Life Coach"
+    },
+    "Geo__team": {
+        "topic": "Sport",
+        "type": "JournalistNews",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "GE"
+        },
+        "full_name": "Geo Team"
+    },
+    "mentalhealth": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Mental Health Awareness"
+        },
+        "full_name": "Mental Health Foundation"
+    },
+    "historyinmemes": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "History and Education through Memes"
+        },
+        "full_name": "Historic Vids"
+    },
+    "spurs": {
+        "topic": "Sport",
+        "type": "Club/Team",
+        "data": {
+            "sport_type": "Basketball",
+            "country": "US"
+        },
+        "full_name": "San Antonio Spurs"
+    },
+    "BasketballCL": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Basketball",
+            "country": null
+        },
+        "full_name": "Basketball Champions League"
+    },
+    "HowThingsWork_": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Technology and General Knowledge"
+        },
+        "full_name": "HOW THINGS WORK"
+    },
+    "TeamKhabib": {
+        "topic": "Sport",
+        "type": "Athlete",
+        "data": {
+            "type_of_sport": "Mixed Martial Arts",
+            "club": "UFC",
+            "nationality": "RU"
+        },
+        "full_name": "khabib nurmagomedov"
+    },
+    "Paobcgr": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Basketball",
+            "country": "GR"
+        },
+        "full_name": "Panathinaikos BC"
+    },
+    "fatihterim": {
+        "topic": "Sport",
+        "type": "Athlete",
+        "data": {
+            "type_of_sport": "Football",
+            "club": null,
+            "nationality": "TR"
+        },
+        "full_name": "Fatih Terim"
+    },
+    "cooltechtipz": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "STEM education"
+        },
+        "full_name": "Learn Something"
+    },
+    "SkySportsNews": {
+        "topic": "Sport",
+        "type": "JournalistNews",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "GB"
+        },
+        "full_name": "Sky Sports News"
+    },
+    "ScienceGuys_": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Science Videos"
+        },
+        "full_name": "Science"
+    },
+    "FCSteaua": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "RO"
+        },
+        "full_name": "FCSB (FC Steaua Bucuresti)"
+    },
+    "SKSlovan": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "SK"
+        },
+        "full_name": "ŠK Slovan Bratislava"
+    },
+    "DonaldTNews": {
+        "topic": "Politics",
+        "type": "JournalistNews",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "US"
+        },
+        "full_name": "Donald J. Trump 🇺🇸 News"
+    },
+    "paofc_": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "GR"
+        },
+        "full_name": "Panathinaikos F.C."
+    },
+    "Cobratate": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "personality and influence"
+        },
+        "full_name": "Andrew Tate"
+    },
+    "jakepaul": {
+        "topic": "Sport",
+        "type": "Athlete",
+        "data": {
+            "type_of_sport": "Boxing",
+            "club": null,
+            "nationality": "US"
+        },
+        "full_name": "Jake Paul"
+    },
+    "realDonaldTrump": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": "Republican",
+            "ideology": "Conservative",
+            "country": "US"
+        },
+        "full_name": "Donald J. Trump"
+    },
+    "Lewysko": {
+        "topic": "Sport",
+        "type": "Athlete",
+        "data": {
+            "type_of_sport": "Ice Hockey",
+            "club": null,
+            "nationality": null
+        },
+        "full_name": "Tomáš Prokop"
+    },
+    "ShaneStoffer": {
+        "topic": "Entertainment",
+        "type": "Entertainment",
+        "data": {
+            "industry": "movies",
+            "notable_work": null
+        },
+        "full_name": "TOGI"
+    },
+    "hooliganscz1999": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Hooligan fan page"
+        },
+        "full_name": "Hooligans.cz Official"
+    },
+    "frogNscorpion": {
+        "topic": "Entertainment",
+        "type": "BandLabel",
+        "data": {
+            "music_genre": "classical",
+            "authors": null,
+            "country": null
+        },
+        "full_name": "Into the Memory Hole"
+    },
+    "Nikeliga_sk": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "SK"
+        },
+        "full_name": "Niké liga"
+    },
+    "FutZakulisie": {
+        "topic": "Sport",
+        "type": "SportFanpage",
+        "data": {
+            "sport": "Football"
+        },
+        "full_name": "Futbalové Zákulisie"
+    },
+    "visegrad24": {
+        "topic": "Politics",
+        "type": "Journalist/News",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "HU"
+        },
+        "full_name": "Visegrád 24"
+    },
+    "imagesaicouldnt": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Meme Collection"
+        },
+        "full_name": "Images AI Could Never Recreate"
+    },
+    "HumansNoContext": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Humans being humans"
+        },
+        "full_name": "NO CONTEXT HUMANS"
+    },
+    "insaneposes": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Social Media and Entertainment"
+        },
+        "full_name": "insane poses"
+    },
+    "WeedPorns": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Cannabis"
+        },
+        "full_name": "Weed Porn"
+    },
+    "FacebookAIslop": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Posting AI images from Facebook"
+        },
+        "full_name": "Insane Facebook AI slop"
+    },
+    "VLONEPREDATOR": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "N/A"
+        },
+        "full_name": "Pilgrim"
+    },
+    "NickJFuentes": {
+        "topic": "Politics",
+        "type": "Other",
+        "data": {
+            "topic": "America First movement influencer"
+        },
+        "full_name": "Nicholas J. Fuentes"
+    },
+    "Nugjokes": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Humor and Entertainment"
+        },
+        "full_name": "Nugs"
+    },
+    "lporiginalg": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Blog or Social Commentary"
+        },
+        "full_name": "I,Hypocrite"
+    },
+    "UpdateNews724": {
+        "topic": "Politics",
+        "type": "JournalistNews",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "N/A"
+        },
+        "full_name": "Update NEWS"
+    },
+    "fasc1nate": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Science, gadgets, history, art"
+        },
+        "full_name": "Fascinating"
+    },
+    "DeIudedShaniqwa": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Satire"
+        },
+        "full_name": "Shaniqua Posting Delusions"
+    },
+    "Stone_tossers": {
+        "topic": "Politics",
+        "type": "Journalist/News",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "US"
+        },
+        "full_name": "Stone tossers"
+    },
+    "libsoftiktok": {
+        "topic": "Politics",
+        "type": "JournalistNews",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "US"
+        },
+        "full_name": "Libs of TikTok"
+    },
+    "mugshawtys": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Social Media Influencer"
+        },
+        "full_name": "mugshawtys"
+    },
+    "astrologybot_": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Astrology"
+        },
+        "full_name": "astrology bot"
+    },
+    "FilmsBub": {
+        "topic": "Entertainment",
+        "type": "Entertainment",
+        "data": {
+            "industry": "movies",
+            "notable_work": null
+        },
+        "full_name": "Bub Films"
+    },
+    "shirtsthtgohard": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Apparel and Design"
+        },
+        "full_name": "shirts that go hard"
+    },
+    "FatsPostingLs": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Related Questions on Social Media Submissions"
+        },
+        "full_name": "Fats posting Ls"
+    },
+    "KFC_ES": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Restaurant/Food Chain"
+        },
+        "full_name": "KFC"
+    },
+    "mischiefanimals": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Humor/Entertainment Blog"
+        },
+        "full_name": "animals going goblin mode"
+    },
+    "GreenTextRepost": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Greentext reposting"
+        },
+        "full_name": "Greentext Reposter"
+    },
+    "yajwokeup": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "This profile doesn't fit any specific category provided."
+        },
+        "full_name": "jay"
+    },
+    "weirdlilguys": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Animal fanpage"
+        },
+        "full_name": "cats being weird little guys 👅"
+    },
+    "cashanova_bg": {
+        "topic": "Music",
+        "type": "Author",
+        "data": {
+            "genre": "Rap",
+            "country": "CZ"
+        },
+        "full_name": "CA$HANOVA BULHAR"
+    },
+    "FACEITTF2": {
+        "topic": "Sport",
+        "type": "Other",
+        "data": {
+            "topic": "eSports"
+        },
+        "full_name": "FACEIT Team Fortress 2"
+    },
+    "ResNeXtGuesser": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Neural Networks & Memes"
+        },
+        "full_name": "neural net guesses memes"
+    },
+    "GymplQuotes": {
+        "topic": "Other",
+        "type": "Entertainment",
+        "data": {
+            "industry": "movies",
+            "notable_work": "The Can"
+        },
+        "full_name": "Gympl"
+    },
+    "ShapedInternet": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Internet Culture"
+        },
+        "full_name": "Things That Changed The Internet"
+    },
+    "trvisXX": {
+        "topic": "Music",
+        "type": "Author",
+        "data": {
+            "genre": "Hip-Hop/Rap",
+            "country": "US"
+        },
+        "full_name": "TRAVIS SCOTT"
+    },
+    "LILUZIVERT": {
+        "topic": "Music",
+        "type": "Other",
+        "data": {
+            "topic": "American rapper and singer"
+        },
+        "full_name": "Uzi London 🌎☄️💕®"
+    },
+    "vercetti_cg": {
+        "topic": "Music",
+        "type": "Author",
+        "data": {
+            "genre": "Unknown",
+            "country": null
+        },
+        "full_name": "Vercetti CG"
+    },
+    "ZssBecker": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Twitter Personality"
+        },
+        "full_name": "Alex Becker 🍊🏆🥇"
+    },
+    "contactathand": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Ordinals, Berachain, Solana, memes"
+        },
+        "full_name": "entrenchedindust"
+    },
+    "KosherPlug": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Internet Content Creator"
+        },
+        "full_name": "Kosher Plug"
+    },
+    "MutantShibaClub": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Web3 and NFTs"
+        },
+        "full_name": "Mutant Shiba Club"
+    },
+    "0xMert_": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Unknown"
+        },
+        "full_name": "mert | helius.dev"
+    },
+    "Shibtoken": {
+        "topic": "Finance",
+        "type": "Other",
+        "data": {
+            "topic": "Cryptocurrency"
+        },
+        "full_name": "Shib | TreatYourself Season"
+    },
+    "binance": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Blockchain ecosystem and digital asset exchange"
+        },
+        "full_name": "Binance"
+    },
+    "SpaceX": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Space technology"
+        },
+        "full_name": "SpaceX"
+    },
+    "Tesla": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Automotive company"
+        },
+        "full_name": "Tesla"
+    },
+    "pedrosgame": {
+        "topic": "Sport",
+        "type": "Athlete",
+        "data": {
+            "type_of_sport": "Soccer",
+            "club": "Lazio",
+            "nationality": null
+        },
+        "full_name": "Pedro"
+    },
+    "X": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Social media company"
+        },
+        "full_name": "X"
+    },
+    "BillGates": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "software",
+            "notable_company": "Microsoft"
+        },
+        "full_name": "Bill Gates"
+    },
+    "Google": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Technology Company"
+        },
+        "full_name": "Google"
+    },
+    "spolecnice": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Lifestyle and Personal"
+        },
+        "full_name": "Klára"
+    },
+    "o_novotny": {
+        "topic": "Sport",
+        "type": "JournalistNews",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "CZ"
+        },
+        "full_name": "Ondřej Novotný"
+    },
+    "HockeySlovakia": {
+        "topic": "Sport",
+        "type": "SportFanpage",
+        "data": {
+            "sport": "Ice Hockey"
+        },
+        "full_name": "Hockey Slovakia"
+    },
+    "HCKometa": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Ice Hockey",
+            "country": "CZ"
+        },
+        "full_name": "HC Kometa Brno"
+    },
+    "FCZbrojovkaBrno": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "CZ"
+        },
+        "full_name": "FC Zbrojovka Brno"
+    },
+    "FKAustriaWien": {
+        "topic": "Sport",
+        "type": "Club/Team",
+        "data": {
+            "sport_type": "Football",
+            "country": "AT"
+        },
+        "full_name": "FK Austria Wien"
+    },
+    "kelsieswrites": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Storytelling and Advocacy"
+        },
+        "full_name": "Kelsie Snow"
+    },
+    "BlueJacketsNHL": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Ice Hockey",
+            "country": "US"
+        },
+        "full_name": "Columbus Blue Jackets"
+    },
+    "NYIslanders": {
+        "topic": "Sport",
+        "type": "Club/Team",
+        "data": {
+            "sport_type": "Hockey",
+            "country": "US"
+        },
+        "full_name": "New York Islanders"
+    },
+    "darina_vymetali": {
+        "topic": "Sport",
+        "type": "JournalistNews",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "CZ"
+        },
+        "full_name": "Darina"
+    },
+    "jurislaff": {
+        "topic": "Sport",
+        "type": "Athlete",
+        "data": {
+            "type_of_sport": "Ice Hockey",
+            "club": null,
+            "nationality": "SK"
+        },
+        "full_name": "Juraj Slafkovsky"
+    },
+    "TomasVosvrda": {
+        "topic": "Sport",
+        "type": "Other",
+        "data": {
+            "topic": "Hockey Agency"
+        },
+        "full_name": "Tomáš Vošvrda"
+    },
+    "FKPartizanEN": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "RS"
+        },
+        "full_name": "Partizan Belgrade 🇬🇧"
+    },
+    "crvenazvezda_en": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "RS"
+        },
+        "full_name": "FK Crvena zvezda in English"
+    },
+    "dentondella4407": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "No specific information to categorize"
+        },
+        "full_name": "Della"
+    },
+    "NBCSportsHockey": {
+        "topic": "Sport",
+        "type": "SportFanpage",
+        "data": {
+            "sport": "Hockey"
+        },
+        "full_name": "NBC Sports Hockey"
+    },
+    "NHLBruins": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Hockey",
+            "country": "US"
+        },
+        "full_name": "Boston Bruins"
+    },
+    "NHLBlackhawks": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Ice Hockey",
+            "country": "US"
+        },
+        "full_name": "Chicago Blackhawks"
+    },
+    "NHL": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Hockey",
+            "country": null
+        },
+        "full_name": "NHL"
+    },
+    "matej_hejda33": {
+        "topic": "Sport",
+        "type": "JournalistNews",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "CZ"
+        },
+        "full_name": "Matěj Hejda"
+    },
+    "ZvolenskyAndrej": {
+        "topic": "Sport",
+        "type": "JournalistNews",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "SK"
+        },
+        "full_name": "Andrej Zvolenský"
+    },
+    "HV71": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Ice Hockey",
+            "country": "SE"
+        },
+        "full_name": "HV71"
+    },
+    "alppouch": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Consumer Products"
+        },
+        "full_name": "Alp Pouch"
+    },
+    "TCNetwork": {
+        "topic": "Politics",
+        "type": "JournalistNews",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "US"
+        },
+        "full_name": "Tucker Carlson Network"
+    },
+    "hcslovanba": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Ice Hockey",
+            "country": "SK"
+        },
+        "full_name": "HC SLOVAN Bratislava"
+    },
+    "miro81s": {
+        "topic": "Sport",
+        "type": "Athlete",
+        "data": {
+            "type_of_sport": "Ice Hockey",
+            "club": null,
+            "nationality": "SK"
+        },
+        "full_name": "Miroslav Šatan"
+    },
+    "Pod_Y39": {
+        "topic": "Sport",
+        "type": "Athlete",
+        "data": {
+            "type_of_sport": "Football",
+            "club": "Sparta Prague",
+            "nationality": "CZE"
+        },
+        "full_name": "Jakub Podaný"
+    },
+    "Pravdask": {
+        "topic": "Politics",
+        "type": "JournalistNews",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "SK"
+        },
+        "full_name": "Pravda.sk"
+    },
+    "fmeetsdata": {
+        "topic": "Sport",
+        "type": "Other",
+        "data": {
+            "topic": "Football statistics and analysis"
+        },
+        "full_name": "Football Meets Data"
+    },
+    "za_carou": {
+        "topic": "Sport",
+        "type": "SportFanpage",
+        "data": {
+            "sport": "Football"
+        },
+        "full_name": "Za čárou"
+    },
+    "AndreGreen_": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Psychoanalysis"
+        },
+        "full_name": "André Green"
+    },
+    "TomasTatar90": {
+        "topic": "Sport",
+        "type": "Athlete",
+        "data": {
+            "type_of_sport": "Ice Hockey",
+            "club": "New Jersey Devils",
+            "nationality": "SK"
+        },
+        "full_name": "Tomas Tatar"
+    },
+    "MGaborik12": {
+        "topic": "Sport",
+        "type": "Athlete",
+        "data": {
+            "type_of_sport": "Ice Hockey",
+            "club": null,
+            "nationality": "SK"
+        },
+        "full_name": "Marian Gaborik"
+    },
+    "SavicevicVukan": {
+        "topic": "Sport",
+        "type": "Athlete",
+        "data": {
+            "type_of_sport": "Football",
+            "club": "FK Vojvodina",
+            "nationality": "ME"
+        },
+        "full_name": "Vukan Savicevic"
+    },
+    "hajduk": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "HR"
+        },
+        "full_name": "HNK Hajduk Split"
+    },
+    "ChampionsLeague": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "UE"
+        },
+        "full_name": "UEFA Champions League"
+    },
+    "EuropaLeague": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "EU"
+        },
+        "full_name": "UEFA Europa League"
+    },
+    "Bratislava_LIVE": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Tourism and City Promotion"
+        },
+        "full_name": "Bratislava"
+    },
+    "Bratislava": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "City Tourism and Cultural Information"
+        },
+        "full_name": "Bratislava"
+    },
+    "adidasfootball": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "DE"
+        },
+        "full_name": "adidas Football"
+    },
+    "rtvs": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Broadcasting Services"
+        },
+        "full_name": "RTVS"
+    },
+    "UEFAcom": {
+        "topic": "Sport",
+        "type": "SportFanpage",
+        "data": {
+            "sport": "Football"
+        },
+        "full_name": "UEFA.com"
+    },
+    "fcviktorkaplzen": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "CZ"
+        },
+        "full_name": "FC Viktoria Plzeň"
+    },
+    "astrencin": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "SK"
+        },
+        "full_name": "AS Trenčín"
+    },
+    "sfzofficial": {
+        "topic": "Sport",
+        "type": "Other",
+        "data": {
+            "topic": "Slovak Football Association"
+        },
+        "full_name": "SFZ (official)"
+    },
+    "FKSenica": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "SK"
+        },
+        "full_name": "FK Senica"
+    },
+    "SeboFilip": {
+        "topic": "Sport",
+        "type": "Athlete",
+        "data": {
+            "type_of_sport": "Football",
+            "club": null,
+            "nationality": "SK"
+        },
+        "full_name": "Filip Sebo"
+    },
+    "CPBritain": {
+        "topic": "Politics",
+        "type": "PoliticalPartyMovement",
+        "data": {
+            "political_party": null,
+            "ideology": "communism",
+            "country": "GB"
+        },
+        "full_name": "Communist Party ☭"
+    },
+    "yclbritain": {
+        "topic": "Politics",
+        "type": "PoliticalPartyMovement",
+        "data": {
+            "political_party": null,
+            "ideology": "communism",
+            "country": "GB"
+        },
+        "full_name": "Young Communist League of Britain"
+    },
+    "socialist_china": {
+        "topic": "Politics",
+        "type": "PoliticalPartyMovement",
+        "data": {
+            "political_party": null,
+            "ideology": "socialism",
+            "country": "CN"
+        },
+        "full_name": "Friends of Socialist China"
+    },
+    "ChallengeYCL": {
+        "topic": "Politics",
+        "type": "JournalistNews",
+        "data": {
+            "political_party": null,
+            "ideology": "communism",
+            "country": "GB"
+        },
+        "full_name": "Challenge Magazine"
+    },
+    "comunistamexico": {
+        "topic": "Politics",
+        "type": "PoliticalPartyMovement",
+        "data": {
+            "political_party": null,
+            "ideology": "communism",
+            "country": "MX"
+        },
+        "full_name": "Partido Comunista de México *☭"
+    },
+    "CPSwaziland": {
+        "topic": "Politics",
+        "type": "PoliticalPartyMovement",
+        "data": {
+            "political_party": null,
+            "ideology": "socialism",
+            "country": "SZ"
+        },
+        "full_name": "CPS"
+    },
+    "CpusaDepartment": {
+        "topic": "Politics",
+        "type": "PoliticalPartyMovement",
+        "data": {
+            "political_party": null,
+            "ideology": "communism",
+            "country": "US"
+        },
+        "full_name": "CPUSA International Department"
+    },
+    "pycpim": {
+        "topic": "Politics",
+        "type": "PoliticalPartyMovement",
+        "data": {
+            "political_party": null,
+            "ideology": "communism",
+            "country": "IN"
+        },
+        "full_name": "CPI(M) Puducherry ☭"
+    },
+    "communist_au": {
+        "topic": "Politics",
+        "type": "PoliticalPartyMovement",
+        "data": {
+            "political_party": null,
+            "ideology": "communism",
+            "country": "AU"
+        },
+        "full_name": "Communist Party of Australia"
+    },
+    "friendsofswazi": {
+        "topic": "Politics",
+        "type": "PoliticalPartyMovement",
+        "data": {
+            "political_party": null,
+            "ideology": "socialism",
+            "country": "SZ"
+        },
+        "full_name": "Friends of Swazi Freedom"
+    },
+    "donnabrazile": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": "Democratic Party",
+            "ideology": null,
+            "country": "US"
+        },
+        "full_name": "Donna Brazile"
+    },
+    "organizeworkers": {
+        "topic": "Politics",
+        "type": "PoliticalPartyMovement",
+        "data": {
+            "political_party": null,
+            "ideology": "socialism",
+            "country": "US"
+        },
+        "full_name": "Emergency Workplace Organizing Committee (EWOC)"
+    },
+    "LunaOi_VN": {
+        "topic": "Politics",
+        "type": "Other",
+        "data": {
+            "topic": "Human Rights"
+        },
+        "full_name": "Luna Oi! 👁 UK/USA Expert/Human Rights Watcher 👁"
+    },
+    "AidaTuma": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": "Hadash-Ta'al",
+            "ideology": null,
+            "country": "IL"
+        },
+        "full_name": "MK Aida Touma-Sliman"
+    },
+    "ofercass": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": "Hadash",
+            "ideology": "communism",
+            "country": "IL"
+        },
+        "full_name": "Ofer Cassif עופר כסיף عوفر كسيف"
+    },
+    "NationalAction": {
+        "topic": "Politics",
+        "type": "PoliticalPartyMovement",
+        "data": {
+            "political_party": null,
+            "ideology": "social democracy",
+            "country": "US"
+        },
+        "full_name": "NationalActionNet"
+    },
+    "geo3550": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Labor Union"
+        },
+        "full_name": "Grad Employees' Org UMich"
+    },
+    "AFTunion": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Union/Organization for Education, Healthcare, and Public Services"
+        },
+        "full_name": "AFT"
+    },
+    "LincolnBrigade": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "History, Activism, Human Rights"
+        },
+        "full_name": "ALBA"
+    },
+    "lucianasantos": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "BR"
+        },
+        "full_name": "Luciana Santos"
+    },
+    "pcdob_oficial": {
+        "topic": "Politics",
+        "type": "PoliticalPartyMovement",
+        "data": {
+            "political_party": null,
+            "ideology": "socialism",
+            "country": "BR"
+        },
+        "full_name": "PCdoB 🇧🇷"
+    },
+    "DiazCanelB": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": "Partido Comunista de Cuba",
+            "ideology": "communism",
+            "country": "CU"
+        },
+        "full_name": "Miguel Díaz-Canel Bermúdez"
+    },
+    "TheRealNews": {
+        "topic": "Politics",
+        "type": "JournalistNews",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "US"
+        },
+        "full_name": "The Real News"
+    },
+    "JudithLeBlanc": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Advocacy and Indigenous Rights"
+        },
+        "full_name": "Judith LeBlanc"
+    },
+    "NatUrbanLeague": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Civil Rights Advocacy"
+        },
+        "full_name": "National Urban League"
+    },
+    "CWAUnion": {
+        "topic": "Politics",
+        "type": "PoliticalPartyMovement",
+        "data": {
+            "political_party": null,
+            "ideology": "social democracy",
+            "country": "US"
+        },
+        "full_name": "CWA"
+    },
+    "MineWorkers": {
+        "topic": "Politics",
+        "type": "PoliticalPartyMovement",
+        "data": {
+            "political_party": null,
+            "ideology": "labor movement",
+            "country": "US"
+        },
+        "full_name": "United Mine Workers"
+    },
+    "4EdJustice": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Activism and Social Justice"
+        },
+        "full_name": "Alliance for Educational Justice"
+    },
+    "inthesetimesmag": {
+        "topic": "Politics",
+        "type": "JournalistNews",
+        "data": {
+            "political_party": null,
+            "ideology": "socialism",
+            "country": "US"
+        },
+        "full_name": "In These Times"
+    },
+    "NLGnews": {
+        "topic": "Politics",
+        "type": "PoliticalPartyMovement",
+        "data": {
+            "political_party": null,
+            "ideology": "socialism",
+            "country": "US"
+        },
+        "full_name": "National Lawyers Guild"
+    },
+    "cpimspeak": {
+        "topic": "Politics",
+        "type": "PoliticalPartyMovement",
+        "data": {
+            "political_party": null,
+            "ideology": "communism",
+            "country": "IN"
+        },
+        "full_name": "CPI (M)"
+    },
+    "NationalNurses": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Nursing Union"
+        },
+        "full_name": "NationalNursesUnited"
+    },
+    "SchomburgCenter": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Cultural Institution"
+        },
+        "full_name": "SchomburgCenter"
+    },
+    "WorkingAmerica": {
+        "topic": "Politics",
+        "type": "PoliticalPartyMovement",
+        "data": {
+            "political_party": null,
+            "ideology": "social democracy",
+            "country": "US"
+        },
+        "full_name": "Working America"
+    },
+    "domesticworkers": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Labor Rights Organization"
+        },
+        "full_name": "Domestic Workers"
+    },
+    "labornotes": {
+        "topic": "Politics",
+        "type": "JournalistNews",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "US"
+        },
+        "full_name": "Labor Notes"
+    },
+    "unitehere": {
+        "topic": "Politics",
+        "type": "PoliticalPartyMovement",
+        "data": {
+            "political_party": null,
+            "ideology": "social democracy",
+            "country": "US"
+        },
+        "full_name": "UNITE HERE"
+    },
+    "ifcop4p": {
+        "topic": "Politics",
+        "type": "PoliticalPartyMovement",
+        "data": {
+            "political_party": null,
+            "ideology": "social justice",
+            "country": "US"
+        },
+        "full_name": "IFCO/PastorsforPeace"
+    },
+    "OurRevolution": {
+        "topic": "Politics",
+        "type": "PoliticalPartyMovement",
+        "data": {
+            "political_party": null,
+            "ideology": "progressivism",
+            "country": "US"
+        },
+        "full_name": "Our Revolution"
+    },
+    "Teamsters": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Labor Union"
+        },
+        "full_name": "Teamsters"
+    },
+    "steelworkers": {
+        "topic": "Politics",
+        "type": "PoliticalPartyMovement",
+        "data": {
+            "political_party": null,
+            "ideology": "social democracy",
+            "country": "US"
+        },
+        "full_name": "United Steelworkers #EverybodysUnion"
+    },
+    "PCdeChile": {
+        "topic": "Politics",
+        "type": "PoliticalPartyMovement",
+        "data": {
+            "political_party": null,
+            "ideology": "communism",
+            "country": "CL"
+        },
+        "full_name": "Partido Comunista de Chile"
+    },
+    "TPS_Alliance": {
+        "topic": "Politics",
+        "type": "PoliticalPartyMovement",
+        "data": {
+            "political_party": null,
+            "ideology": "progressivism",
+            "country": "US"
+        },
+        "full_name": "Nat’l TPS Alliance"
+    },
+    "mike_p_johnson": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": "Republican",
+            "ideology": null,
+            "country": "US"
+        },
+        "full_name": "Mike Johnson"
+    },
+    "astralkid22": {
+        "topic": "Music",
+        "type": "Author",
+        "data": {
+            "genre": "Hip Hop/Rap",
+            "country": "SK"
+        },
+        "full_name": "astralkid22🇪🇺"
+    },
+    "BranislavRapac": {
+        "topic": "Sport",
+        "type": "Athlete",
+        "data": {
+            "type_of_sport": "Ice Hockey",
+            "club": "HK Spišská Nová Ves",
+            "nationality": "SK"
+        },
+        "full_name": "Branislav Rapac"
+    },
+    "rayferraro21": {
+        "topic": "Sport",
+        "type": "Athlete",
+        "data": {
+            "type_of_sport": "Hockey",
+            "club": null,
+            "nationality": null
+        },
+        "full_name": "Ray Ferraro"
+    },
+    "MatoDeraj": {
+        "topic": "Sport",
+        "type": "JournalistNews",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "SK"
+        },
+        "full_name": "Matej Deraj"
+    },
+    "vretenicka": {
+        "topic": "Sport",
+        "type": "JournalistNews",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "SK"
+        },
+        "full_name": "Peter Vretenička"
+    },
+    "MarioNawfal": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Entrepreneurship and Investment"
+        },
+        "full_name": "Mario Nawfal"
+    },
+    "robin_j_brooks": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Economics"
+        },
+        "full_name": "Robin Brooks"
+    },
+    "MikeBenzCyber": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Cybersecurity and Information Policy"
+        },
+        "full_name": "Mike Benz"
+    },
+    "RobertKennedyJr": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "US"
+        },
+        "full_name": "Robert F. Kennedy Jr"
+    },
+    "ClownWorld_": {
+        "topic": "Politics",
+        "type": "JournalistNews",
+        "data": {
+            "political_party": null,
+            "ideology": "conservatism",
+            "country": "US"
+        },
+        "full_name": "Clown World ™ 🤡"
+    },
+    "Project_Veritas": {
+        "topic": "Politics",
+        "type": "JournalistNews",
+        "data": {
+            "political_party": null,
+            "ideology": "conservatism",
+            "country": "US"
+        },
+        "full_name": "Project Veritas"
+    },
+    "CSU": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "University"
+        },
+        "full_name": "CSU"
+    },
+    "jeremycorbyn": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": "socialism",
+            "country": "GB"
+        },
+        "full_name": "Jeremy Corbyn"
+    },
+    "JStredula": {
+        "topic": "Politics",
+        "type": "Other",
+        "data": {
+            "topic": "Trade Union Activist"
+        },
+        "full_name": "Josef Středula"
+    },
+    "SOCDEM_cz": {
+        "topic": "Politics",
+        "type": "PoliticalPartyMovement",
+        "data": {
+            "political_party": null,
+            "ideology": "social democracy",
+            "country": "CZ"
+        },
+        "full_name": "Sociální demokracie"
+    },
+    "SPOE_at": {
+        "topic": "Politics",
+        "type": "Political Party Movement",
+        "data": {
+            "political_party": null,
+            "ideology": "social democracy",
+            "country": "AT"
+        },
+        "full_name": "SPÖ"
+    },
+    "dieLinke": {
+        "topic": "Politics",
+        "type": "PoliticalPartyMovement",
+        "data": {
+            "political_party": null,
+            "ideology": "socialism",
+            "country": "DEU"
+        },
+        "full_name": "Die Linke"
+    },
+    "spdde": {
+        "topic": "Politics",
+        "type": "PoliticalPartyMovement",
+        "data": {
+            "political_party": null,
+            "ideology": "social democracy",
+            "country": "DE"
+        },
+        "full_name": "SPD Parteivorstand 🇪🇺"
+    },
+    "UKLabour": {
+        "topic": "Politics",
+        "type": "PoliticalPartyMovement",
+        "data": {
+            "political_party": null,
+            "ideology": "social democracy",
+            "country": "GB"
+        },
+        "full_name": "The Labour Party"
+    },
+    "SsethTzeentach": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Creator with an unknown or unspecified topic, potentially related to different online content."
+        },
+        "full_name": "Sseth"
+    },
+    "vgdunkey": {
+        "topic": "Entertainment",
+        "type": "Entertainment",
+        "data": {
+            "industry": "gaming",
+            "notable_work": null
+        },
+        "full_name": "dunkey"
+    },
+    "JonTronShow": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Content Creation"
+        },
+        "full_name": "JonTron"
+    },
+    "KHaring75": {
+        "topic": "Politics",
+        "type": "JournalistNews",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "CZ"
+        },
+        "full_name": "Karel Häring"
+    },
+    "JaromirBosak": {
+        "topic": "Politics",
+        "type": "Journalist/News",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "CZ"
+        },
+        "full_name": "Jaromír Bosák"
+    },
+    "JaroslavTvrdik": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "CZ"
+        },
+        "full_name": "Jaroslav Tvrdik"
+    },
+    "sportCT": {
+        "topic": "Sport",
+        "type": "JournalistNews",
+        "data": {
+            "country": "CZ",
+            "field": "sport"
+        },
+        "full_name": "ČT sport"
+    },
+    "DenikSport": {
+        "topic": "Sport",
+        "type": "JournalistNews",
+        "data": {
+            "country": "CZ",
+            "field": "sport"
+        },
+        "full_name": "Deník Sport"
+    },
+    "chanceliga": {
+        "topic": "Sport",
+        "type": "SportFanpage",
+        "data": {
+            "sport": "Football"
+        },
+        "full_name": "Chance Liga"
+    },
+    "bohemians1905": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "CZ"
+        },
+        "full_name": "Bohemians Praha 1905"
+    },
+    "fcbanikostrava": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "CZ"
+        },
+        "full_name": "FC Baník Ostrava"
+    },
+    "Posledniskaut": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Commentator"
+        },
+        "full_name": "Poslední skaut™"
+    },
+    "PocketSandThrwr": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Anarchism"
+        },
+        "full_name": "Rusty"
+    },
+    "f95": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "DE"
+        },
+        "full_name": "Fortuna Düsseldorf"
+    },
+    "fcstpauli": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "DE"
+        },
+        "full_name": "FC St. Pauli"
+    },
+    "VfB": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "DE"
+        },
+        "full_name": "VfB Stuttgart"
+    },
+    "FCSlovanLiberec": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "CZ"
+        },
+        "full_name": "FC Slovan Liberec"
+    },
+    "michalhrdlicka": {
+        "topic": "Sport",
+        "type": "JournalistNews",
+        "data": {
+            "country": "CZ",
+            "field": "Tennis, Football"
+        },
+        "full_name": "Michal Hrdlička"
+    },
+    "PetrCech": {
+        "topic": "Sport",
+        "type": "Athlete",
+        "data": {
+            "type_of_sport": "Football",
+            "club": null,
+            "nationality": "CZ"
+        },
+        "full_name": "Petr Cech"
+    },
+    "fortunaligazen": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "CZ"
+        },
+        "full_name": "FORTUNA=LIGA"
+    },
+    "JanKaliba": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "country": "CZ",
+            "field": "Climate"
+        },
+        "full_name": "Jan Kaliba"
+    },
+    "jbartos66": {
+        "topic": "Sport",
+        "type": "JournalistNews",
+        "data": {
+            "country": "CZ",
+            "field": "Football"
+        },
+        "full_name": "Jonáš Bartoš"
+    },
+    "premierleague": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "GB"
+        },
+        "full_name": "Premier League"
+    },
+    "david_nehoda": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Unknown"
+        },
+        "full_name": "David Nehoda"
+    },
+    "NeumannBob": {
+        "topic": "Sport",
+        "type": "JournalistNews",
+        "data": {
+            "country": "CZ",
+            "field": "Football"
+        },
+        "full_name": "Neumann Robert"
+    },
+    "BarboraReichova": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Photographer"
+        },
+        "full_name": "Barbora Reichova"
+    },
+    "SFilipek": {
+        "topic": "Sport",
+        "type": "JournalistNews",
+        "data": {
+            "country": "CZ",
+            "field": "Sport"
+        },
+        "full_name": "Štěpán Filípek"
+    },
+    "zdenek_janda": {
+        "topic": "Sport",
+        "type": "JournalistNews",
+        "data": {
+            "country": "CZ",
+            "field": "Hockey"
+        },
+        "full_name": "Zdenek Janda"
+    },
+    "FKJablonec": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "CZ"
+        },
+        "full_name": "FK Jablonec"
+    },
+    "ANenadal": {
+        "topic": "Sport",
+        "type": "Journalist/News",
+        "data": {
+            "country": "CZ",
+            "field": "Basketball"
+        },
+        "full_name": "Adam Nenadál"
+    },
+    "KohyCZ": {
+        "topic": "Sport",
+        "type": "JournalistNews",
+        "data": {
+            "country": "CZ",
+            "field": "Ice Hockey"
+        },
+        "full_name": "Tomáš Kučera"
+    },
+    "kalous37": {
+        "topic": "Sport",
+        "type": "JournalistNews",
+        "data": {
+            "country": "CZ",
+            "field": "Football"
+        },
+        "full_name": "David Kalous 🇨🇿🇪🇺"
+    },
+    "EuroFotbal": {
+        "topic": "Sport",
+        "type": "JournalistNews",
+        "data": {
+            "country": "CZ",
+            "field": "Football"
+        },
+        "full_name": "Eurofotbal.cz"
+    },
+    "TomekLukas": {
+        "topic": "Sport",
+        "type": "JournalistNews",
+        "data": {
+            "country": "CZ",
+            "field": "Sport"
+        },
+        "full_name": "Lukas Tomek"
+    },
+    "Pupik33": {
+        "topic": "Sport",
+        "type": "Athlete",
+        "data": {
+            "type_of_sport": "Football",
+            "club": null,
+            "nationality": "CZ"
+        },
+        "full_name": "Daniel Pudil 36"
+    },
+    "jakub_konecny": {
+        "topic": "Sport",
+        "type": "Other",
+        "data": {
+            "topic": "Sports analytics and scouting"
+        },
+        "full_name": "Jakub Konečný"
+    },
+    "niklovka": {
+        "topic": "Sport",
+        "type": "JournalistNews",
+        "data": {
+            "country": "CZ",
+            "field": "Sport"
+        },
+        "full_name": "Jana Niklová"
+    },
+    "Conf_League": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "UE"
+        },
+        "full_name": "UEFA Conference League"
+    },
+    "DAC_1904": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "SK"
+        },
+        "full_name": "DAC 1904"
+    },
+    "WislaKrakowSA": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "PL"
+        },
+        "full_name": "Wisła Kraków"
+    },
+    "FK_Sarajevo": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "BA"
+        },
+        "full_name": "FK Sarajevo"
+    },
+    "Fenerbahce_EN": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "TR"
+        },
+        "full_name": "Fenerbahçe English"
+    },
+    "FCNordsjaelland": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "DK"
+        },
+        "full_name": "FC Nordsjælland 🐯"
+    },
+    "UEFAMensYouth": {
+        "topic": "Sport",
+        "type": "SportFanpage",
+        "data": {
+            "sport": "Football"
+        },
+        "full_name": "UEFA Youth League"
+    },
+    "slavia_eng": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "CZ"
+        },
+        "full_name": "SK Slavia Prague EN"
+    },
+    "LFC": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "GB"
+        },
+        "full_name": "Liverpool FC"
+    },
+    "realmadrid": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "ES"
+        },
+        "full_name": "Real Madrid C.F."
+    },
+    "FCBarcelona": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "ES"
+        },
+        "full_name": "FC Barcelona"
+    },
+    "ManUtd": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "GB"
+        },
+        "full_name": "Manchester United"
+    },
+    "ACSparta_EN": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "CZ"
+        },
+        "full_name": "AC Sparta Prague"
+    },
+    "fcviktoria_en": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "CZ"
+        },
+        "full_name": "FC Viktoria Plzeň 🇬🇧"
+    },
+    "Trabzonspor": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "TR"
+        },
+        "full_name": "Trabzonspor"
+    },
+    "footballzlin": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "CZ"
+        },
+        "full_name": "FC Zlín"
+    },
+    "RapidFC1923": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "RO"
+        },
+        "full_name": "FC Rapid 1923"
+    },
+    "FCZoryaOfficial": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "UA"
+        },
+        "full_name": "FC Zorya Luhansk"
+    },
+    "zaglebie_eu": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "PL"
+        },
+        "full_name": "Zagłębie Sosnowiec"
+    },
+    "RigaFC_Official": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "LV"
+        },
+        "full_name": "Riga FC"
+    },
+    "_GKSKatowice_": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "PL"
+        },
+        "full_name": "GKS Katowice"
+    },
+    "GKS_JASTRZEBIE": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "PL"
+        },
+        "full_name": "GKS Jastrzębie"
+    },
+    "fcdynamo": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "RU"
+        },
+        "full_name": "ФК «Динамо» Москва"
+    },
+    "RadnickiNis": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "RS"
+        },
+        "full_name": "FK Radnički Niš"
+    },
+    "ChojniczankaMKS": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "PL"
+        },
+        "full_name": "Chojniczanka"
+    },
+    "PogonSzczecin": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "PL"
+        },
+        "full_name": "Pogoń Szczecin"
+    },
+    "ServetteFC": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "CH"
+        },
+        "full_name": "Servette FC"
+    },
+    "SCRAltach": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "AT"
+        },
+        "full_name": "SCR Altach"
+    },
+    "FKPartizanBG": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "RS"
+        },
+        "full_name": "FK Partizan"
+    },
+    "Slasknet": {
+        "topic": "Sport",
+        "type": "JournalistNews",
+        "data": {
+            "country": "PL",
+            "field": "Football"
+        },
+        "full_name": "Śląsknet"
+    },
+    "SlaskWroclawPl": {
+        "topic": "Sport",
+        "type": "Club Team",
+        "data": {
+            "sport_type": "Football",
+            "country": "PL"
+        },
+        "full_name": "Śląsk Wrocław"
+    },
+    "Jagiellonia1920": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "PL"
+        },
+        "full_name": "Jagiellonia Białystok"
+    },
+    "1_FCS": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "CZ"
+        },
+        "full_name": "1.FC Sʟᴏᴠᴀ́ᴄᴋᴏ"
+    },
+    "FK_Teplice": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "CZ"
+        },
+        "full_name": "FK Teplice"
+    },
+    "sfcopava": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "CZ"
+        },
+        "full_name": "Slezský FC Opava"
+    },
+    "fkmladaboleslav": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "CZ"
+        },
+        "full_name": "FK Mladá Boleslav"
+    },
+    "FCUnitedMcr": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "GB"
+        },
+        "full_name": "FC United of Manchester 🟥⬜⬛"
+    },
+    "mcuban": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Business"
+        },
+        "full_name": "Mark Cuban"
+    },
+    "bwenews": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Cryptocurrency News"
+        },
+        "full_name": "方程式新闻 BWEnews 🏎️"
+    },
+    "ajammar": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "AE"
+        },
+        "full_name": "عمار بن حميد النعيمي"
+    },
+    "DubaiExcellence": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Government Excellence in Dubai"
+        },
+        "full_name": "دبي للتميز الحكومي"
+    },
+    "FTMidEastAfrica": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Middle East and Africa News"
+        },
+        "full_name": "Middle East & Africa"
+    },
+    "mohapuae": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Health"
+        },
+        "full_name": "وزارة الصحة ووقاية المجتمع - MOHAP UAE"
+    },
+    "dubaidutyfree1": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Retail"
+        },
+        "full_name": "dubai duty free"
+    },
+    "WSJ": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "country": "US",
+            "field": null
+        },
+        "full_name": "The Wall Street Journal"
+    },
+    "wef": {
+        "topic": "Politics",
+        "type": "Other",
+        "data": {
+            "topic": "International organization"
+        },
+        "full_name": "World Economic Forum"
+    },
+    "CNN": {
+        "topic": "Politics",
+        "type": "JournalistNews",
+        "data": {
+            "country": "US",
+            "field": null
+        },
+        "full_name": "CNN"
+    },
+    "BBCWorld": {
+        "topic": "Politics",
+        "type": "JournalistNews",
+        "data": {
+            "country": "GB",
+            "field": null
+        },
+        "full_name": "BBC News (World)"
+    },
+    "DubaiAirshow": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Aviation"
+        },
+        "full_name": "Dubai Airshow"
+    },
+    "DubaiPressClub": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "country": "AE",
+            "field": null
+        },
+        "full_name": "نادي دبي للصحافة"
+    },
+    "DHA_Dubai": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Health Authority"
+        },
+        "full_name": "هيئة الصحة بدبي"
+    },
+    "DubaiPP": {
+        "topic": "Politics",
+        "type": "PoliticalPartyMovement",
+        "data": {
+            "political_party": null,
+            "ideology": "legal institution",
+            "country": "AE"
+        },
+        "full_name": "نيابة دبي"
+    },
+    "SamadubaiTV": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Media and Broadcasting"
+        },
+        "full_name": "قناة سما دبي"
+    },
+    "DubaiCares": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Philanthropy"
+        },
+        "full_name": "Dubai Cares"
+    },
+    "ZayedBookAward": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Cultural Award"
+        },
+        "full_name": "Zayed Book Award"
+    },
+    "MediaAward": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Awards"
+        },
+        "full_name": "Majid Media Awards"
+    },
+    "UAEAid": {
+        "topic": "Politics",
+        "type": "Other",
+        "data": {
+            "topic": "Humanitarian aid"
+        },
+        "full_name": "UAEAid"
+    },
+    "noordubai": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Charity/Philanthropy"
+        },
+        "full_name": "Noor Dubai Foundation"
+    },
+    "smccudubai": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Cultural Understanding"
+        },
+        "full_name": "SMCCU Dubai"
+    },
+    "UNICEFinArabic": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Humanitarian Organization"
+        },
+        "full_name": "منظمة اليونيسف"
+    },
+    "CDA_Dubai": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Social sector and sustainable development"
+        },
+        "full_name": "CDA Dubai"
+    },
+    "Dxb_Events": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Tourism and Events"
+        },
+        "full_name": "D E P E"
+    },
+    "tdrauae": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "telecommunications regulation"
+        },
+        "full_name": "تدرا 🇦🇪 TDRA"
+    },
+    "DEWA_Women": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Women's Empowerment"
+        },
+        "full_name": "اللجنة النسائية"
+    },
+    "UAEEmbassyUS": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Diplomacy"
+        },
+        "full_name": "UAE Embassy US"
+    },
+    "HealthcareCity": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Healthcare and Wellness"
+        },
+        "full_name": "DHCC"
+    },
+    "HCT_UAE": {
+        "topic": "Other",
+        "type": "Education",
+        "data": {
+            "specialization": "STEM, humanities, business",
+            "institution": "Higher Colleges of Technology"
+        },
+        "full_name": "Higher Colleges of Technology"
+    },
+    "Zayed_U": {
+        "topic": "Education",
+        "type": "Education",
+        "data": {
+            "specialization": "STEM",
+            "institution": "جامعة زايد"
+        },
+        "full_name": "جامعة زايد"
+    },
+    "SKGEP": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Government Excellence Program"
+        },
+        "full_name": "SKGEP"
+    },
+    "WEFatUAE": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Global Summit Event"
+        },
+        "full_name": "WEF UAE"
+    },
+    "TCA_AbuDhabi": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Tourism and Culture Authority"
+        },
+        "full_name": "ADACH"
+    },
+    "UAEICP": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Identity, Citizenship, Customs & Port Security"
+        },
+        "full_name": "Identity, Citizenship, Customs & Port Security UAE"
+    },
+    "EmiratesTrans": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Transportation Services"
+        },
+        "full_name": "Emirates Transport"
+    },
+    "uaedgov": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Digital Government"
+        },
+        "full_name": "الحكومة الرقمية لدولة الامارات"
+    },
+    "DFWAC": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Supports abused women & children"
+        },
+        "full_name": "dfwac"
+    },
+    "AwqafUAE": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Islamic affairs and endowments"
+        },
+        "full_name": "الشؤون الإسلامية والأوقاف والزكاة -الإمارات"
+    },
+    "MOFUAE": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "government, finance"
+        },
+        "full_name": "وزارة المالية | الإمارات"
+    },
+    "JumeirahET": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Hospitality"
+        },
+        "full_name": "Jumeirah Emirates Towers"
+    },
+    "dubaifilm": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Film Festival"
+        },
+        "full_name": "Dubai International Film Festival"
+    },
+    "HazzaBinZayed": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "ARE"
+        },
+        "full_name": "هزاع بن زايد"
+    },
+    "TECofDubai": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Executive Council of Dubai"
+        },
+        "full_name": "المجلس التنفيذي"
+    },
+    "mbrlae": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Library"
+        },
+        "full_name": "Mohammed Bin Rashid Library"
+    },
+    "UAENewsArabic": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "country": "AE",
+            "field": null
+        },
+        "full_name": "أخبار الإمارات"
+    },
+    "rta_dubai": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Public Infrastructure"
+        },
+        "full_name": "RTA"
+    },
+    "UAENews": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Aggregated news from UAE"
+        },
+        "full_name": "UAE News"
+    },
+    "sheikhmansoor": {
+        "topic": "Sport",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "AE"
+        },
+        "full_name": "Mansoor bin Mohammed"
+    },
+    "AhmedMohammed": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "ARE"
+        },
+        "full_name": "Ahmed bin Mohammed"
+    },
+    "DiamondandSilk": {
+        "topic": "Politics",
+        "type": "Other",
+        "data": {
+            "topic": "Political commentary and media"
+        },
+        "full_name": "Diamond and Silk®"
+    },
+    "seanhannity": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "country": "US",
+            "field": null
+        },
+        "full_name": "Sean Hannity 🇺🇸"
+    },
+    "IvankaTrump": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": "Republican",
+            "ideology": "conservatism",
+            "country": "US"
+        },
+        "full_name": "Ivanka Trump"
+    },
+    "IngrahamAngle": {
+        "topic": "Politics",
+        "type": "JournalistNews",
+        "data": {
+            "country": "US",
+            "field": "conservatism"
+        },
+        "full_name": "Laura Ingraham"
+    },
+    "JudgeJeanine": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "US"
+        },
+        "full_name": "Jeanine Pirro"
+    },
+    "kimguilfoyle": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Author, Host"
+        },
+        "full_name": "Kimberly Guilfoyle"
+    },
+    "EricTrump": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": "Republican Party",
+            "ideology": "conservatism",
+            "country": "US"
+        },
+        "full_name": "Eric Trump"
+    },
+    "MELANIATRUMP": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": "Republican Party",
+            "ideology": "conservatism",
+            "country": "US"
+        },
+        "full_name": "MELANIA TRUMP"
+    },
+    "DanScavino": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "US"
+        },
+        "full_name": "Dan Scavino Jr.🇺🇸🦅"
+    },
+    "LouDobbs": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "news/commentary"
+        },
+        "full_name": "Lou Dobbs"
+    },
+    "Mike_Pence": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": "Republican",
+            "ideology": "conservatism",
+            "country": "US"
+        },
+        "full_name": "Mike Pence"
+    },
+    "BillOReilly": {
+        "topic": "Politics",
+        "type": "JournalistNews",
+        "data": {
+            "country": "US",
+            "field": "Conservatism"
+        },
+        "full_name": "Bill O'Reilly"
+    },
+    "TiffanyATrump": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Georgetown Law Student"
+        },
+        "full_name": "Tiffany Ariana Trump"
+    },
+    "KellyannePolls": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "USA"
+        },
+        "full_name": "Kellyanne Conway"
+    },
+    "meremere28": {
+        "topic": "Finance",
+        "type": "Finance",
+        "data": {
+            "sector": "investment",
+            "country": "US"
+        },
+        "full_name": "Meredith ORourke"
+    },
+    "realtrumpcoins1": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Partnership with The Trump Organization"
+        },
+        "full_name": "realtrumpcoins"
+    },
+    "worldlibertyfi": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Whitelist and investment opportunities in the financial sector"
+        },
+        "full_name": "WLFI"
+    },
+    "SpeakerMcCarthy": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "US"
+        },
+        "full_name": "Kevin McCarthy"
+    },
+    "SenMcConnell": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "US"
+        },
+        "full_name": "U.S. Senator Mitch McConnell"
+    },
+    "MarkMeadows": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "US"
+        },
+        "full_name": "Mark Meadows"
+    },
+    "MariaBartiromo": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "country": "US",
+            "field": null
+        },
+        "full_name": "Maria Bartiromo"
+    },
+    "RonnaMcDaniel": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Wife, mother of two"
+        },
+        "full_name": "Ronna McDaniel"
+    },
+    "parscale": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": "Republican",
+            "ideology": "conservatism",
+            "country": "US"
+        },
+        "full_name": "Brad Parscale"
+    },
+    "PressSec45": {
+        "topic": "Politics",
+        "type": "PoliticalPartyMovement",
+        "data": {
+            "political_party": null,
+            "ideology": "conservatism",
+            "country": "US"
+        },
+        "full_name": "Kayleigh McEnany 45 Archived"
+    },
+    "JesseBWatters": {
+        "topic": "Politics",
+        "type": "Journalist/News",
+        "data": {
+            "country": "US",
+            "field": null
+        },
+        "full_name": "Jesse Watters"
+    },
+    "WhiteHouse45": {
+        "topic": "Politics",
+        "type": "Other",
+        "data": {
+            "topic": "Archive of a United States presidential administration"
+        },
+        "full_name": "The White House 45 Archived"
+    },
+    "Scavino45": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Trump Administration Archive"
+        },
+        "full_name": "Dan Scavino Jr. Archived"
+    },
+    "Reince": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "country": "US",
+            "field": null
+        },
+        "full_name": "Reince Priebus"
+    },
+    "RealRomaDowney": {
+        "topic": "Entertainment",
+        "type": "Entertainment",
+        "data": {
+            "industry": "movies",
+            "notable_work": "Touched by an Angel"
+        },
+        "full_name": "Roma Downey"
+    },
+    "TeamTrump": {
+        "topic": "Politics",
+        "type": "PoliticalPartyMovement",
+        "data": {
+            "political_party": null,
+            "ideology": "conservatism",
+            "country": "US"
+        },
+        "full_name": "Team Trump (Text TRUMP to 88022)"
+    },
+    "GeraldoRivera": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Journalism"
+        },
+        "full_name": "Geraldo Rivera"
+    },
+    "ericbolling": {
+        "topic": "Politics",
+        "type": "JournalistNews",
+        "data": {
+            "country": "US",
+            "field": null
+        },
+        "full_name": "🇺🇸 ERIC BOLLING 🇺🇸"
+    },
+    "MarkBurnettTV": {
+        "topic": "Entertainment",
+        "type": "Entertainment",
+        "data": {
+            "industry": "television",
+            "notable_work": null
+        },
+        "full_name": "Mark Burnett"
+    },
+    "garyplayer": {
+        "topic": "Sport",
+        "type": "Athlete",
+        "data": {
+            "type_of_sport": "Golf",
+            "club": null,
+            "nationality": "ZA"
+        },
+        "full_name": "GARY PLAYER"
+    },
+    "VinceMcMahon": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Entertainment/Business"
+        },
+        "full_name": "Vince McMahon"
+    },
+    "TrumpDoral": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Golf",
+            "country": "US"
+        },
+        "full_name": "Trump National Doral Miami"
+    },
+    "Teslarati": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "FutureTech",
+            "notable_company": "Tesla"
+        },
+        "full_name": "TESLARATI"
+    },
+    "TeslaCharging": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "Electric Vehicles",
+            "notable_company": "Tesla"
+        },
+        "full_name": "Tesla Charging"
+    },
+    "woodhaus2": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "automotive design",
+            "notable_company": "Tesla"
+        },
+        "full_name": "Franz von Holzhausen"
+    },
+    "boringcompany": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "Infrastructure",
+            "notable_company": null
+        },
+        "full_name": "The Boring Company"
+    },
+    "MartinViecha": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Tesla-related influence"
+        },
+        "full_name": "Martin Viecha"
+    },
+    "Tesla_Asia": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "sustainable energy",
+            "notable_company": "Tesla"
+        },
+        "full_name": "Tesla Asia"
+    },
+    "cleantechnica": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "clean technology",
+            "notable_company": null
+        },
+        "full_name": "CleanTechnica"
+    },
+    "teslaenergy": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "clean energy",
+            "notable_company": "Tesla"
+        },
+        "full_name": "Tesla Energy"
+    },
+    "baglino": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "Energy",
+            "notable_company": "Tesla"
+        },
+        "full_name": "Drew Baglino"
+    },
+    "sendilpalani": {
+        "topic": "Other",
+        "type": "Finance",
+        "data": {
+            "sector": "investment",
+            "country": "US"
+        },
+        "full_name": "Sendil Palani"
+    },
+    "DonRonnelly": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Merger and Acquisition"
+        },
+        "full_name": "Ryan Donnelly"
+    },
+    "ckuehmann": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "materials engineering",
+            "notable_company": "SpaceX"
+        },
+        "full_name": "Charlie Kuehmann"
+    },
+    "_milankovac_": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "AI",
+            "notable_company": "Tesla"
+        },
+        "full_name": "Milan Kovac"
+    },
+    "r_jegaa": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "AI, IT Infrastructure",
+            "notable_company": "Tesla"
+        },
+        "full_name": "Raj Jegannathan"
+    },
+    "travisraxelrod": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "automotive",
+            "notable_company": "Tesla"
+        },
+        "full_name": "Travis Axelrod"
+    },
+    "mike_megapack": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "biotechnology",
+            "notable_company": "Personalis"
+        },
+        "full_name": "Mike Snyder"
+    },
+    "MdeZegher": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Technology"
+        },
+        "full_name": "Max"
+    },
+    "omead": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "tech and automotive",
+            "notable_company": "Tesla and SpaceX"
+        },
+        "full_name": "Omead Afshar"
+    },
+    "tesla_uk": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "Automotive and Energy",
+            "notable_company": "Tesla"
+        },
+        "full_name": "Tesla UK"
+    },
+    "aelluswamy": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "AI",
+            "notable_company": "Tesla"
+        },
+        "full_name": "Ashok Elluswamy"
+    },
+    "troyrjones": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Unsure, potentially construction"
+        },
+        "full_name": "Troy Jones"
+    },
+    "wmorrill3": {
+        "topic": "Other",
+        "type": "HobbiesFreeTime",
+        "data": {
+            "field": "Adventure Sports",
+            "notable_company": null
+        },
+        "full_name": "Wes"
+    },
+    "larsmoravy": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Taxi & Limousine Commission Service"
+        },
+        "full_name": "Lars"
+    },
+    "tesla_thailand": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "electric cars",
+            "notable_company": "Tesla"
+        },
+        "full_name": "Tesla Thailand"
+    },
+    "Tesla_Taiwan": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "Sustainable Energy",
+            "notable_company": "Tesla"
+        },
+        "full_name": "Tesla Taiwan 臺灣"
+    },
+    "gigafactories": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "manufacturing",
+            "notable_company": "Tesla"
+        },
+        "full_name": "Tesla Manufacturing"
+    },
+    "cybertruck": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Automobile"
+        },
+        "full_name": "Cybertruck"
+    },
+    "TeslaAUNZ": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Sustainable Energy"
+        },
+        "full_name": "Tesla Australia & New Zealand"
+    },
+    "TeslaRecruiting": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "software",
+            "notable_company": "Tesla"
+        },
+        "full_name": "Tesla Recruiting"
+    },
+    "teslamacau": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "sustainable energy",
+            "notable_company": "Tesla"
+        },
+        "full_name": "Tesla Macau 澳門"
+    },
+    "tesla_singapore": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "sustainable energy",
+            "notable_company": "Tesla"
+        },
+        "full_name": "Tesla Singapore"
+    },
+    "teslahongkong": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "sustainable transportation",
+            "notable_company": "Tesla"
+        },
+        "full_name": "Tesla Hong Kong 香港"
+    },
+    "Tesla_Malaysia": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Tesla in Malaysia"
+        },
+        "full_name": "Tesla Malaysia"
+    },
+    "tesla_na": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "sustainable energy",
+            "notable_company": "Tesla"
+        },
+        "full_name": "Tesla North America"
+    },
+    "Tesla_AI": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "robotics",
+            "notable_company": "Tesla"
+        },
+        "full_name": "Tesla AI"
+    },
+    "tomzhu_nz": {
+        "topic": "Other",
+        "type": "ArtAndCulture",
+        "data": {
+            "field": "art",
+            "specification": "historian"
+        },
+        "full_name": "LaoZhu"
+    },
+    "Starlink": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "satellite internet",
+            "notable_company": "SpaceX"
+        },
+        "full_name": "Starlink"
+    },
+    "tesla_korea": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Sustainable Energy"
+        },
+        "full_name": "Tesla Korea"
+    },
+    "Tesla_Megapack": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "energy storage",
+            "notable_company": "Tesla"
+        },
+        "full_name": "Tesla Megapack"
+    },
+    "teslaeurope": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "automotive",
+            "notable_company": "Tesla"
+        },
+        "full_name": "Tesla Europe & Middle East"
+    },
+    "XBusiness": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Business Guidance"
+        },
+        "full_name": "Business"
+    },
+    "Tesla_Optimus": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "robotics",
+            "notable_company": "Tesla"
+        },
+        "full_name": "Tesla Optimus"
+    },
+    "TeslaOwnersUK": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Electric vehicles community"
+        },
+        "full_name": "Tesla Owners UK 🇬🇧"
+    },
+    "teslajapan": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "electric vehicles",
+            "notable_company": null
+        },
+        "full_name": "Tesla Japan"
+    },
+    "karpathy": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "AI",
+            "notable_company": "Tesla"
+        },
+        "full_name": "Andrej Karpathy"
+    },
+    "TeslaOwnersWW": {
+        "topic": "Technology",
+        "type": "Technology",
+        "data": {
+            "field": "sustainable energy",
+            "notable_company": "Tesla"
+        },
+        "full_name": "Tesla Owners Global"
+    },
+    "DMC_Ryan": {
+        "topic": "Other",
+        "type": "Entertainment",
+        "data": {
+            "industry": "gaming",
+            "notable_work": "IGN"
+        },
+        "full_name": "Ryan McCaffrey"
+    },
+    "MKBHD": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "technology media",
+            "notable_company": null
+        },
+        "full_name": "Marques Brownlee"
+    },
+    "Hyperloop": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "Transportation",
+            "notable_company": "SpaceX"
+        },
+        "full_name": "Hyperloop"
+    },
+    "Trump": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Real Estate and Hospitality"
+        },
+        "full_name": "The Trump Organization"
+    },
+    "TrumpGolf": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Golf",
+            "country": "US"
+        },
+        "full_name": "Trump Golf"
+    },
+    "MrsVanessaTrump": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Public Figure"
+        },
+        "full_name": "Ms Vanessa Trump"
+    },
+    "LaraLeaTrump": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": "nationalism",
+            "country": "US"
+        },
+        "full_name": "Lara Trump"
+    },
+    "CLewandowski_": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": "Republican Party",
+            "ideology": "conservatism",
+            "country": "US"
+        },
+        "full_name": "Corey R. Lewandowski"
+    },
+    "KatrinaCampins": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Real Estate and Television"
+        },
+        "full_name": "Katrina Campins"
+    },
+    "foxandfriends": {
+        "topic": "Other",
+        "type": "Entertainment",
+        "data": {
+            "industry": "television",
+            "notable_work": "FOX & Friends"
+        },
+        "full_name": "FOX & Friends"
+    },
+    "TrumpCharlotte": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Golf Club Venue"
+        },
+        "full_name": "Trump Charlotte"
+    },
+    "TrumpLasVegas": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Luxury Hotel"
+        },
+        "full_name": "Trump Las Vegas"
+    },
+    "TrumpChicago": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Building"
+        },
+        "full_name": "Trump Chicago"
+    },
+    "TrumpGolfDC": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "private golf club"
+        },
+        "full_name": "Trump Washington DC"
+    },
+    "TrumpGolfLA": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Golf",
+            "country": "US"
+        },
+        "full_name": "Trump Los Angeles"
+    },
+    "ThomasTrukesitz": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "country": "AT",
+            "field": "Football"
+        },
+        "full_name": "Thomas Trukesitz"
+    },
+    "SkySportAustria": {
+        "topic": "Sport",
+        "type": "JournalistNews",
+        "data": {
+            "country": "AT",
+            "field": "Football"
+        },
+        "full_name": "Sky Sport Austria"
+    },
+    "KernChri": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": "Social Democratic Party of Austria",
+            "ideology": "social democracy",
+            "country": "AT"
+        },
+        "full_name": "Christian Kern"
+    },
+    "oefb1904": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "AT"
+        },
+        "full_name": "ÖFB - oefb.at"
+    },
+    "OtherBundesliga": {
+        "topic": "Sport",
+        "type": "SportFanpage",
+        "data": {
+            "sport": "Football"
+        },
+        "full_name": "The Other Bundesliga"
+    },
+    "Sky_Johannes": {
+        "topic": "Sport",
+        "type": "JournalistNews",
+        "data": {
+            "country": "AT",
+            "field": "Football"
+        },
+        "full_name": "Johannes Brandl"
+    },
+    "PeterFilzmaier": {
+        "topic": "Other",
+        "type": "Education",
+        "data": {
+            "specialization": "Political Communication",
+            "institution": null
+        },
+        "full_name": "Peter Filzmaier"
+    },
+    "RedBullSalzburg": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "AT"
+        },
+        "full_name": "FC Red Bull Salzburg"
+    },
+    "chmelar_dieter": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "country": "AT",
+            "field": null
+        },
+        "full_name": "dieter chmelar"
+    },
+    "SKSturm": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "AT"
+        },
+        "full_name": "SK Sturm Graz"
+    },
+    "ha_pra": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "country": "AT",
+            "field": null
+        },
+        "full_name": "Harald Prantl"
+    },
+    "BgmLudwig": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": "Social Democratic Party (SPÖ)",
+            "ideology": "social democracy",
+            "country": "AUT"
+        },
+        "full_name": "Michael Ludwig"
+    },
+    "Stadt_Wien": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "City Governance"
+        },
+        "full_name": "Stadt Wien"
+    },
+    "WienerSportClub": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "AT"
+        },
+        "full_name": "Wiener Sport-Club"
+    },
+    "ballesterer_fm": {
+        "topic": "Sport",
+        "type": "JournalistNews",
+        "data": {
+            "country": "AT",
+            "field": "Football"
+        },
+        "full_name": "ballesterer.bsky.social"
+    },
+    "MotherwellFC": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "GB"
+        },
+        "full_name": "Motherwell FC"
+    },
+    "MacronSports": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Brand or Company"
+        },
+        "full_name": "Macron"
+    },
+    "FCBfemeni": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "ES"
+        },
+        "full_name": "FC Barcelona Femení"
+    },
+    "rot_weiss_essen": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "DEU"
+        },
+        "full_name": "Rot-Weiss Essen"
+    },
+    "TheyThinkKits": {
+        "topic": "Sport",
+        "type": "Other",
+        "data": {
+            "topic": "Football merchandise show"
+        },
+        "full_name": "They Think Kits All Over"
+    },
+    "ilvesfootball": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "FI"
+        },
+        "full_name": "Ilves Football"
+    },
+    "patsdeutsch": {
+        "topic": "Sport",
+        "type": "SportFanpage",
+        "data": {
+            "sport": "American Football"
+        },
+        "full_name": "Patriots Deutschland"
+    },
+    "LaczyNasPilka": {
+        "topic": "Sport",
+        "type": "SportFanpage",
+        "data": {
+            "sport": "Football"
+        },
+        "full_name": "Łączy nas piłka"
+    },
+    "viennaoffices": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "International Relations"
+        },
+        "full_name": "Internationale Büros"
+    },
+    "benholmes1006": {
+        "topic": "Sport",
+        "type": "Athlete",
+        "data": {
+            "type_of_sport": "American Football",
+            "club": "Vienna Vikings",
+            "nationality": "AT"
+        },
+        "full_name": "Ben Holmes"
+    },
+    "_vienna_info_": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Tourism"
+        },
+        "full_name": "Vienna"
+    },
+    "thorsteinh": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Odds tips platform"
+        },
+        "full_name": "Thorstein H. Helstad"
+    },
+    "SarahZadrazil": {
+        "topic": "Sport",
+        "type": "Athlete",
+        "data": {
+            "type_of_sport": "Football",
+            "club": "Bayern Munich",
+            "nationality": "AT"
+        },
+        "full_name": "Sarah Zadrazil"
+    },
+    "gregwrubell": {
+        "topic": "Sport",
+        "type": "JournalistNews",
+        "data": {
+            "country": "US",
+            "field": "Sport Broadcasting"
+        },
+        "full_name": "Greg Wrubell"
+    },
+    "byusoccer_w": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Soccer",
+            "country": "US"
+        },
+        "full_name": "BYU Women's Soccer"
+    },
+    "DFL_Official": {
+        "topic": "Sport",
+        "type": "Other",
+        "data": {
+            "topic": "Professional Football League Operations"
+        },
+        "full_name": "DFL Deutsche Fußball Liga"
+    },
+    "grazerak": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "football",
+            "country": "AT"
+        },
+        "full_name": "GAK 1902"
+    },
+    "flf_lu": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "LU"
+        },
+        "full_name": "Fédération Luxembourgeoise de Football"
+    },
+    "WSGTIROL": {
+        "topic": "Sport",
+        "type": "ClubTeam",
+        "data": {
+            "sport_type": "Football",
+            "country": "AT"
+        },
+        "full_name": "WSG Tirol"
+    },
+    "TheBabylonBee": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "field": "satire",
+            "notable_company": null
+        },
+        "full_name": "The Babylon Bee"
+    },
+    "dbongino": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": "conservatism",
+            "country": "US"
+        },
+        "full_name": "Dan Bongino"
+    },
+    "lexfridman": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "AI, robotics, software",
+            "notable_company": null
+        },
+        "full_name": "Lex Fridman"
+    },
+    "laurenboebert": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "US"
+        },
+        "full_name": "Lauren Boebert"
+    },
+    "DineshDSouza": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": "conservatism",
+            "country": "US"
+        },
+        "full_name": "Dinesh D'Souza"
+    },
+    "RepMTG": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": "Republican",
+            "ideology": "conservatism",
+            "country": "US"
+        },
+        "full_name": "Rep. Marjorie Taylor Greene🇺🇸"
+    },
+    "benshapiro": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": "conservatism",
+            "country": "US"
+        },
+        "full_name": "Ben Shapiro"
+    },
+    "RandPaul": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": "Republican Party",
+            "ideology": "libertarianism",
+            "country": "US"
+        },
+        "full_name": "Rand Paul"
+    },
+    "tedcruz": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "US"
+        },
+        "full_name": "Ted Cruz"
+    },
+    "mattgaetz": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "US"
+        },
+        "full_name": "Matt Gaetz"
+    },
+    "TulsiGabbard": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "US"
+        },
+        "full_name": "Tulsi Gabbard 🌺"
+    },
+    "realDailyWire": {
+        "topic": "Politics",
+        "type": "JournalistNews",
+        "data": {
+            "country": "US",
+            "field": null
+        },
+        "full_name": "Daily Wire"
+    },
+    "RepBoebert": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "US"
+        },
+        "full_name": "Rep. Lauren Boebert"
+    },
+    "yishan": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Entrepreneurship"
+        },
+        "full_name": "Yishan"
+    },
+    "APompliano": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Investment"
+        },
+        "full_name": "Anthony Pompliano 🌪"
+    },
+    "SecDuffy": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": "Republican",
+            "ideology": null,
+            "country": "US"
+        },
+        "full_name": "Secretary Sean Duffy"
+    },
+    "belce_dogru": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "LinkedIn profile of a professional in AI and technology"
+        },
+        "full_name": "Belce Doğru"
+    },
+    "WilliamShatner": {
+        "topic": "Other",
+        "type": "Entertainment",
+        "data": {
+            "industry": "movies",
+            "notable_work": "Star Trek"
+        },
+        "full_name": "William Shatner"
+    },
+    "Kling_ai": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "AI",
+            "notable_company": null
+        },
+        "full_name": "Kling AI"
+    },
+    "AdamLowisz": {
+        "topic": "Politics",
+        "type": "JournalistNews",
+        "data": {
+            "country": "US",
+            "field": "conservatism"
+        },
+        "full_name": "Adam Lowisz 🇺🇸🇵🇱🇪🇺🇬🇧🇺🇦"
+    },
+    "Diablo": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Gaming"
+        },
+        "full_name": "Diablo"
+    },
+    "BenShapiroShow": {
+        "topic": "Politics",
+        "type": "JournalistNews",
+        "data": {
+            "country": "US",
+            "field": "conservatism"
+        },
+        "full_name": "The Ben Shapiro Show"
+    },
+    "USTradeRep": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Trade and economic policies"
+        },
+        "full_name": "United States Trade Representative"
+    },
+    "Max33Verstappen": {
+        "topic": "Sport",
+        "type": "Athlete",
+        "data": {
+            "type_of_sport": "Formula 1",
+            "club": "Red Bull Racing",
+            "nationality": "NL"
+        },
+        "full_name": "Max Verstappen"
+    },
+    "joel_kaplan": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "US"
+        },
+        "full_name": "Joel Kaplan"
+    },
+    "satofishi": {
+        "topic": "Other",
+        "type": "HobbiesFreeTime",
+        "data": {
+            "field": "travel",
+            "notable_company": null
+        },
+        "full_name": "Chun"
+    },
+    "AsraNomani": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "country": "US",
+            "field": null
+        },
+        "full_name": "Asra Nomani"
+    },
+    "khloekardashian": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Celebrity"
+        },
+        "full_name": "Khloé"
+    },
+    "framonauts": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Space Mission"
+        },
+        "full_name": "fram2"
+    },
+    "Nature": {
+        "topic": "Other",
+        "type": "Nature",
+        "data": {
+            "specification": "Science"
+        },
+        "full_name": "nature"
+    },
+    "SteveWitkoff": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Diplomacy"
+        },
+        "full_name": "Steve Witkoff"
+    },
+    "FDRLST": {
+        "topic": "Politics",
+        "type": "JournalistNews",
+        "data": {
+            "country": "US",
+            "field": "conservatism"
+        },
+        "full_name": "The Federalist"
+    },
+    "astro_jannicke": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Cinematography and Technology"
+        },
+        "full_name": "Jannicke Mikkelsen"
+    },
+    "TeamSchimel": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "US"
+        },
+        "full_name": "Team Schimel"
+    },
+    "LockheedMartin": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "Defense technology",
+            "notable_company": "Lockheed Martin"
+        },
+        "full_name": "Lockheed Martin"
+    },
+    "DCPoliceDept": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Public safety and law enforcement"
+        },
+        "full_name": "DC Police Department"
+    },
+    "FBIDDBongino": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": "conservatism",
+            "country": "US"
+        },
+        "full_name": "Dan Bongino"
+    },
+    "ChuckGrassley": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "US"
+        },
+        "full_name": "Chuck Grassley"
+    },
+    "KariLake": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "US"
+        },
+        "full_name": "Kari Lake"
+    },
+    "SecretaryLCD": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": "Republican Party",
+            "ideology": null,
+            "country": "US"
+        },
+        "full_name": "Secretary Lori Chavez-DeRemer"
+    },
+    "scottmcnealy": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "computer technology",
+            "notable_company": "Sun Microsystems"
+        },
+        "full_name": "Scott McNealy"
+    },
+    "CIA": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Intelligence Agency"
+        },
+        "full_name": "CIA"
+    },
+    "ENERGY": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Government Agency"
+        },
+        "full_name": "U.S. Department of Energy"
+    },
+    "RepChipRoy": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "US"
+        },
+        "full_name": "Rep. Chip Roy Press Office"
+    },
+    "nataliegwinters": {
+        "topic": "Politics",
+        "type": "JournalistNews",
+        "data": {
+            "country": "US",
+            "field": null
+        },
+        "full_name": "Natalie Winters"
+    },
+    "ray4tesla": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Tesla EV fanpage"
+        },
+        "full_name": "Ray"
+    },
+    "EVerastegui": {
+        "topic": "Music",
+        "type": "Author",
+        "data": {
+            "genre": "Latin Pop",
+            "country": "MX"
+        },
+        "full_name": "Eduardo Verástegui"
+    },
+    "DODResponse": {
+        "topic": "Politics",
+        "type": "Other",
+        "data": {
+            "topic": "Military defense"
+        },
+        "full_name": "DOD Rapid Response"
+    },
+    "DeptofDefense": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Government Agency"
+        },
+        "full_name": "Department of Defense 🇺🇸"
+    },
+    "TheCaptainEli": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Soda and Collectibles"
+        },
+        "full_name": "Captain Eli"
+    },
+    "IfindRetards": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Cryptocurrency"
+        },
+        "full_name": "Retard Finder"
+    },
+    "ada_lluch": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Personal musings"
+        },
+        "full_name": "Ada Lluch"
+    },
+    "iliketeslas": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "AI",
+            "notable_company": "Tesla"
+        },
+        "full_name": "i like teslas"
+    },
+    "SenLummis": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "US"
+        },
+        "full_name": "Senator Cynthia Lummis"
+    },
+    "SenMullin": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": "conservatism",
+            "country": "US"
+        },
+        "full_name": "Markwayne Mullin"
+    },
+    "davidsacks47": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "internet technology",
+            "notable_company": "Craft Ventures"
+        },
+        "full_name": "David Sacks"
+    },
+    "FloydMayweather": {
+        "topic": "Sport",
+        "type": "Athlete",
+        "data": {
+            "type_of_sport": "Boxing",
+            "club": null,
+            "nationality": "US"
+        },
+        "full_name": "Floyd Mayweather"
+    },
+    "Eric_Schmitt": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "US"
+        },
+        "full_name": "Eric Schmitt"
+    },
+    "DHSgov": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Homeland Security"
+        },
+        "full_name": "Homeland Security"
+    },
+    "grossmanhannah": {
+        "topic": "Politics",
+        "type": "JournalistNews",
+        "data": {
+            "country": "US",
+            "field": "conservatism"
+        },
+        "full_name": "Hannah Grossman"
+    },
+    "LeVeonBell": {
+        "topic": "Sport",
+        "type": "Athlete",
+        "data": {
+            "type_of_sport": "Football",
+            "club": null,
+            "nationality": "US"
+        },
+        "full_name": "Le'Veon Bell"
+    },
+    "market_a": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": "TOP 09",
+            "ideology": null,
+            "country": "CZ"
+        },
+        "full_name": "Markéta Pekarová Adamová"
+    },
+    "etabery": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "country": "CZ",
+            "field": null
+        },
+        "full_name": "Erik Tabery"
+    },
+    "McFaul": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "RU"
+        },
+        "full_name": "Michael McFaul"
+    },
+    "alexstubb": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "FI"
+        },
+        "full_name": "Alexander Stubb"
+    },
+    "Juraj_Rizman": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": "liberalism",
+            "country": "SK"
+        },
+        "full_name": "Juraj Rizman"
+    },
+    "prezidentpavel": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "CZ"
+        },
+        "full_name": "Petr Pavel"
+    },
+    "MarosSefcovic": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "EU"
+        },
+        "full_name": "Maroš Šefčovič🇪🇺"
+    },
+    "strakovka": {
+        "topic": "Politics",
+        "type": "PoliticalPartyMovement",
+        "data": {
+            "political_party": null,
+            "ideology": "centrism",
+            "country": "CZ"
+        },
+        "full_name": "Úřad vlády ČR"
+    },
+    "eduardheger": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": "Democrats",
+            "ideology": "centrism",
+            "country": "SK"
+        },
+        "full_name": "Eduard Heger"
+    },
+    "mzvcr": {
+        "topic": "Politics",
+        "type": "Other",
+        "data": {
+            "topic": "Ministry of Foreign Affairs"
+        },
+        "full_name": "Ministerstvo zahraničních věcí"
+    },
+    "PremierRP": {
+        "topic": "Politics",
+        "type": "Other",
+        "data": {
+            "topic": "Official profile of the Polish Prime Minister's office"
+        },
+        "full_name": "Kancelaria Premiera"
+    },
+    "Lagarde": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "INT"
+        },
+        "full_name": "Christine Lagarde"
+    },
+    "SwedishRoyalFam": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Royal Family Fanpage"
+        },
+        "full_name": "Swedish Royal Family fan"
+    },
+    "Kronprinsparet": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Royal Family"
+        },
+        "full_name": "Det kongelige hoff"
+    },
+    "ignaziocassis": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "CH"
+        },
+        "full_name": "Ignazio Cassis"
+    },
+    "MorawieckiM": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": "pisorgpl",
+            "ideology": null,
+            "country": "PL"
+        },
+        "full_name": "Mateusz Morawiecki"
+    },
+    "MarinSanna": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": "Social Democratic Party of Finland",
+            "ideology": null,
+            "country": "FI"
+        },
+        "full_name": "Sanna Marin"
+    },
+    "katrinjak": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "IS"
+        },
+        "full_name": "Katrín Jakobsdóttir"
+    },
+    "MichealMartinTD": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": "Fianna Fáil",
+            "ideology": "centrism",
+            "country": "IE"
+        },
+        "full_name": "Micheál Martin"
+    },
+    "jonasgahrstore": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": "Labour Party",
+            "ideology": "social democracy",
+            "country": "NO"
+        },
+        "full_name": "Jonas Gahr Støre"
+    },
+    "OlafScholz": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": "Sozialdemokrat",
+            "ideology": "social democracy",
+            "country": "DEU"
+        },
+        "full_name": "Olaf Scholz"
+    },
+    "karlnehammer": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "country": "AT",
+            "field": null
+        },
+        "full_name": "Karl Nehammer"
+    },
+    "IlvesToomas": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "EE"
+        },
+        "full_name": "toomas ilves, ex-verif"
+    },
+    "Tsihanouskaya": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "BY"
+        },
+        "full_name": "Sviatlana Tsikhanouskaya"
+    },
+    "KensingtonRoyal": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "British Royal Family"
+        },
+        "full_name": "The Prince and Princess of Wales"
+    },
+    "ClarenceHouse": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Royal Residence"
+        },
+        "full_name": "Clarence House"
+    },
+    "algore": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": "Democratic Party",
+            "ideology": "environmentalism",
+            "country": "US"
+        },
+        "full_name": "Al Gore"
+    },
+    "Schwarzenegger": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Entertainment"
+        },
+        "full_name": "Arnold"
+    },
+    "GretaThunberg": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": "environmentalism",
+            "country": "SE"
+        },
+        "full_name": "Greta Thunberg"
+    },
+    "DalaiLama": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Spiritual Leadership"
+        },
+        "full_name": "Dalai Lama"
+    },
+    "drewhinshaw": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "field": "World News",
+            "specification": ""
+        },
+        "full_name": "drew hinshaw"
+    },
+    "edwardlucas": {
+        "topic": "Politics",
+        "type": "JournalistNews",
+        "data": {
+            "country": "GB",
+            "field": null
+        },
+        "full_name": "Edward Lucas"
+    },
+    "khalafroula": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "country": "GB",
+            "field": null
+        },
+        "full_name": "roula khalaf"
+    },
+    "zannymb": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "country": "GB",
+            "field": "politics"
+        },
+        "full_name": "Zanny Minton Beddoes"
+    },
+    "liliebayer": {
+        "topic": "Politics",
+        "type": "JournalistNews",
+        "data": {
+            "country": "AUT",
+            "field": null
+        },
+        "full_name": "Lili Bayer"
+    },
+    "Mikepeeljourno": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "country": "GB",
+            "field": "science"
+        },
+        "full_name": "Michael Peel"
+    },
+    "florianeder": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "country": "DE",
+            "field": "News"
+        },
+        "full_name": "Florian Eder"
+    },
+    "SylvieKauffmann": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "country": "FR",
+            "field": null
+        },
+        "full_name": "Sylvie Kauffmann"
+    },
+    "shaunwalker7": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "country": "GB",
+            "field": null
+        },
+        "full_name": "Shaun Walker"
+    },
+    "tom_nuttall": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "country": "DE",
+            "field": null
+        },
+        "full_name": "Tom Nuttall"
+    },
+    "JamesShotter": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "country": "IL",
+            "field": "politics"
+        },
+        "full_name": "James Shotter"
+    },
+    "catBrahic": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "country": "GB",
+            "field": "environment"
+        },
+        "full_name": "Catherine Brahic"
+    },
+    "OSCE": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Intergovernmental Organization"
+        },
+        "full_name": "OSCE"
+    },
+    "UNFCCC": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Climate Change"
+        },
+        "full_name": "UN Climate Change"
+    },
+    "UNEP": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Environment"
+        },
+        "full_name": "UN Environment Programme"
+    },
+    "MSF": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Humanitarian Organization"
+        },
+        "full_name": "MSF International"
+    },
+    "ICRC": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Humanitarian Mission"
+        },
+        "full_name": "ICRC"
+    },
+    "IPCC_CH": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Climate and Environmental Science"
+        },
+        "full_name": "IPCC"
+    },
+    "kvasinka": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "country": "SK",
+            "field": null
+        },
+        "full_name": "Tomáš Bella"
+    },
+    "PaloMacko": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": "ODS",
+            "ideology": "conservatism",
+            "country": "SK"
+        },
+        "full_name": "Pavel Macko"
+    },
+    "smoet": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "country": "SK",
+            "field": "science"
+        },
+        "full_name": "tomas prokopcak"
+    },
+    "mikusovic": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "country": "SK",
+            "field": null
+        },
+        "full_name": "Dušan Mikušovič"
+    },
+    "martinhojsik": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": "Progresívne Slovensko",
+            "ideology": "progressivism",
+            "country": "SK"
+        },
+        "full_name": "Martin Hojsik"
+    },
+    "matusvallo": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "SK"
+        },
+        "full_name": "Matus Vallo"
+    },
+    "LuciaPlavakova": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "SK"
+        },
+        "full_name": "Lucia Plaváková"
+    },
+    "r_choleva": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": "Progresívne Slovensko",
+            "ideology": null,
+            "country": "SK"
+        },
+        "full_name": "Radovan Choleva"
+    },
+    "jsuchal": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "software",
+            "notable_company": null
+        },
+        "full_name": "Jano Suchal"
+    },
+    "kolkava": {
+        "topic": "Politics",
+        "type": "Education",
+        "data": {
+            "specialization": "political theory",
+            "institution": "Comenius University"
+        },
+        "full_name": "Pavol Hardos 🌻💙💛🏳️‍🌈🏳️‍⚧️🇪🇺"
+    },
+    "BalogovaBeata": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "country": "SK",
+            "field": null
+        },
+        "full_name": "Beata Balogova"
+    },
+    "NigelMBaker1": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "British diplomat and ambassador to Slovakia"
+        },
+        "full_name": "Nigel Baker"
+    },
+    "fule_lukas": {
+        "topic": "Politics",
+        "type": "JournalistNews",
+        "data": {
+            "country": "SK",
+            "field": null
+        },
+        "full_name": "Lukáš Füle"
+    },
+    "daniel_freund": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": "Green",
+            "ideology": "environmentalism",
+            "country": "EU"
+        },
+        "full_name": "Daniel Freund"
+    },
+    "michalhvorecky": {
+        "topic": "Music",
+        "type": "Author",
+        "data": {
+            "genre": "Literature",
+            "country": null
+        },
+        "full_name": "Michal Hvorecky"
+    },
+    "Jakub_Filo": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "country": "SK",
+            "field": "politics, climate"
+        },
+        "full_name": "Jakub Filo"
+    },
+    "RenewEurope": {
+        "topic": "Politics",
+        "type": "Political Party/Movement",
+        "data": {
+            "political_party": null,
+            "ideology": "liberalism",
+            "country": "EU"
+        },
+        "full_name": "Renew Europe"
+    },
+    "VeraJourova": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "CZ"
+        },
+        "full_name": "Věra Jourová"
+    },
+    "oukrajine": {
+        "topic": "Politics",
+        "type": "JournalistNews",
+        "data": {
+            "country": "UA",
+            "field": null
+        },
+        "full_name": "Aktuálne o Ukrajine"
+    },
+    "ZelenskyyUa": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "UA"
+        },
+        "full_name": "Volodymyr Zelenskyy / Володимир Зеленський"
+    },
+    "StormNewsNow": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "country": "US",
+            "field": "Weather"
+        },
+        "full_name": "Storm News Now"
+    },
+    "LudoOdor": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": "Progresívne Slovensko",
+            "ideology": "liberalism",
+            "country": "SK"
+        },
+        "full_name": "Ludovit Odor"
+    },
+    "MeTooEP": {
+        "topic": "Politics",
+        "type": "PoliticalPartyMovement",
+        "data": {
+            "political_party": null,
+            "ideology": "progressivism",
+            "country": "BE"
+        },
+        "full_name": "MeTooEP"
+    },
+    "EddyWax": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "country": "BE",
+            "field": "conservatism"
+        },
+        "full_name": "Eddy Wax ✍️"
+    },
+    "europarlAV": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Audiovisual services"
+        },
+        "full_name": "European Parliament Audiovisual Service"
+    },
+    "MarkHertling": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Military"
+        },
+        "full_name": "Mark Hertling"
+    },
+    "JEF_Europe": {
+        "topic": "Politics",
+        "type": "PoliticalPartyMovement",
+        "data": {
+            "political_party": null,
+            "ideology": "progressivism",
+            "country": "EU"
+        },
+        "full_name": "Young European Federalists"
+    },
+    "TimothyDSnyder": {
+        "topic": "Other",
+        "type": "Education",
+        "data": {
+            "specialization": "humanities",
+            "institution": "Yale University"
+        },
+        "full_name": "Timothy Snyder"
+    },
+    "StefanishynaO": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "UA"
+        },
+        "full_name": "Olga Stefanishyna"
+    },
+    "irinaborogan": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Investigative Journalism"
+        },
+        "full_name": "Irina Borogan"
+    },
+    "lionelbarber": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "country": "GB",
+            "field": null
+        },
+        "full_name": "Lionel Barber"
+    },
+    "AsamiTerajima": {
+        "topic": "Politics",
+        "type": "JournalistNews",
+        "data": {
+            "country": "UA",
+            "field": "military issues"
+        },
+        "full_name": "Asami Terajima"
+    },
+    "christogrozev": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "country": "DE",
+            "field": "investigative journalism"
+        },
+        "full_name": "ChristoGrozev@bsky.social"
+    },
+    "KyivIndependent": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "country": "UA",
+            "field": null
+        },
+        "full_name": "The Kyiv Independent"
+    },
+    "EP_President": {
+        "topic": "Politics",
+        "type": "Politician",
+        "data": {
+            "political_party": null,
+            "ideology": null,
+            "country": "MT"
+        },
+        "full_name": "Roberta Metsola"
+    },
+    "ippfen": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Sexual and reproductive health rights"
+        },
+        "full_name": "IPPF European Network"
+    },
+    "EUSec_Defence": {
+        "topic": "Politics",
+        "type": "PoliticalPartyMovement",
+        "data": {
+            "political_party": null,
+            "ideology": "authoritarianism",
+            "country": "EU"
+        },
+        "full_name": "EUSecurityDefence"
+    },
+    "eu_eeas": {
+        "topic": "Politics",
+        "type": "Other",
+        "data": {
+            "topic": "European Union Diplomacy"
+        },
+        "full_name": "European External Action Service - EEAS 🇪🇺"
+    },
+    "EULawAndPolicy": {
+        "topic": "Other",
+        "type": "Education",
+        "data": {
+            "specialization": "Law",
+            "institution": "University College Dublin"
+        },
+        "full_name": "EU Law & Policy now @eulawandpolicy.bsky.social"
+    },
+    "TadeuszGiczan": {
+        "topic": "Politics",
+        "type": "JournalistNews",
+        "data": {
+            "country": "BY",
+            "field": "null"
+        },
+        "full_name": "Tadeusz Giczan"
+    },
+    "MeabhMcMahon": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "country": "EU",
+            "field": "News"
+        },
+        "full_name": "Méabh Mc Mahon"
+    },
+    "chatignoux": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "country": "FR",
+            "field": null
+        },
+        "full_name": "catherine chatignoux"
+    },
+    "markduursma": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "country": "NL",
+            "field": "Central and Eastern Europe, Balkans, Caucasus, Russia"
+        },
+        "full_name": "Mark Duursma"
+    },
+    "EUCivicForum": {
+        "topic": "Politics",
+        "type": "PoliticalPartyMovement",
+        "data": {
+            "political_party": null,
+            "ideology": "social democracy",
+            "country": "EU"
+        },
+        "full_name": "European Civic Forum @eucivicforum.bsky.social"
+    },
+    "SidlovaTereza": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "country": "CZ",
+            "field": null
+        },
+        "full_name": "Tereza Šídlová"
+    },
+    "isabelleory": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "country": "BE",
+            "field": null
+        },
+        "full_name": "isabelle ory"
+    },
+    "KiraTaylor15": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "country": "BE",
+            "field": "environment"
+        },
+        "full_name": "Kira Taylor"
+    },
+    "NickFT": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Author"
+        },
+        "full_name": "Nick Thorpe"
+    },
+    "paolatamma": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "country": "BE",
+            "field": "economy"
+        },
+        "full_name": "Paola Tamma"
+    },
+    "FilipNerad": {
+        "topic": "Other",
+        "type": "JournalistNews",
+        "data": {
+            "country": "CZ",
+            "field": "European affairs"
+        },
+        "full_name": "Filip Nerad"
+    },
+    "gooutcz": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Event Management"
+        },
+        "full_name": "GoOut"
+    },
+    "NOBODYLISTEN1": {
+        "topic": "Music",
+        "type": "Author",
+        "data": {
+            "genre": "Hip Hop",
+            "country": "CZ"
+        },
+        "full_name": "NOBODYLISTEN"
+    },
+    "LowLuisa": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Social Media Personality"
+        },
+        "full_name": "Luisa"
+    },
+    "SOSvesnicky": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Non-profit organization"
+        },
+        "full_name": "SOS dětské vesničky"
+    },
+    "nik_tendo": {
+        "topic": "Music",
+        "type": "Author",
+        "data": {
+            "genre": "Rap/Hip-Hop",
+            "country": "CZ"
+        },
+        "full_name": "NikTendo"
+    },
+    "SpecialBeatz": {
+        "topic": "Music",
+        "type": "Author",
+        "data": {
+            "genre": "Music Producer",
+            "country": "SK"
+        },
+        "full_name": "SpecialBeatz"
+    },
+    "dokkeytino": {
+        "topic": "Music",
+        "type": "Author",
+        "data": {
+            "genre": "Hip-hop/rap",
+            "country": null
+        },
+        "full_name": "DOKKEYTINO"
+    },
+    "gumbgu": {
+        "topic": "Music",
+        "type": "Author",
+        "data": {
+            "genre": "Hip Hop/Rap",
+            "country": null
+        },
+        "full_name": "gumbgu"
+    },
+    "Erdayastronaut": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Space Education/Enthusiast"
+        },
+        "full_name": "Everyday Astronaut"
+    },
+    "Space_Station": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "space",
+            "notable_company": null
+        },
+        "full_name": "International Space Station"
+    },
+    "neuralink": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "neurotechnology",
+            "notable_company": "Neuralink"
+        },
+        "full_name": "Neuralink"
+    },
+    "NASA_Johnson": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "space exploration",
+            "notable_company": "NASA"
+        },
+        "full_name": "NASA's Johnson Space Center"
+    },
+    "NASAKennedy": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Space Exploration"
+        },
+        "full_name": "NASA's Kennedy Space Center"
+    },
+    "rookisaacman": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Space Exploration"
+        },
+        "full_name": "Jared Isaacman"
+    },
+    "ISS_Research": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Space Research"
+        },
+        "full_name": "ISS Research"
+    },
+    "Icetrek": {
+        "topic": "Other",
+        "type": "HobbiesFreeTime",
+        "data": {
+            "field": "adventure",
+            "notable_company": null
+        },
+        "full_name": "Eric Philips"
+    },
+    "rprogge": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "Robotics",
+            "notable_company": null
+        },
+        "full_name": "Rabea Rogge"
+    },
+    "KiddPoteet": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Astronaut"
+        },
+        "full_name": "Kidd Poteet"
+    },
+    "Gillis_SarahE": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "space operations",
+            "notable_company": "SpaceX"
+        },
+        "full_name": "Sarah Gillis"
+    },
+    "skeech412": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "Aerospace",
+            "notable_company": "SpaceX"
+        },
+        "full_name": "Stu Keech"
+    },
+    "MrBeast": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Content Creator"
+        },
+        "full_name": "MrBeast"
+    },
+    "michaelnicollsx": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "satellite communications",
+            "notable_company": "SpaceX"
+        },
+        "full_name": "Michael Nicolls"
+    },
+    "matthemonson": {
+        "topic": "Technology",
+        "type": "Technology",
+        "data": {
+            "field": "space technology",
+            "notable_company": "SpaceX"
+        },
+        "full_name": "Matt Monson"
+    },
+    "chadgibbs88": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Corporate Executive"
+        },
+        "full_name": "Chad Gibbs"
+    },
+    "jjfactorykat": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Business"
+        },
+        "full_name": "Jessica Jensen"
+    },
+    "Int_Machines": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "space technology",
+            "notable_company": "Intuitive Machines"
+        },
+        "full_name": "Intuitive Machines"
+    },
+    "ChrisSembroski": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Commercial Astronaut"
+        },
+        "full_name": "Chris “Hanks” Sembroski"
+    },
+    "ArceneauxHayley": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Astronaut and Author"
+        },
+        "full_name": "Hayley Arceneaux"
+    },
+    "DrSianProctor": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Astronaut and Space Artist"
+        },
+        "full_name": "Dr. Sian “Leo” Proctor"
+    },
+    "Boca_Bill_R": {
+        "topic": "Technology",
+        "type": "Other",
+        "data": {
+            "topic": "SpaceX Engineering"
+        },
+        "full_name": "Bill R"
+    },
+    "ochinero": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Business/Corporate Leadership"
+        },
+        "full_name": "Tom Ochinero"
+    },
+    "PolarisProgram": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Space Exploration"
+        },
+        "full_name": "Polaris"
+    },
+    "edwards345": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Space Engineering"
+        },
+        "full_name": "Jon Edwards"
+    },
+    "TurkeyBeaver": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "aerospace",
+            "notable_company": "SpaceX"
+        },
+        "full_name": "Kiko Dontchev"
+    },
+    "Gwynne_Shotwell": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "Space Exploration",
+            "notable_company": "SpaceX"
+        },
+        "full_name": "Gwynne Shotwell"
+    },
+    "vast": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "space technology",
+            "notable_company": null
+        },
+        "full_name": "Vast"
+    },
+    "SwarmInternet": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "satellite communication",
+            "notable_company": "Swarm Technologies"
+        },
+        "full_name": "Swarm Technologies"
+    },
+    "EutelsatGroup": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "satellite communications",
+            "notable_company": null
+        },
+        "full_name": "Eutelsat Group"
+    },
+    "NASAArtemis": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Space Exploration"
+        },
+        "full_name": "NASA Artemis"
+    },
+    "inspiration4x": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Space Mission"
+        },
+        "full_name": "Inspiration4"
+    },
+    "Astro_Soichi": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Astronaut"
+        },
+        "full_name": "NOGUCHI, Soichi 野口　聡一（公式）"
+    },
+    "planet": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "satellite imaging",
+            "notable_company": null
+        },
+        "full_name": "Planet"
+    },
+    "Aki_Hoshide": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Astronaut"
+        },
+        "full_name": "星出 彰彦 (JAXA宇宙飛行士)"
+    },
+    "astro_kimbrough": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "NASA Astronaut"
+        },
+        "full_name": "Shane Kimbrough"
+    },
+    "Astro_Megan": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "space exploration",
+            "notable_company": "NASA"
+        },
+        "full_name": "Megan McArthur"
+    },
+    "Thom_astro": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Astronautics"
+        },
+        "full_name": "Thomas Pesquet"
+    },
+    "Astro_SEAL": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "NASA Astronaut and U.S. Navy SEAL"
+        },
+        "full_name": "Chris Cassidy"
+    },
+    "Axiom_Space": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "space",
+            "notable_company": null
+        },
+        "full_name": "Axiom Space"
+    },
+    "MissionToPsyche": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "Space exploration",
+            "notable_company": "NASA"
+        },
+        "full_name": "Mission To Psyche"
+    },
+    "SpaceAdventures": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "space exploration",
+            "notable_company": null
+        },
+        "full_name": "Space Adventures"
+    },
+    "viasat": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Satellite Communication"
+        },
+        "full_name": "Viasat"
+    },
+    "Thales_Alenia_S": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "aerospace",
+            "notable_company": null
+        },
+        "full_name": "Thales Alenia Space"
+    },
+    "Telesat": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "Satellite Communication",
+            "notable_company": null
+        },
+        "full_name": "Telesat"
+    },
+    "rSpaceX": {
+        "topic": "Other",
+        "type": "Other",
+        "data": {
+            "topic": "Space Exploration and Technology"
+        },
+        "full_name": "r/SpaceX"
+    },
+    "MDA_space": {
+        "topic": "Other",
+        "type": "Technology",
+        "data": {
+            "field": "space",
+            "notable_company": null
+        },
+        "full_name": "MDA Space"
+    }
+}
