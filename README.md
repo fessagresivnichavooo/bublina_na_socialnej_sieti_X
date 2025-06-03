@@ -1,1 +1,0 @@
-# bublina_na_socialnej_sieti_X
