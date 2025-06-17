@@ -19,7 +19,7 @@
 ### 📂 Dátové súbory
 
 - **`profile_analysis.json`**  
-  Výsledky analýzy profilov – napr. bio, lokalita, sledovatelia/sledovaní.
+  Výsledky analýzy sledovaných profilov.
 
 - **`tweet_analysis_test.json`**  
   Výstupy z analýzy tweetov – obsah, typ interakcie (odpoveď, retweet), sentiment atď.
